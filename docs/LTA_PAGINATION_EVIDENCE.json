@@ -1,0 +1,2145 @@
+{
+  "checked_at": "2026-10-02T18:13:47.809685+08:00",
+  "configured": {
+    "DEEPSEEK_API_KEY": true,
+    "ORS_API_KEY": true,
+    "LTA_API_KEY": true,
+    "DATAGOVSG_API_KEY": false
+  },
+  "routing": {
+    "engine": "OSRM",
+    "driving_configured": true,
+    "walking_configured": true,
+    "key_required": false,
+    "public_driving_service": true
+  },
+  "connectivity": {
+    "LTA": {
+      "status": "API 响应成功",
+      "cached": false,
+      "note": "单个响应不代表完整规划验收",
+      "item_count": 0,
+      "collection": {
+        "v4/TrafficSpeedBands": {
+          "complete": false,
+          "pages": 76,
+          "record_count": 38000,
+          "reason": "已为后续算路和模型决策保留预算；LTA 数据尚未读完。"
+        },
+        "TrafficIncidents": {
+          "complete": true,
+          "pages": 1,
+          "record_count": 22,
+          "reason": null
+        }
+      },
+      "speed_band_count": 38000
+    },
+    "OSRM driving": {
+      "status": "API 响应成功",
+      "cached": false,
+      "note": "单个响应不代表完整规划验收",
+      "item_count": 2,
+      "routes": [
+        {
+          "id": "leg-6768483865801708",
+          "mode": "driving",
+          "origin": {
+            "id": "public-cityhall",
+            "name": "City Hall area",
+            "lat": 1.29,
+            "lon": 103.85,
+            "category": null,
+            "opening_hours": null,
+            "source": "固定公共测试坐标",
+            "evidence_ids": [],
+            "available_lots": null,
+            "entrance_confirmed": false,
+            "requires_confirmation": false
+          },
+          "destination": {
+            "id": "public-marina",
+            "name": "Marina Bay area",
+            "lat": 1.3,
+            "lon": 103.86,
+            "category": null,
+            "opening_hours": null,
+            "source": "固定公共测试坐标",
+            "evidence_ids": [],
+            "available_lots": null,
+            "entrance_confirmed": false,
+            "requires_confirmation": false
+          },
+          "geometry": {
+            "coordinates": [
+              [
+                103.849924,
+                1.290046
+              ],
+              [
+                103.849844,
+                1.289914
+              ],
+              [
+                103.849722,
+                1.289714
+              ],
+              [
+                103.849669,
+                1.289627
+              ],
+              [
+                103.849626,
+                1.289563
+              ],
+              [
+                103.849596,
+                1.28952
+              ],
+              [
+                103.849535,
+                1.289431
+              ],
+              [
+                103.849479,
+                1.289413
+              ],
+              [
+                103.849437,
+                1.289438
+              ],
+              [
+                103.849407,
+                1.289456
+              ],
+              [
+                103.84932,
+                1.289509
+              ],
+              [
+                103.849193,
+                1.289605
+              ],
+              [
+                103.849078,
+                1.289685
+              ],
+              [
+                103.848925,
+                1.289781
+              ],
+              [
+                103.848676,
+                1.28993
+              ],
+              [
+                103.848636,
+                1.289949
+              ],
+              [
+                103.848497,
+                1.290019
+              ],
+              [
+                103.848467,
+                1.290033
+              ],
+              [
+                103.848364,
+                1.290087
+              ],
+              [
+                103.848186,
+                1.290114
+              ],
+              [
+                103.848258,
+                1.290204
+              ],
+              [
+                103.8484,
+                1.290372
+              ],
+              [
+                103.848497,
+                1.290499
+              ],
+              [
+                103.84859,
+                1.290655
+              ],
+              [
+                103.848755,
+                1.290952
+              ],
+              [
+                103.848905,
+                1.29124
+              ],
+              [
+                103.849045,
+                1.291493
+              ],
+              [
+                103.849176,
+                1.291758
+              ],
+              [
+                103.849286,
+                1.291966
+              ],
+              [
+                103.849369,
+                1.292149
+              ],
+              [
+                103.849438,
+                1.292331
+              ],
+              [
+                103.84947,
+                1.292391
+              ],
+              [
+                103.849531,
+                1.292538
+              ],
+              [
+                103.84957,
+                1.292629
+              ],
+              [
+                103.849662,
+                1.292845
+              ],
+              [
+                103.849684,
+                1.292891
+              ],
+              [
+                103.849842,
+                1.293219
+              ],
+              [
+                103.850044,
+                1.293586
+              ],
+              [
+                103.850123,
+                1.293743
+              ],
+              [
+                103.850189,
+                1.293872
+              ],
+              [
+                103.850235,
+                1.293961
+              ],
+              [
+                103.850296,
+                1.294083
+              ],
+              [
+                103.850471,
+                1.294414
+              ],
+              [
+                103.850537,
+                1.29452
+              ],
+              [
+                103.850609,
+                1.294611
+              ],
+              [
+                103.851063,
+                1.295138
+              ],
+              [
+                103.851334,
+                1.295428
+              ],
+              [
+                103.851396,
+                1.295486
+              ],
+              [
+                103.851415,
+                1.295506
+              ],
+              [
+                103.851501,
+                1.295599
+              ],
+              [
+                103.851657,
+                1.295763
+              ],
+              [
+                103.851765,
+                1.295887
+              ],
+              [
+                103.851819,
+                1.295945
+              ],
+              [
+                103.851901,
+                1.296028
+              ],
+              [
+                103.851949,
+                1.296087
+              ],
+              [
+                103.852053,
+                1.296203
+              ],
+              [
+                103.852203,
+                1.29637
+              ],
+              [
+                103.85235,
+                1.29653
+              ],
+              [
+                103.852669,
+                1.296898
+              ],
+              [
+                103.852742,
+                1.296988
+              ],
+              [
+                103.852761,
+                1.297012
+              ],
+              [
+                103.853086,
+                1.297419
+              ],
+              [
+                103.853171,
+                1.297522
+              ],
+              [
+                103.853271,
+                1.297648
+              ],
+              [
+                103.853408,
+                1.297821
+              ],
+              [
+                103.853439,
+                1.297859
+              ],
+              [
+                103.853667,
+                1.298145
+              ],
+              [
+                103.853892,
+                1.298427
+              ],
+              [
+                103.853945,
+                1.298494
+              ],
+              [
+                103.854038,
+                1.298616
+              ],
+              [
+                103.854061,
+                1.298643
+              ],
+              [
+                103.854281,
+                1.298899
+              ],
+              [
+                103.854536,
+                1.299196
+              ],
+              [
+                103.854663,
+                1.299344
+              ],
+              [
+                103.854902,
+                1.299622
+              ],
+              [
+                103.854925,
+                1.29965
+              ],
+              [
+                103.855254,
+                1.300045
+              ],
+              [
+                103.855442,
+                1.30026
+              ],
+              [
+                103.855572,
+                1.300418
+              ],
+              [
+                103.855677,
+                1.300538
+              ],
+              [
+                103.855719,
+                1.300587
+              ],
+              [
+                103.855811,
+                1.300694
+              ],
+              [
+                103.855876,
+                1.300768
+              ],
+              [
+                103.856168,
+                1.301106
+              ],
+              [
+                103.856529,
+                1.301522
+              ],
+              [
+                103.85671,
+                1.301735
+              ],
+              [
+                103.856839,
+                1.301885
+              ],
+              [
+                103.856941,
+                1.302006
+              ],
+              [
+                103.85699,
+                1.302068
+              ],
+              [
+                103.857086,
+                1.301943
+              ],
+              [
+                103.85711,
+                1.301901
+              ],
+              [
+                103.857136,
+                1.301881
+              ],
+              [
+                103.857328,
+                1.301725
+              ],
+              [
+                103.857418,
+                1.301652
+              ],
+              [
+                103.857583,
+                1.301518
+              ],
+              [
+                103.857627,
+                1.301481
+              ],
+              [
+                103.857807,
+                1.301333
+              ],
+              [
+                103.857902,
+                1.301255
+              ],
+              [
+                103.857942,
+                1.301222
+              ],
+              [
+                103.858399,
+                1.30084
+              ],
+              [
+                103.858643,
+                1.300634
+              ],
+              [
+                103.858812,
+                1.300451
+              ],
+              [
+                103.8591,
+                1.300129
+              ],
+              [
+                103.859334,
+                1.299856
+              ],
+              [
+                103.859361,
+                1.299823
+              ],
+              [
+                103.859457,
+                1.299907
+              ],
+              [
+                103.859643,
+                1.300073
+              ],
+              [
+                103.859915,
+                1.300298
+              ],
+              [
+                103.860325,
+                1.300599
+              ],
+              [
+                103.860506,
+                1.300718
+              ],
+              [
+                103.860694,
+                1.300832
+              ],
+              [
+                103.861054,
+                1.301023
+              ],
+              [
+                103.861273,
+                1.301135
+              ],
+              [
+                103.861314,
+                1.301104
+              ],
+              [
+                103.861341,
+                1.301078
+              ],
+              [
+                103.861355,
+                1.301025
+              ],
+              [
+                103.861347,
+                1.300984
+              ],
+              [
+                103.861154,
+                1.30088
+              ],
+              [
+                103.861076,
+                1.300838
+              ],
+              [
+                103.860726,
+                1.300634
+              ],
+              [
+                103.860675,
+                1.300601
+              ],
+              [
+                103.860426,
+                1.300437
+              ],
+              [
+                103.860066,
+                1.300168
+              ],
+              [
+                103.860025,
+                1.300138
+              ],
+              [
+                103.859943,
+                1.300081
+              ]
+            ],
+            "type": "LineString"
+          },
+          "distance_m": 2736.9,
+          "provider_duration_s": 269.1,
+          "source": "OSRM",
+          "evidence_ids": [
+            "ev-998e3ba97e052e88"
+          ],
+          "highways": null,
+          "traffic_coverage": null,
+          "traffic_duration_s": null,
+          "traffic_lower_s": null,
+          "traffic_upper_s": null,
+          "congestion_fraction": null,
+          "traffic_retrieved_at": null,
+          "segments": [
+            {
+              "start": 0,
+              "end": 6,
+              "name": "North Bridge Road",
+              "duration_s": 9.3,
+              "distance_m": 80.6
+            },
+            {
+              "start": 6,
+              "end": 18,
+              "name": "North Boat Quay",
+              "duration_s": 15.8,
+              "distance_m": 151.5
+            },
+            {
+              "start": 18,
+              "end": 43,
+              "name": "Hill Street",
+              "duration_s": 60.9,
+              "distance_m": 574.6
+            },
+            {
+              "start": 43,
+              "end": 88,
+              "name": "Victoria Street",
+              "duration_s": 96.1,
+              "distance_m": 1101.5
+            },
+            {
+              "start": 88,
+              "end": 104,
+              "name": "Ophir Road",
+              "duration_s": 38.8,
+              "distance_m": 363.7
+            },
+            {
+              "start": 104,
+              "end": 112,
+              "name": "Beach Road",
+              "duration_s": 27.1,
+              "distance_m": 258.6
+            },
+            {
+              "start": 112,
+              "end": 124,
+              "name": "Beach Road",
+              "duration_s": 21.1,
+              "distance_m": 206.3
+            }
+          ]
+        },
+        {
+          "id": "leg-3ee0f32cc64c9c02",
+          "mode": "driving",
+          "origin": {
+            "id": "public-cityhall",
+            "name": "City Hall area",
+            "lat": 1.29,
+            "lon": 103.85,
+            "category": null,
+            "opening_hours": null,
+            "source": "固定公共测试坐标",
+            "evidence_ids": [],
+            "available_lots": null,
+            "entrance_confirmed": false,
+            "requires_confirmation": false
+          },
+          "destination": {
+            "id": "public-marina",
+            "name": "Marina Bay area",
+            "lat": 1.3,
+            "lon": 103.86,
+            "category": null,
+            "opening_hours": null,
+            "source": "固定公共测试坐标",
+            "evidence_ids": [],
+            "available_lots": null,
+            "entrance_confirmed": false,
+            "requires_confirmation": false
+          },
+          "geometry": {
+            "coordinates": [
+              [
+                103.849924,
+                1.290046
+              ],
+              [
+                103.849844,
+                1.289914
+              ],
+              [
+                103.849722,
+                1.289714
+              ],
+              [
+                103.849669,
+                1.289627
+              ],
+              [
+                103.849626,
+                1.289563
+              ],
+              [
+                103.849596,
+                1.28952
+              ],
+              [
+                103.849535,
+                1.289431
+              ],
+              [
+                103.849479,
+                1.289413
+              ],
+              [
+                103.849437,
+                1.289438
+              ],
+              [
+                103.849407,
+                1.289456
+              ],
+              [
+                103.84932,
+                1.289509
+              ],
+              [
+                103.849193,
+                1.289605
+              ],
+              [
+                103.849078,
+                1.289685
+              ],
+              [
+                103.848925,
+                1.289781
+              ],
+              [
+                103.848676,
+                1.28993
+              ],
+              [
+                103.848636,
+                1.289949
+              ],
+              [
+                103.848497,
+                1.290019
+              ],
+              [
+                103.848467,
+                1.290033
+              ],
+              [
+                103.848364,
+                1.290087
+              ],
+              [
+                103.848186,
+                1.290114
+              ],
+              [
+                103.848258,
+                1.290204
+              ],
+              [
+                103.8484,
+                1.290372
+              ],
+              [
+                103.848497,
+                1.290499
+              ],
+              [
+                103.84859,
+                1.290655
+              ],
+              [
+                103.848755,
+                1.290952
+              ],
+              [
+                103.84885,
+                1.291004
+              ],
+              [
+                103.848899,
+                1.291013
+              ],
+              [
+                103.848971,
+                1.291
+              ],
+              [
+                103.849041,
+                1.290943
+              ],
+              [
+                103.849281,
+                1.290762
+              ],
+              [
+                103.849599,
+                1.290518
+              ],
+              [
+                103.849628,
+                1.290496
+              ],
+              [
+                103.849928,
+                1.290278
+              ],
+              [
+                103.850015,
+                1.290196
+              ],
+              [
+                103.850059,
+                1.290164
+              ],
+              [
+                103.850106,
+                1.290125
+              ],
+              [
+                103.850426,
+                1.28987
+              ],
+              [
+                103.850555,
+                1.289764
+              ],
+              [
+                103.850692,
+                1.289648
+              ],
+              [
+                103.85081,
+                1.289554
+              ],
+              [
+                103.851046,
+                1.289365
+              ],
+              [
+                103.851096,
+                1.289333
+              ],
+              [
+                103.851146,
+                1.289301
+              ],
+              [
+                103.851196,
+                1.289269
+              ],
+              [
+                103.851237,
+                1.289244
+              ],
+              [
+                103.851254,
+                1.289234
+              ],
+              [
+                103.851285,
+                1.289218
+              ],
+              [
+                103.851306,
+                1.289212
+              ],
+              [
+                103.851326,
+                1.289209
+              ],
+              [
+                103.851352,
+                1.289212
+              ],
+              [
+                103.851381,
+                1.289217
+              ],
+              [
+                103.851408,
+                1.289229
+              ],
+              [
+                103.851435,
+                1.289246
+              ],
+              [
+                103.851575,
+                1.289374
+              ],
+              [
+                103.851652,
+                1.289514
+              ],
+              [
+                103.851739,
+                1.28967
+              ],
+              [
+                103.852329,
+                1.29073
+              ],
+              [
+                103.852412,
+                1.290877
+              ],
+              [
+                103.852429,
+                1.290909
+              ],
+              [
+                103.852527,
+                1.291084
+              ],
+              [
+                103.852635,
+                1.291282
+              ],
+              [
+                103.852992,
+                1.291914
+              ],
+              [
+                103.853083,
+                1.292081
+              ],
+              [
+                103.853132,
+                1.29217
+              ],
+              [
+                103.853252,
+                1.29239
+              ],
+              [
+                103.853395,
+                1.292518
+              ],
+              [
+                103.853498,
+                1.292576
+              ],
+              [
+                103.853619,
+                1.292604
+              ],
+              [
+                103.853735,
+                1.292634
+              ],
+              [
+                103.85378,
+                1.292646
+              ],
+              [
+                103.853852,
+                1.292664
+              ],
+              [
+                103.853919,
+                1.292719
+              ],
+              [
+                103.853934,
+                1.292731
+              ],
+              [
+                103.85395,
+                1.292744
+              ],
+              [
+                103.854238,
+                1.293191
+              ],
+              [
+                103.854284,
+                1.293258
+              ],
+              [
+                103.854372,
+                1.293407
+              ],
+              [
+                103.85459,
+                1.293775
+              ],
+              [
+                103.854604,
+                1.293808
+              ],
+              [
+                103.854654,
+                1.293935
+              ],
+              [
+                103.854787,
+                1.293832
+              ],
+              [
+                103.855329,
+                1.293467
+              ],
+              [
+                103.855535,
+                1.293426
+              ],
+              [
+                103.855738,
+                1.293439
+              ],
+              [
+                103.855822,
+                1.293463
+              ],
+              [
+                103.855921,
+                1.293508
+              ],
+              [
+                103.855996,
+                1.29356
+              ],
+              [
+                103.85609,
+                1.293611
+              ],
+              [
+                103.856347,
+                1.294008
+              ],
+              [
+                103.856563,
+                1.294365
+              ],
+              [
+                103.856582,
+                1.294397
+              ],
+              [
+                103.856782,
+                1.294727
+              ],
+              [
+                103.856806,
+                1.294767
+              ],
+              [
+                103.857018,
+                1.295114
+              ],
+              [
+                103.857058,
+                1.295178
+              ],
+              [
+                103.857098,
+                1.295244
+              ],
+              [
+                103.857292,
+                1.295547
+              ],
+              [
+                103.85734,
+                1.295622
+              ],
+              [
+                103.857456,
+                1.295782
+              ],
+              [
+                103.857554,
+                1.295901
+              ],
+              [
+                103.857682,
+                1.296054
+              ],
+              [
+                103.857877,
+                1.296299
+              ],
+              [
+                103.858391,
+                1.296864
+              ],
+              [
+                103.858485,
+                1.296957
+              ],
+              [
+                103.859311,
+                1.297781
+              ],
+              [
+                103.85951,
+                1.297966
+              ],
+              [
+                103.859714,
+                1.29815
+              ],
+              [
+                103.859925,
+                1.298328
+              ],
+              [
+                103.859972,
+                1.298367
+              ],
+              [
+                103.860513,
+                1.298787
+              ],
+              [
+                103.861562,
+                1.299543
+              ],
+              [
+                103.862079,
+                1.299936
+              ],
+              [
+                103.862161,
+                1.299992
+              ],
+              [
+                103.862793,
+                1.300473
+              ],
+              [
+                103.863154,
+                1.300744
+              ],
+              [
+                103.86318,
+                1.300763
+              ],
+              [
+                103.863197,
+                1.300813
+              ],
+              [
+                103.863209,
+                1.300861
+              ],
+              [
+                103.863217,
+                1.300907
+              ],
+              [
+                103.863217,
+                1.300958
+              ],
+              [
+                103.863208,
+                1.301009
+              ],
+              [
+                103.863151,
+                1.301109
+              ],
+              [
+                103.86307,
+                1.301252
+              ],
+              [
+                103.863001,
+                1.301365
+              ],
+              [
+                103.862808,
+                1.301686
+              ],
+              [
+                103.862787,
+                1.30172
+              ],
+              [
+                103.862679,
+                1.301658
+              ],
+              [
+                103.862544,
+                1.301582
+              ],
+              [
+                103.862495,
+                1.301555
+              ],
+              [
+                103.862377,
+                1.301491
+              ],
+              [
+                103.862345,
+                1.301473
+              ],
+              [
+                103.86226,
+                1.301426
+              ],
+              [
+                103.861729,
+                1.301161
+              ],
+              [
+                103.861533,
+                1.30107
+              ],
+              [
+                103.861347,
+                1.300984
+              ],
+              [
+                103.861154,
+                1.30088
+              ],
+              [
+                103.861076,
+                1.300838
+              ],
+              [
+                103.860726,
+                1.300634
+              ],
+              [
+                103.860675,
+                1.300601
+              ],
+              [
+                103.860426,
+                1.300437
+              ],
+              [
+                103.860066,
+                1.300168
+              ],
+              [
+                103.860025,
+                1.300138
+              ],
+              [
+                103.859943,
+                1.300081
+              ]
+            ],
+            "type": "LineString"
+          },
+          "distance_m": 3174.3,
+          "provider_duration_s": 299.4,
+          "source": "OSRM",
+          "evidence_ids": [
+            "ev-998e3ba97e052e88"
+          ],
+          "highways": null,
+          "traffic_coverage": null,
+          "traffic_duration_s": null,
+          "traffic_lower_s": null,
+          "traffic_upper_s": null,
+          "congestion_fraction": null,
+          "traffic_retrieved_at": null,
+          "segments": [
+            {
+              "start": 0,
+              "end": 6,
+              "name": "North Bridge Road",
+              "duration_s": 9.3,
+              "distance_m": 80.6
+            },
+            {
+              "start": 6,
+              "end": 18,
+              "name": "North Boat Quay",
+              "duration_s": 15.8,
+              "distance_m": 151.5
+            },
+            {
+              "start": 18,
+              "end": 24,
+              "name": "Hill Street",
+              "duration_s": 21.9,
+              "distance_m": 132.7
+            },
+            {
+              "start": 24,
+              "end": 33,
+              "name": "High Street",
+              "duration_s": 19.6,
+              "distance_m": 172.1
+            },
+            {
+              "start": 33,
+              "end": 53,
+              "name": "Parliament Place",
+              "duration_s": 20,
+              "distance_m": 216.9
+            },
+            {
+              "start": 53,
+              "end": 67,
+              "name": "Saint Andrew's Road",
+              "duration_s": 42.7,
+              "distance_m": 430.4
+            },
+            {
+              "start": 67,
+              "end": 79,
+              "name": "Beach Road",
+              "duration_s": 23.8,
+              "distance_m": 194.3
+            },
+            {
+              "start": 79,
+              "end": 81,
+              "name": "Bras Basah Road",
+              "duration_s": 8.2,
+              "distance_m": 91.3
+            },
+            {
+              "start": 81,
+              "end": 115,
+              "name": "Nicoll Highway",
+              "duration_s": 85.1,
+              "distance_m": 1219.5
+            },
+            {
+              "start": 115,
+              "end": 125,
+              "name": "Java Road",
+              "duration_s": 16.1,
+              "distance_m": 119.4
+            },
+            {
+              "start": 125,
+              "end": 142,
+              "name": "Beach Road",
+              "duration_s": 36.9,
+              "distance_m": 365.5
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "acceptance": "未验收",
+  "route_traffic": [
+    {
+      "id": "leg-6768483865801708",
+      "coverage": 0.630394296994235,
+      "duration_s": null,
+      "lower_s": null,
+      "upper_s": null
+    },
+    {
+      "id": "leg-3ee0f32cc64c9c02",
+      "coverage": 0.7430091610810331,
+      "duration_s": null,
+      "lower_s": null,
+      "upper_s": null
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-3df431ffcc9fef43",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:13:49.672082Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:18:49.672082Z",
+      "tool_call_id": "initial",
+      "response_sha256": "e706735b999685228f02f5a41f5bdd8305d60a46d524dd4bb7e35887cca95cba",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-4a73d46340f617e6",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:13:51.468717Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:18:51.468717Z",
+      "tool_call_id": "initial",
+      "response_sha256": "8564de6d859b725f37ae2061ae17629d6e865729603f5fcee4fbd2723dd3c5a4",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-7b05dbbc7cf20a1a",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:13:53.260171Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:18:53.260171Z",
+      "tool_call_id": "initial",
+      "response_sha256": "78144cde8c63e585bdcc36c0feffc97c24f0e3ec91222618123850e916b84f94",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-f4292d455e948270",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:13:55.072433Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:18:55.072433Z",
+      "tool_call_id": "initial",
+      "response_sha256": "a714b90b873f9d20d7ecc3c1b19de0b3c88bb56b3bdde060b4f31e12d5bd0ff0",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-0d3a795b2a3f5c49",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:13:56.952532Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:18:56.952532Z",
+      "tool_call_id": "initial",
+      "response_sha256": "94ae0fc1df2d243f410ebe2b1981789d596104367bbbb3d094f3a6c1bc554e5a",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-7bdbada3465fba95",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:13:58.935961Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:18:58.935961Z",
+      "tool_call_id": "initial",
+      "response_sha256": "3682c2e8c2654e15330cd4b3ac3c3065431ee1b1991a9b1e8d134600c8032df8",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-d27c43caab9d5372",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:00.704452Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:00.704452Z",
+      "tool_call_id": "initial",
+      "response_sha256": "16b768401084a489a743fa428a3887c7d01e8de22a4c8cb408f834471381b7c3",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-193b739e56b4d48f",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:02.530969Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:02.530969Z",
+      "tool_call_id": "initial",
+      "response_sha256": "aecd118f8f7bcf2d0429115e8981cd6860ffbc356cbbf1fc990b0e421054548e",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-5f0cc1cbf58919a0",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:04.367430Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:04.367430Z",
+      "tool_call_id": "initial",
+      "response_sha256": "a94e71a6adf9bb1a3e3d3b59f2fecc0c794cf7faf5414418cd82073c68cd5a9e",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-1724369dc2be8cc4",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:06.189919Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:06.189919Z",
+      "tool_call_id": "initial",
+      "response_sha256": "60195530e04534b3d6fff0760d87ac66e1f70e2f03f93ef46a12f4c459959a92",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-90bed19315afc3ae",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:07.937912Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:07.937912Z",
+      "tool_call_id": "initial",
+      "response_sha256": "61fa4e0f9183d517d6650232cc0406644aa92cdf576fc729635645c428791a91",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-ddb1a78e70c34cff",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:10.055299Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:10.055299Z",
+      "tool_call_id": "initial",
+      "response_sha256": "f9400e247c8bdcb70bd003039ef025bc40e7cb0fdd0f2e04b545845d9052d813",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-1d98f9522ddf00b9",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:11.871113Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:11.871113Z",
+      "tool_call_id": "initial",
+      "response_sha256": "846bac27f29357594f514fa896f704cb95b5c024da455882ca3a20a3c7fc9c76",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-fb7b377a93f854a1",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:13.731582Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:13.731582Z",
+      "tool_call_id": "initial",
+      "response_sha256": "d3a2cdf05d6e96b9812229e37fa40d4ecd50c20c6eaba67be9d327b51d1f8fb6",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-b78cedcd0335d10d",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:15.760706Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:15.760706Z",
+      "tool_call_id": "initial",
+      "response_sha256": "9ba5fc7e6b061bc8a1cedb1c183641dfca72dc0f7f24300ceff99e92ee470d9c",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-e2d5529f1b74cafe",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:17.675546Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:17.675546Z",
+      "tool_call_id": "initial",
+      "response_sha256": "4bc9b894afb293d0461b091c2f325de72ef533ff3c57358e8abb81cfab6de076",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-86852eb9fed95472",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:19.424367Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:19.424367Z",
+      "tool_call_id": "initial",
+      "response_sha256": "d3b0685ceb7449279ef4f376baff3386bfee8943677b2e15153c82eb75eb1265",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-bd3a724a6417ba8b",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:21.264897Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:21.264897Z",
+      "tool_call_id": "initial",
+      "response_sha256": "2984c7a05d4483052a176b3745a653641d52d740cd4dab59d0cbd54934130e31",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-d65222a7817543ec",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:23.007481Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:23.007481Z",
+      "tool_call_id": "initial",
+      "response_sha256": "71e03b24980383c1553028a1707dbb9a4429b0fba688f7125c8d64db0dd5185a",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-5808e2c323d38e4a",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:24.973407Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:24.973407Z",
+      "tool_call_id": "initial",
+      "response_sha256": "8a32e18c37075a2bd81c168fe6d2029014af533053e93c8679747e00cc2e1eb6",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-4a1a52f88893d45e",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:26.777815Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:26.777815Z",
+      "tool_call_id": "initial",
+      "response_sha256": "a534f25d50b9dc068aad7db5be59a62399f6cae2e8c3437748773185d4d80fc0",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-3199a8b57550ceb1",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:28.531573Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:28.531573Z",
+      "tool_call_id": "initial",
+      "response_sha256": "3d8413c477a0884d36c9f92e014df78183a6fc3c6b12740e8342ba2191095b0f",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-c3039b93aa704cf4",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:30.605838Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:30.605838Z",
+      "tool_call_id": "initial",
+      "response_sha256": "f7c1b8a142b5479520f4785428dee4cf032ff47977752ddc1cbf2f2c24b197f4",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-a123b7f1f07474d9",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:32.400286Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:32.400286Z",
+      "tool_call_id": "initial",
+      "response_sha256": "08c96b68f3c00009617f17ba8a522d48006bd48ee8e5f2949f49a5e194f09f4a",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-72ed4fe54f4375ef",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:34.282598Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:34.282598Z",
+      "tool_call_id": "initial",
+      "response_sha256": "51d8c3e5b12ed0d00e438ab293790b643959258090a326527b034e472cb3ce9b",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-48c4dd28f98dd7be",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:37.050830Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:37.050830Z",
+      "tool_call_id": "initial",
+      "response_sha256": "25120548971e8535fdca3344e2c55d496bf954650e16dd42daca1d32ba01dc5f",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-83bac41feec3acbd",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:38.820229Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:38.820229Z",
+      "tool_call_id": "initial",
+      "response_sha256": "fa725dab9b5abe4a111218a39f8b841124dd03e113268756e5f480957b5988e0",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-f2aa4f6d6326c234",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:40.623511Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:40.623511Z",
+      "tool_call_id": "initial",
+      "response_sha256": "a71824335b3b6a87d8562140c9ff7ccf55df0c453ad968fdd10b53cee6e17a2a",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-c3c4cf82ef87c353",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:42.395480Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:42.395480Z",
+      "tool_call_id": "initial",
+      "response_sha256": "a8416139a5c84ec50293098e086fc1257268805aecea79facb844a27ad80328e",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-efd101e8fa9c3abf",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:44.174292Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:44.174292Z",
+      "tool_call_id": "initial",
+      "response_sha256": "941260c51853053bd4b5ab81cce45128ae42005d83e4bd1728d0e826dd7e381f",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-0407f62a73e067b9",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:46.430391Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:46.430391Z",
+      "tool_call_id": "initial",
+      "response_sha256": "c8d47edb8ecef85f227ded13710d26b3181ea5ba02f402f5f1dbaa7db2b3fa48",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-c5cda298dc9224b3",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:48.296438Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:48.296438Z",
+      "tool_call_id": "initial",
+      "response_sha256": "52da6e061e8181fd91bcee27b6b37dff2fa20ea41391eaac451fc52fe7aa1956",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-afb50bbb7fed1f82",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:50.231981Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:50.231981Z",
+      "tool_call_id": "initial",
+      "response_sha256": "3f98c2eca03ef74eaecd0841c285dd5574a16c16fbf746fa6583791c57d04ba8",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-98996de38c4e3c33",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:52.350295Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:52.350295Z",
+      "tool_call_id": "initial",
+      "response_sha256": "ab5b1f6ab44e2e38aa97c7f9e48c0c299b248fc447fe89d78a6640cc7449471a",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-4dc374fd84b1051c",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:54.132737Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:54.132737Z",
+      "tool_call_id": "initial",
+      "response_sha256": "5aa60370d1b9f9397e1ef9b9f6d0c5f7b25f72308c52fb72fbadb5c25a3734ea",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-33dc4d3ae36aeb21",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:55.977546Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:55.977546Z",
+      "tool_call_id": "initial",
+      "response_sha256": "ddfd256a9ed0211f79518b25f19afa471a144578e46b4a594b38de837235d64c",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-3037543a4ec260c9",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:57.754667Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:57.754667Z",
+      "tool_call_id": "initial",
+      "response_sha256": "cce3bbe4c742bd2a67c62129392101671a985837da85fd22848dc43748f2d411",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-9788aecbf166dcc0",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:14:59.550579Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:19:59.550579Z",
+      "tool_call_id": "initial",
+      "response_sha256": "1c78ef3803e310483eac777ebcea501421e7363ecc4918b804b2cb1865410362",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-79d6fe47d8af67a3",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:01.353166Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:01.353166Z",
+      "tool_call_id": "initial",
+      "response_sha256": "7d182e1153e09cf6f65c11c3dccb77c1beb184a186cd70e10fc6c87820478680",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-84fba69b109eddf2",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:03.134361Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:03.134361Z",
+      "tool_call_id": "initial",
+      "response_sha256": "045a6aabb39d0600339e2392bf16363cd7242c6b53d4ccbb8d5e2170159f9d8b",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-56aa0f847ac0ffdb",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:04.895598Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:04.895598Z",
+      "tool_call_id": "initial",
+      "response_sha256": "e68990faed5554f27b09abb6c3d7cf77e6717eb0997167181b867189dd67b971",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-56857d47248abad9",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:06.672847Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:06.672847Z",
+      "tool_call_id": "initial",
+      "response_sha256": "0670bbb1ef3d2feda79750ded3f3622b8a2a13850912b23318df247ebf92ef99",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-f920208e4f534435",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:08.434888Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:08.434888Z",
+      "tool_call_id": "initial",
+      "response_sha256": "ee11ad9a787045d49c32e314385bee292f78f13b99a2ed9c0cd7b7f0b991044d",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-97edfbc06ca5c84b",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:10.305517Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:10.305517Z",
+      "tool_call_id": "initial",
+      "response_sha256": "dda2b11db1c4d1a5871c5291f724dac9339eb571938933cad0d06c254c816314",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-76a95e18066ff171",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:12.143029Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:12.143029Z",
+      "tool_call_id": "initial",
+      "response_sha256": "a3a91b76e4d07bd24329a5af7227ba29234234b74c97e29058502858e913cea1",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-037125e148730cdb",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:13.970423Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:13.970423Z",
+      "tool_call_id": "initial",
+      "response_sha256": "09fc04d3139ae7ce4ec4ad2c3879d74ff1430ea4cc27d6c22d6ac6788678af46",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-f6deaaefcffe94e4",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:15.996665Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:15.996665Z",
+      "tool_call_id": "initial",
+      "response_sha256": "6717a86baef38fd2ee78d4dfd3e471a348f65f4ae4c6855a3fbf0ca4c36a0c88",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-7fa8276bf8d1b2e2",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:17.731599Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:17.731599Z",
+      "tool_call_id": "initial",
+      "response_sha256": "8a2173f03f5ff2ac9465d02bd1a47233d56b22ecf5b84e4a9eaa9683e7f2bc1d",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-ed749dbe7d052ba9",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:19.555191Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:19.555191Z",
+      "tool_call_id": "initial",
+      "response_sha256": "efc980e56b86b063e2c3de89e472f0369099abfe3576272f6a2c62cf3b735e77",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-2d137d682b78e555",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:21.402607Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:21.402607Z",
+      "tool_call_id": "initial",
+      "response_sha256": "5640b0f2d01379fd5efcd084caf6cd05044abe1b2ec266dbe820d37447ed286b",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-0a9048d4a89f3f51",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:23.152674Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:23.152674Z",
+      "tool_call_id": "initial",
+      "response_sha256": "bf6b543fd19d74f4375d2a3bd19054818f676d675e04fd8fc0c83f0b7e8cb937",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-ac51327af7327cf8",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:24.985869Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:24.985869Z",
+      "tool_call_id": "initial",
+      "response_sha256": "21da552adb84716dfa25749866e827bd3a408239156ef53e63f94650ab984fa2",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-447541c3a665dbd3",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:26.812004Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:26.812004Z",
+      "tool_call_id": "initial",
+      "response_sha256": "ac6f73f8df6bf73cf8dbf14a81d1bf49236f251dae66395f461a0bdf0c20b269",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-91d537b27b93180e",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:28.691828Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:28.691828Z",
+      "tool_call_id": "initial",
+      "response_sha256": "397e24a653e08423dbbefaaa166414356572a659c80f7afde46d311575d70e62",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-06dfb45ec7e70aed",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:30.609032Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:30.609032Z",
+      "tool_call_id": "initial",
+      "response_sha256": "756d41229d1a83766f849e29690bb2338c2d5278b833b59d316e8037f22080e1",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-80a00a89832f36be",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:32.436481Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:32.436481Z",
+      "tool_call_id": "initial",
+      "response_sha256": "d2f762d781b8ba615eedcb7ec2f1b87b626b27b9a30b9dfdc6f7adcfee3c9243",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-b065ec3ad2a29764",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:34.249780Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:34.249780Z",
+      "tool_call_id": "initial",
+      "response_sha256": "84e86108fd7af1943b4ff452e6e86508721ec57243ffd7cf759f5093cd3eabef",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-7802ac7d6b19e884",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:36.026197Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:36.026197Z",
+      "tool_call_id": "initial",
+      "response_sha256": "07002a852a73d603c4b50bfcc68be4ce1cecb8ac5386e55bf67c65cfbe30c6c4",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-5ccdef7d530205bb",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:37.780351Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:37.780351Z",
+      "tool_call_id": "initial",
+      "response_sha256": "dc32d5cca5d5f3e1cc1270cf701e6ec85d7c5cdb20e35c3cf1222fe79bb58c30",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-9c18f555cb2f1045",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:39.542303Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:39.542303Z",
+      "tool_call_id": "initial",
+      "response_sha256": "8c106379f7d698a5f46498b8f7491d3d68acfd30a66cbeef1fd0c1ee3f0402e1",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-e588acbb40b570dc",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:41.468528Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:41.468528Z",
+      "tool_call_id": "initial",
+      "response_sha256": "cafc45b738b25df61f5a0b6f95d0e932d477d7696b56344c016a49bc087563e5",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-a0df7d1c3dcade45",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:43.222945Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:43.222945Z",
+      "tool_call_id": "initial",
+      "response_sha256": "03a4b1fd038a2a0875a5cc7d859cae43fdda5c1c21c68e6e991933f71932c5c2",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-4939d3639e662f60",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:44.981620Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:44.981620Z",
+      "tool_call_id": "initial",
+      "response_sha256": "e142013bb7dde750432d4b425ecaa8a72b3d69685b284d937c250fd6236f1f1b",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-97b83c14e9a6b287",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:46.781826Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:46.781826Z",
+      "tool_call_id": "initial",
+      "response_sha256": "74d13f9b3fe9c0f1611789bc5f33ee85dfff0945e1fde65e54921cbc0e320aed",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-25843000e13b4566",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:48.554297Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:48.554297Z",
+      "tool_call_id": "initial",
+      "response_sha256": "d9bdd531ed51832d9f950106c32c36b73af284943cde1e5b275fc7bbf017e10b",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-81f6009a4ea63ebf",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:50.893500Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:50.893500Z",
+      "tool_call_id": "initial",
+      "response_sha256": "d77a32abb87a25ac5f5fed1e0354d048146ca575351b8bdb69c96dd091c07d54",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-8c67287d04f74f9d",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:53.045983Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:53.045983Z",
+      "tool_call_id": "initial",
+      "response_sha256": "94db2268729cc1ebdda5c2501bcbc85c63deb4d47256ae488dc6efeea8875e92",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-b4172f0c477e7c05",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:54.789906Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:54.789906Z",
+      "tool_call_id": "initial",
+      "response_sha256": "007404df0e44024a9519c5ab6bf90a50dad566f04d94fdab925fa437443ed99c",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-cfed9873c2f151de",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:56.563898Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:56.563898Z",
+      "tool_call_id": "initial",
+      "response_sha256": "44b0155f0e44296ad2f7f12ea5fc713fe6c5949ed3fb17a44e456f5514b0e657",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-b222ead9e3cb8d4c",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:15:58.323104Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:20:58.323104Z",
+      "tool_call_id": "initial",
+      "response_sha256": "2517cba7399f4cc7acc0a580c5e92e5b8aaefb3db8dced41184b3fb7520b5093",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-3442732e14e2306c",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:16:00.146511Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:21:00.146511Z",
+      "tool_call_id": "initial",
+      "response_sha256": "9f1142787172fe620dad64c916dab8e4b75eea75168e5687eed8925f5c25eeba",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-a6af2ed0dd8f11ca",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:16:02.018556Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:21:02.018556Z",
+      "tool_call_id": "initial",
+      "response_sha256": "b584bcc9f54c781a00e823bf3b6e4a24d531976f00dc63fa98f5969adb2fa759",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-7fecce46ae502797",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:16:03.839310Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:21:03.839310Z",
+      "tool_call_id": "initial",
+      "response_sha256": "7dba2ead97650db587ddfc476f04cdd46ace00f9cd5f80b6eb368d962d3c6e8d",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-cc06d62e1072b7a4",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:16:05.674515Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:21:05.674515Z",
+      "tool_call_id": "initial",
+      "response_sha256": "d20a193a06d1720330947ada2150b3e89a42f1dd0faf125e6ff76055917c7106",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-4abfab21584b08de",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:16:07.422604Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:21:07.422604Z",
+      "tool_call_id": "initial",
+      "response_sha256": "02a4ed0bc991583aa7337495baef02fde9066e62e4986078964edaea1c7c1544",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-d778fd42dccdafc6",
+      "source": "LTA v4/TrafficSpeedBands",
+      "retrieved_at": "2026-10-02T10:16:09.282490Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:21:09.282490Z",
+      "tool_call_id": "initial",
+      "response_sha256": "ff53fda63f2694309b0b9e0ab38785482e097f5952634abad259c0d7a1e54fb0",
+      "summary": "LTA v4/TrafficSpeedBands 服务响应"
+    },
+    {
+      "id": "ev-13eb91a7ca919bb5",
+      "source": "LTA TrafficIncidents",
+      "retrieved_at": "2026-10-02T10:16:11.105571Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:18:11.105571Z",
+      "tool_call_id": "initial",
+      "response_sha256": "ed7e271f3edc37c9315c28c54b88b0269bb3914673772b6e7d1b6a43a66e8309",
+      "summary": "LTA TrafficIncidents 服务响应"
+    },
+    {
+      "id": "ev-998e3ba97e052e88",
+      "source": "OSRM Route",
+      "retrieved_at": "2026-10-02T10:16:12.861981Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:21:12.861981Z",
+      "tool_call_id": "initial",
+      "response_sha256": "64941dae4e3e3ecfb829dcfedbf925b525cc7d2418ca39979e72049f1030e912",
+      "summary": "OSRM Route 服务响应"
+    }
+  ],
+  "http_calls": 78
+}

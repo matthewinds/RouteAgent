@@ -1,0 +1,2002 @@
+{
+  "run_id": "20261001T095705-0032a7de",
+  "status": "verified",
+  "message": "已找到满足当前模型下全部硬约束的路线。",
+  "request": {
+    "original_text": "现在驾车从 City Hall 到 Orchard Road，30 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "origin": "City Hall",
+    "destination": "Orchard Road",
+    "departure_time": "2026-10-01T09:00:00+08:00",
+    "mode": "driving",
+    "max_duration_s": 1800.0,
+    "arrival_deadline": null,
+    "poi_category": "cafe",
+    "poi_name": null,
+    "resolved_poi_id": null,
+    "multiple_stops": false,
+    "poi_required": true,
+    "stop_duration_s": 300.0,
+    "avoid_highways": false,
+    "prefer_avoid_highways": false,
+    "prefer_avoid_congestion": true,
+    "max_congestion_fraction": null,
+    "require_open": false,
+    "max_walking_m": null,
+    "weather_required": false,
+    "evidence": {
+      "origin_destination": "从 City Hall 到 Orchard Road",
+      "mode": "驾车",
+      "max_duration_s": "30 分钟内",
+      "stop_duration_s": "停留 5 分钟",
+      "poi": "分钟内到达，必须经过咖啡店"
+    }
+  },
+  "questions": {},
+  "recommended": {
+    "id": "f6dea35f0d0692",
+    "strategy": "fastest",
+    "nodes": [
+      1,
+      30,
+      3
+    ],
+    "edges": [
+      "1:30:0",
+      "30:3:0"
+    ],
+    "geometry": {
+      "type": "Feature",
+      "properties": {
+        "id": "f6dea35f0d0692"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            103.852,
+            1.2935
+          ],
+          [
+            103.843,
+            1.311
+          ],
+          [
+            103.832,
+            1.3048
+          ]
+        ]
+      }
+    },
+    "origin": {
+      "id": "city-hall",
+      "name": "City Hall",
+      "lat": 1.2935,
+      "lon": 103.852,
+      "category": null,
+      "node": 1,
+      "snap_m": 0.0,
+      "opening_hours": null,
+      "source": "synthetic landmark"
+    },
+    "destination": {
+      "id": "orchard",
+      "name": "Orchard Road",
+      "lat": 1.3048,
+      "lon": 103.832,
+      "category": null,
+      "node": 3,
+      "snap_m": 0.0,
+      "opening_hours": null,
+      "source": "synthetic landmark"
+    },
+    "poi": {
+      "id": "cafe-10",
+      "name": "Candidate Cafe 10",
+      "lat": 1.311,
+      "lon": 103.843,
+      "category": "cafe",
+      "node": 30,
+      "snap_m": 0.0,
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    "distance_m": 2000.0,
+    "driving_s": 600.0,
+    "stop_s": 300.0,
+    "total_s": 900.0,
+    "poi_arrival_s": 300.0,
+    "traffic_coverage": 1.0,
+    "congestion_fraction": 0.0,
+    "unknown_fraction": 0.0,
+    "highways": false,
+    "closed": false,
+    "walking_m": 0.0,
+    "score": 0.85,
+    "checks": [
+      {
+        "constraint": "mode",
+        "status": "pass",
+        "hard": true,
+        "actual": "driving",
+        "required": "driving",
+        "reason": "按驾车路网计算。",
+        "evidence": ""
+      },
+      {
+        "constraint": "required_poi",
+        "status": "pass",
+        "hard": true,
+        "actual": "Candidate Cafe 10",
+        "required": "cafe",
+        "reason": "已包含所需道路经停点。",
+        "evidence": ""
+      },
+      {
+        "constraint": "closed_roads",
+        "status": "pass",
+        "hard": true,
+        "actual": false,
+        "required": false,
+        "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+        "evidence": ""
+      },
+      {
+        "constraint": "duration",
+        "status": "pass",
+        "hard": true,
+        "actual": 900.0,
+        "required": 1800.0,
+        "reason": "按当前速度区间估计，行驶与停留时间满足限制。",
+        "evidence": "2026-10-01T09:00:00+08:00"
+      }
+    ],
+    "feasibility": "verified",
+    "evidence": {
+      "traffic": {
+        "matched_edges": 36,
+        "total_edges": 36,
+        "fresh": true,
+        "observed_at": "2026-10-01T09:00:00+08:00",
+        "rejected_records": 0,
+        "incidents": [],
+        "source": "synthetic speed snapshot",
+        "missing": null,
+        "timestamp_basis": "snapshot observation"
+      },
+      "graph_source": "synthetic Singapore-coordinate test graph",
+      "synthetic": true,
+      "lower_total_s": 900.0,
+      "upper_total_s": 900.0,
+      "lower_poi_arrival_s": 300.0,
+      "upper_poi_arrival_s": 300.0,
+      "poi_access": "nearest drive node; parking/walking not modeled",
+      "snapshot_id": "demo-replan",
+      "ranking_weights": {
+        "time": 0.5,
+        "distance": 0.1,
+        "uncertainty": 0.1,
+        "congestion": 0.3
+      },
+      "normalization": {
+        "time_s": 600.0,
+        "distance_m": 2000.0
+      }
+    }
+  },
+  "alternatives": [],
+  "unverified": [],
+  "state": {
+    "request": {
+      "original_text": "现在驾车从 City Hall 到 Orchard Road，30 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "departure_time": "2026-10-01T09:00:00+08:00",
+      "mode": "driving",
+      "max_duration_s": 1800.0,
+      "arrival_deadline": null,
+      "poi_category": "cafe",
+      "poi_name": null,
+      "resolved_poi_id": null,
+      "multiple_stops": false,
+      "poi_required": true,
+      "stop_duration_s": 300.0,
+      "avoid_highways": false,
+      "prefer_avoid_highways": false,
+      "prefer_avoid_congestion": true,
+      "max_congestion_fraction": null,
+      "require_open": false,
+      "max_walking_m": null,
+      "weather_required": false,
+      "evidence": {
+        "origin_destination": "从 City Hall 到 Orchard Road",
+        "mode": "驾车",
+        "max_duration_s": "30 分钟内",
+        "stop_duration_s": "停留 5 分钟",
+        "poi": "分钟内到达，必须经过咖啡店"
+      }
+    },
+    "tools": [
+      {
+        "tool": "geocode",
+        "arguments": {
+          "query": "City Hall"
+        },
+        "status": "ok",
+        "source": "adapter",
+        "observed_at": null,
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "Place"
+      },
+      {
+        "tool": "geocode",
+        "arguments": {
+          "query": "Orchard Road"
+        },
+        "status": "ok",
+        "source": "adapter",
+        "observed_at": null,
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "Place"
+      },
+      {
+        "tool": "search_pois",
+        "arguments": {
+          "category": "cafe",
+          "name": null
+        },
+        "status": "ok",
+        "source": "adapter",
+        "observed_at": null,
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "11 results"
+      },
+      {
+        "tool": "traffic",
+        "arguments": {},
+        "status": "ok",
+        "source": "adapter",
+        "observed_at": null,
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "4 results"
+      }
+    ],
+    "stages": [
+      {
+        "stage": "parse",
+        "message": "正在理解出行需求",
+        "elapsed_s": 0.0
+      },
+      {
+        "stage": "context",
+        "message": "正在加载路网与出行信息",
+        "elapsed_s": 0.0
+      },
+      {
+        "stage": "planning",
+        "message": "按原需求与失败原因选择有限动作。",
+        "elapsed_s": 0.047,
+        "decision": {
+          "fetch_traffic": true,
+          "strategies": [
+            "fastest",
+            "shortest",
+            "less_congestion"
+          ],
+          "action": "generate",
+          "reason": "按原需求与失败原因选择有限动作。"
+        },
+        "coordinator": "rules",
+        "warnings": [],
+        "usage": {}
+      },
+      {
+        "stage": "traffic",
+        "message": "正在核对交通证据与道路方向",
+        "elapsed_s": 0.047
+      },
+      {
+        "stage": "candidates",
+        "message": "正在计算候选路线",
+        "elapsed_s": 0.047,
+        "attempt": 0
+      },
+      {
+        "stage": "verify",
+        "message": "正在逐项检查原始出行约束",
+        "elapsed_s": 0.047,
+        "count": 10
+      },
+      {
+        "stage": "planning",
+        "message": "按原需求与失败原因选择有限动作。",
+        "elapsed_s": 0.047,
+        "decision": {
+          "fetch_traffic": false,
+          "strategies": [
+            "fastest",
+            "shortest",
+            "less_congestion"
+          ],
+          "action": "expand_pois",
+          "reason": "按原需求与失败原因选择有限动作。"
+        },
+        "coordinator": "rules",
+        "warnings": [],
+        "usage": {}
+      },
+      {
+        "stage": "replan",
+        "message": "根据检查结果重新规划",
+        "elapsed_s": 0.047,
+        "attempt": 1
+      },
+      {
+        "stage": "verify",
+        "message": "正在逐项检查原始出行约束",
+        "elapsed_s": 0.063,
+        "count": 11
+      },
+      {
+        "stage": "rank",
+        "message": "正在比较方案并生成证据说明",
+        "elapsed_s": 0.063
+      },
+      {
+        "stage": "complete",
+        "message": "已找到满足当前模型下全部硬约束的路线。",
+        "elapsed_s": 0.063
+      }
+    ],
+    "candidates": [
+      {
+        "id": "a1959e168ce7cc",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          23,
+          3
+        ],
+        "edges": [
+          "1:23:0",
+          "23:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "a1959e168ce7cc"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8453,
+                1.2973
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-3",
+          "name": "Candidate Cafe 3",
+          "lat": 1.2973,
+          "lon": 103.8453,
+          "category": "cafe",
+          "node": 23,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 3",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "927eaf911407c2",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          22,
+          3
+        ],
+        "edges": [
+          "1:22:0",
+          "22:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "927eaf911407c2"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8452,
+                1.2972
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-2",
+          "name": "Candidate Cafe 2",
+          "lat": 1.2972,
+          "lon": 103.8452,
+          "category": "cafe",
+          "node": 22,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 2",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "9c349b2119a1c7",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          24,
+          3
+        ],
+        "edges": [
+          "1:24:0",
+          "24:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "9c349b2119a1c7"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8454,
+                1.2973999999999999
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-4",
+          "name": "Candidate Cafe 4",
+          "lat": 1.2973999999999999,
+          "lon": 103.8454,
+          "category": "cafe",
+          "node": 24,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 4",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "aadee60a28d728",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          21,
+          3
+        ],
+        "edges": [
+          "1:21:0",
+          "21:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "aadee60a28d728"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8451,
+                1.2971
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-1",
+          "name": "Candidate Cafe 1",
+          "lat": 1.2971,
+          "lon": 103.8451,
+          "category": "cafe",
+          "node": 21,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 1",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "e7efbff7c819a2",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          25,
+          3
+        ],
+        "edges": [
+          "1:25:0",
+          "25:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "e7efbff7c819a2"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8455,
+                1.2974999999999999
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-5",
+          "name": "Candidate Cafe 5",
+          "lat": 1.2974999999999999,
+          "lon": 103.8455,
+          "category": "cafe",
+          "node": 25,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 5",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "00727a1b4d0d83",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          20,
+          3
+        ],
+        "edges": [
+          "1:20:0",
+          "20:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "00727a1b4d0d83"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.845,
+                1.297
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-0",
+          "name": "Candidate Cafe 0",
+          "lat": 1.297,
+          "lon": 103.845,
+          "category": "cafe",
+          "node": 20,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 0",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "2d95905d623dc9",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          26,
+          3
+        ],
+        "edges": [
+          "1:26:0",
+          "26:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "2d95905d623dc9"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8456,
+                1.2975999999999999
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-6",
+          "name": "Candidate Cafe 6",
+          "lat": 1.2975999999999999,
+          "lon": 103.8456,
+          "category": "cafe",
+          "node": 26,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 6",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "d2c643fe0aab69",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          27,
+          3
+        ],
+        "edges": [
+          "1:27:0",
+          "27:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "d2c643fe0aab69"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8457,
+                1.2976999999999999
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-7",
+          "name": "Candidate Cafe 7",
+          "lat": 1.2976999999999999,
+          "lon": 103.8457,
+          "category": "cafe",
+          "node": 27,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 7",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "ad355454ac70c0",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          28,
+          3
+        ],
+        "edges": [
+          "1:28:0",
+          "28:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "ad355454ac70c0"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8458,
+                1.2977999999999998
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-8",
+          "name": "Candidate Cafe 8",
+          "lat": 1.2977999999999998,
+          "lon": 103.8458,
+          "category": "cafe",
+          "node": 28,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 8",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "b6dbda062cc13e",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          29,
+          3
+        ],
+        "edges": [
+          "1:29:0",
+          "29:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "b6dbda062cc13e"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.8459,
+                1.2978999999999998
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-9",
+          "name": "Candidate Cafe 9",
+          "lat": 1.2978999999999998,
+          "lon": 103.8459,
+          "category": "cafe",
+          "node": 29,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 2200.0000000000005,
+        "stop_s": 300.0,
+        "total_s": 2500.0000000000005,
+        "poi_arrival_s": 1100.0000000000002,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": null,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 9",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "fail",
+            "hard": true,
+            "actual": 2500.0,
+            "required": 1800.0,
+            "reason": "即使按速度区间乐观估计，总时间仍超过限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "violated",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 2500.0000000000005,
+          "upper_total_s": 2500.0000000000005,
+          "lower_poi_arrival_s": 1100.0000000000002,
+          "upper_poi_arrival_s": 1100.0000000000002,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan"
+        }
+      },
+      {
+        "id": "f6dea35f0d0692",
+        "strategy": "fastest",
+        "nodes": [
+          1,
+          30,
+          3
+        ],
+        "edges": [
+          "1:30:0",
+          "30:3:0"
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {
+            "id": "f6dea35f0d0692"
+          },
+          "geometry": {
+            "type": "LineString",
+            "coordinates": [
+              [
+                103.852,
+                1.2935
+              ],
+              [
+                103.843,
+                1.311
+              ],
+              [
+                103.832,
+                1.3048
+              ]
+            ]
+          }
+        },
+        "origin": {
+          "id": "city-hall",
+          "name": "City Hall",
+          "lat": 1.2935,
+          "lon": 103.852,
+          "category": null,
+          "node": 1,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "destination": {
+          "id": "orchard",
+          "name": "Orchard Road",
+          "lat": 1.3048,
+          "lon": 103.832,
+          "category": null,
+          "node": 3,
+          "snap_m": 0.0,
+          "opening_hours": null,
+          "source": "synthetic landmark"
+        },
+        "poi": {
+          "id": "cafe-10",
+          "name": "Candidate Cafe 10",
+          "lat": 1.311,
+          "lon": 103.843,
+          "category": "cafe",
+          "node": 30,
+          "snap_m": 0.0,
+          "opening_hours": "24/7",
+          "source": "synthetic POI"
+        },
+        "distance_m": 2000.0,
+        "driving_s": 600.0,
+        "stop_s": 300.0,
+        "total_s": 900.0,
+        "poi_arrival_s": 300.0,
+        "traffic_coverage": 1.0,
+        "congestion_fraction": 0.0,
+        "unknown_fraction": 0.0,
+        "highways": false,
+        "closed": false,
+        "walking_m": 0.0,
+        "score": 0.85,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": "driving",
+            "required": "driving",
+            "reason": "按驾车路网计算。",
+            "evidence": ""
+          },
+          {
+            "constraint": "required_poi",
+            "status": "pass",
+            "hard": true,
+            "actual": "Candidate Cafe 10",
+            "required": "cafe",
+            "reason": "已包含所需道路经停点。",
+            "evidence": ""
+          },
+          {
+            "constraint": "closed_roads",
+            "status": "pass",
+            "hard": true,
+            "actual": false,
+            "required": false,
+            "reason": "未经过快照中明确标记的封闭道路；不代表所有未知事故均已排除。",
+            "evidence": ""
+          },
+          {
+            "constraint": "duration",
+            "status": "pass",
+            "hard": true,
+            "actual": 900.0,
+            "required": 1800.0,
+            "reason": "按当前速度区间估计，行驶与停留时间满足限制。",
+            "evidence": "2026-10-01T09:00:00+08:00"
+          }
+        ],
+        "feasibility": "verified",
+        "evidence": {
+          "traffic": {
+            "matched_edges": 36,
+            "total_edges": 36,
+            "fresh": true,
+            "observed_at": "2026-10-01T09:00:00+08:00",
+            "rejected_records": 0,
+            "incidents": [],
+            "source": "synthetic speed snapshot",
+            "missing": null,
+            "timestamp_basis": "snapshot observation"
+          },
+          "graph_source": "synthetic Singapore-coordinate test graph",
+          "synthetic": true,
+          "lower_total_s": 900.0,
+          "upper_total_s": 900.0,
+          "lower_poi_arrival_s": 300.0,
+          "upper_poi_arrival_s": 300.0,
+          "poi_access": "nearest drive node; parking/walking not modeled",
+          "snapshot_id": "demo-replan",
+          "ranking_weights": {
+            "time": 0.5,
+            "distance": 0.1,
+            "uncertainty": 0.1,
+            "congestion": 0.3
+          },
+          "normalization": {
+            "time_s": 600.0,
+            "distance_m": 2000.0
+          }
+        }
+      }
+    ],
+    "attempts": [
+      {
+        "attempt": 0,
+        "poi_limit": 10,
+        "paths_per_leg": 3,
+        "generated": 10,
+        "verified": 0,
+        "failed_checks": [
+          "duration"
+        ],
+        "search": {
+          "poi_pool": 11,
+          "selected_pois": 10,
+          "truncated": 1,
+          "safe_pruned": 0,
+          "duplicates": 30,
+          "candidate_count": 10
+        },
+        "next_action": "expand_pois"
+      },
+      {
+        "attempt": 1,
+        "poi_limit": 30,
+        "paths_per_leg": 3,
+        "generated": 11,
+        "verified": 1,
+        "failed_checks": [
+          "duration"
+        ],
+        "search": {
+          "poi_pool": 11,
+          "selected_pois": 11,
+          "truncated": 0,
+          "safe_pruned": 0,
+          "duplicates": 33,
+          "candidate_count": 11
+        }
+      }
+    ],
+    "search": {
+      "poi_pool": 11,
+      "selected_pois": 11,
+      "truncated": 0,
+      "safe_pruned": 0,
+      "duplicates": 33,
+      "candidate_count": 11
+    }
+  },
+  "explanation": "预计总时间 15.0 分钟，其中行驶 10.0 分钟；距离 2.00 公里。经停 Candidate Cafe 10，停留 5 分钟。交通数据覆盖 100%。已覆盖路段的拥堵长度占比 0%。在当前路网、证据与估计模型下，全部硬约束通过。按显示的偏好权重与指标排序；实际行驶、停车和步行接驳可能产生额外时间。本结果使用合成演示路网和交通数据，不是真实导航建议。",
+  "context": {
+    "parser": "rules",
+    "warnings": [],
+    "parser_usage": {},
+    "synthetic": true,
+    "graph_source": "synthetic Singapore-coordinate test graph",
+    "description": "合成机制演示，不是真实道路、店铺或交通导航",
+    "observed_at": "2026-10-01T09:00:00+08:00",
+    "mode": "replay",
+    "snapshot_id": "demo-replan",
+    "snapshot_sha256": "c0672a4d469b66a055f8fe5497528e970e5f22655d7df349577f4f5cb39c8ee6",
+    "traffic": {
+      "matched_edges": 36,
+      "total_edges": 36,
+      "fresh": true,
+      "observed_at": "2026-10-01T09:00:00+08:00",
+      "rejected_records": 0,
+      "incidents": [],
+      "source": "synthetic speed snapshot",
+      "missing": null,
+      "timestamp_basis": "snapshot observation"
+    }
+  },
+  "metrics": {
+    "latency_s": 0.063,
+    "policy": "full",
+    "tool_calls": 4,
+    "cache_hits": 0,
+    "attempts": 2,
+    "replans": 1,
+    "candidate_count": 11,
+    "model": null,
+    "model_calls": 0,
+    "model_tokens": 0,
+    "reported_model_cost_usd": null
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "checked_at": "2026-10-02T16:57:31.683493+08:00",
+  "configured": {
+    "DEEPSEEK_API_KEY": true,
+    "ORS_API_KEY": true,
+    "LTA_API_KEY": true,
+    "DATAGOVSG_API_KEY": false
+  },
+  "connectivity": {
+    "Open-Meteo": {
+      "status": "API 响应成功",
+      "cached": false,
+      "note": "单个响应不代表完整规划验收",
+      "item_count": 1
+    },
+    "OSM roads": {
+      "status": "API 响应成功",
+      "cached": false,
+      "note": "单个响应不代表完整规划验收",
+      "item_count": 10
+    },
+    "OSM hospitals": {
+      "status": "API 响应成功",
+      "cached": false,
+      "note": "单个响应不代表完整规划验收",
+      "item_count": 1
+    },
+    "OSM restaurants": {
+      "status": "API 响应成功",
+      "cached": false,
+      "note": "单个响应不代表完整规划验收",
+      "item_count": 10
+    }
+  },
+  "acceptance": "未验收",
+  "evidence": [
+    {
+      "id": "ev-1004e2c7dd80f260",
+      "source": "Open-Meteo forecast",
+      "retrieved_at": "2026-10-02T08:57:33.218917Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T09:02:33.218917Z",
+      "tool_call_id": "initial",
+      "response_sha256": "e4eacd89a5833a675527f3ece7a3a0a5fb4f3d03a0b57ed2cb0ec262eef191ae",
+      "summary": "Open-Meteo forecast 服务响应"
+    },
+    {
+      "id": "ev-6e8276c21d923f10",
+      "source": "OSM roads",
+      "retrieved_at": "2026-10-02T08:57:35.608958Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T09:57:35.608958Z",
+      "tool_call_id": "initial",
+      "response_sha256": "7e9ae95e9c210c2cfadea9ea8fd08bb8ecf6e0a9a2f41f624ac38e7e2961be52",
+      "summary": "OSM roads 服务响应"
+    },
+    {
+      "id": "ev-d37c2576f3465ab7",
+      "source": "OSM Overpass",
+      "retrieved_at": "2026-10-02T08:57:37.626407Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T09:57:37.626407Z",
+      "tool_call_id": "initial",
+      "response_sha256": "d02ed9ba60ea4027a24eff60a981bb8450a31ef73aaf550738824e636260e415",
+      "summary": "OSM Overpass 服务响应"
+    },
+    {
+      "id": "ev-bf8eef7489d4d916",
+      "source": "OSM Overpass",
+      "retrieved_at": "2026-10-02T08:57:39.833431Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T09:57:39.833431Z",
+      "tool_call_id": "initial",
+      "response_sha256": "acefb7ea4caf379b7be081d818d37f684892f625b3f49f1b8cf0b3f0ef9d5218",
+      "summary": "OSM Overpass 服务响应"
+    }
+  ]
+}

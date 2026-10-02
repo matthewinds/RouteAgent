@@ -1,0 +1,1322 @@
+[
+  {
+    "id": "test-001",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，25 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1500,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-002",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，26 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1560,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-003",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，27 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1620,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-004",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，28 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1680,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-005",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，29 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1740,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-006",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，30 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1800,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-007",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，31 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1860,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-008",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，32 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1920,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-009",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，33 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1980,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-010",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，34 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 2040,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-011",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，35 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 2100,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-012",
+    "group": "direct",
+    "text": "现在驾车从 City Hall 到 Orchard Road，36 分钟内到达。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 2160,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-013",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，25 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1500,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-014",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，26 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1560,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-015",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，27 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1620,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-016",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，28 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1680,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-017",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，29 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1740,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-018",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，30 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1800,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-019",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，31 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1860,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-020",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，32 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1920,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-021",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，33 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1980,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-022",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，34 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 2040,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-023",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，35 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 2100,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-024",
+    "group": "traffic_poi",
+    "text": "现在驾车从 City Hall 到 Orchard Road，36 分钟内到达，必须经过咖啡店，停留 5 分钟，希望避开拥堵。",
+    "snapshot_id": "demo-traffic",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 2160,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": true,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-025",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，18 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1080.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-026",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，18.5 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1110.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-027",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，19 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1140.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-028",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，19.5 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1170.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-029",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，20 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1200.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-030",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，20.5 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1230.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-031",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，21 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1260.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-032",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，21.5 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1290.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-033",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，22 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1320.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-034",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，22.5 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1350.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-035",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，23 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1380.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-036",
+    "group": "replan",
+    "text": "现在驾车从 City Hall 到 Orchard Road，23.5 分钟内到达，必须经过咖啡店，停留 5 分钟。",
+    "snapshot_id": "demo-replan",
+    "expected_status": "verified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1410.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 300,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-037",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 300.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-038",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.1 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 306.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-039",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.2 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 312.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-040",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.3 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 318.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-041",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.4 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 324.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-042",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.5 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 330.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-043",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.6 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 336.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-044",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.7 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 342.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-045",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.8 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 348.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-046",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，5.9 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 354.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-047",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，6 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 360.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-048",
+    "group": "infeasible",
+    "text": "现在驾车从 City Hall 到 Orchard Road，6.1 分钟内到达，必须经过咖啡店，停留 10 分钟。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "search_exhausted",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 366.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": 600,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-049",
+    "group": "unknown_or_clarify",
+    "text": "从 City Hall 到 Orchard Road，30 分钟内到达，必须经过咖啡店。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "needs_clarification",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": null,
+      "max_duration_s": 1800.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-050",
+    "group": "unknown_or_clarify",
+    "text": "现在驾车从 City Hall 到 Orchard Road，30.1 分钟内到达。",
+    "snapshot_id": "demo-unknown",
+    "expected_status": "unverified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1806.0,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-051",
+    "group": "unknown_or_clarify",
+    "text": "从 City Hall 到 Orchard Road，30.2 分钟内到达，必须经过咖啡店。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "needs_clarification",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": null,
+      "max_duration_s": 1812.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-052",
+    "group": "unknown_or_clarify",
+    "text": "现在驾车从 City Hall 到 Orchard Road，30.3 分钟内到达。",
+    "snapshot_id": "demo-unknown",
+    "expected_status": "unverified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1818.0,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-053",
+    "group": "unknown_or_clarify",
+    "text": "从 City Hall 到 Orchard Road，30.4 分钟内到达，必须经过咖啡店。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "needs_clarification",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": null,
+      "max_duration_s": 1824.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-054",
+    "group": "unknown_or_clarify",
+    "text": "现在驾车从 City Hall 到 Orchard Road，30.5 分钟内到达。",
+    "snapshot_id": "demo-unknown",
+    "expected_status": "unverified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1830.0,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-055",
+    "group": "unknown_or_clarify",
+    "text": "从 City Hall 到 Orchard Road，30.6 分钟内到达，必须经过咖啡店。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "needs_clarification",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": null,
+      "max_duration_s": 1836.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-056",
+    "group": "unknown_or_clarify",
+    "text": "现在驾车从 City Hall 到 Orchard Road，30.7 分钟内到达。",
+    "snapshot_id": "demo-unknown",
+    "expected_status": "unverified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1842.0,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-057",
+    "group": "unknown_or_clarify",
+    "text": "从 City Hall 到 Orchard Road，30.8 分钟内到达，必须经过咖啡店。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "needs_clarification",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": null,
+      "max_duration_s": 1848.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-058",
+    "group": "unknown_or_clarify",
+    "text": "现在驾车从 City Hall 到 Orchard Road，30.9 分钟内到达。",
+    "snapshot_id": "demo-unknown",
+    "expected_status": "unverified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1854.0,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-059",
+    "group": "unknown_or_clarify",
+    "text": "从 City Hall 到 Orchard Road，31 分钟内到达，必须经过咖啡店。",
+    "snapshot_id": "demo-clear",
+    "expected_status": "needs_clarification",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": null,
+      "max_duration_s": 1860.0,
+      "poi_category": "cafe",
+      "poi_required": true,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  },
+  {
+    "id": "test-060",
+    "group": "unknown_or_clarify",
+    "text": "现在驾车从 City Hall 到 Orchard Road，31.1 分钟内到达。",
+    "snapshot_id": "demo-unknown",
+    "expected_status": "unverified",
+    "clarifications": {
+      "departure_time": "2026-10-01T09:00:00+08:00"
+    },
+    "synthetic": true,
+    "gold_request": {
+      "origin": "City Hall",
+      "destination": "Orchard Road",
+      "mode": "driving",
+      "max_duration_s": 1866.0,
+      "poi_category": null,
+      "poi_required": false,
+      "stop_duration_s": null,
+      "prefer_avoid_congestion": false,
+      "avoid_highways": false
+    }
+  }
+]

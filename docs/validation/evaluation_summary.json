@@ -1,0 +1,130 @@
+{
+  "split": "test",
+  "repeats": 1,
+  "synthetic": true,
+  "parser": "rules",
+  "model": null,
+  "summary": {
+    "fastest": {
+      "count": 60,
+      "status_accuracy": 0.6,
+      "constraint_satisfaction_all": 0.2,
+      "feasible_found_rate": 0.3333333333333333,
+      "replanning_recovery_rate": 0,
+      "unknown_rate": 0.1,
+      "mean_latency_s": 0.0028666666666666667,
+      "mean_tool_calls": 3.3,
+      "mean_candidates": 0.9,
+      "parser_field_accuracy": 1,
+      "mean_model_calls": 0
+    },
+    "fixed": {
+      "count": 60,
+      "status_accuracy": 0.8,
+      "constraint_satisfaction_all": 0.4,
+      "feasible_found_rate": 0.6666666666666666,
+      "replanning_recovery_rate": 0,
+      "unknown_rate": 0.1,
+      "mean_latency_s": 0.006233333333333333,
+      "mean_tool_calls": 3.6,
+      "mean_candidates": 14.1,
+      "parser_field_accuracy": 1,
+      "mean_model_calls": 0
+    },
+    "full": {
+      "count": 60,
+      "status_accuracy": 1,
+      "constraint_satisfaction_all": 0.6,
+      "feasible_found_rate": 1,
+      "replanning_recovery_rate": 1,
+      "unknown_rate": 0.1,
+      "mean_latency_s": 0.015633333333333332,
+      "mean_tool_calls": 3.3,
+      "mean_candidates": 19.9,
+      "parser_field_accuracy": 1,
+      "mean_model_calls": 0
+    },
+    "no_coarse": {
+      "count": 60,
+      "status_accuracy": 1,
+      "constraint_satisfaction_all": 0.6,
+      "feasible_found_rate": 1,
+      "replanning_recovery_rate": null,
+      "unknown_rate": 0.1,
+      "mean_latency_s": 0.015866666666666668,
+      "mean_tool_calls": 3.3,
+      "mean_candidates": 19.9,
+      "parser_field_accuracy": 1,
+      "mean_model_calls": 0
+    },
+    "no_personalization": {
+      "count": 60,
+      "status_accuracy": 1,
+      "constraint_satisfaction_all": 0.6,
+      "feasible_found_rate": 1,
+      "replanning_recovery_rate": 1,
+      "unknown_rate": 0.1,
+      "mean_latency_s": 0.024216666666666668,
+      "mean_tool_calls": 3.3,
+      "mean_candidates": 19.9,
+      "parser_field_accuracy": 1,
+      "mean_model_calls": 0
+    },
+    "no_replanning": {
+      "count": 60,
+      "status_accuracy": 0.8,
+      "constraint_satisfaction_all": 0.4,
+      "feasible_found_rate": 0.6666666666666666,
+      "replanning_recovery_rate": 0,
+      "unknown_rate": 0.1,
+      "mean_latency_s": 0.012733333333333333,
+      "mean_tool_calls": 3.3,
+      "mean_candidates": 14.1,
+      "parser_field_accuracy": 1,
+      "mean_model_calls": 0
+    },
+    "no_verification": {
+      "count": 60,
+      "status_accuracy": 0.2,
+      "constraint_satisfaction_all": 0.4,
+      "feasible_found_rate": 0.6666666666666666,
+      "replanning_recovery_rate": 0,
+      "unknown_rate": 0.1,
+      "mean_latency_s": 0.011716666666666667,
+      "mean_tool_calls": 3.3,
+      "mean_candidates": 14.1,
+      "parser_field_accuracy": 1,
+      "mean_model_calls": 0
+    }
+  },
+  "request_sha256": "ee9c570612cc1fb7471603aa3f92cc0c56005f862c7f676be5b7229d8a113476",
+  "code_sha256": {
+    "src\\route_agent\\__init__.py": "874b1ee1f5ca346c7f1fe3e67edbffbbf4e380d549e3928549fb1e663ab89d16",
+    "src\\route_agent\\cache.py": "b5132ecbe70259d0707d7217f7b13dca7f56b5360c62434bb8e17f67d2d4b9cd",
+    "src\\route_agent\\config.py": "d0622e948459c479ca4278b0556b7b6830cd902ae0eb49bce8685f468a507e4c",
+    "src\\route_agent\\coordinator.py": "3d19b92c88a27e0137febbe75540b204a313af58d98fb35812c18934ac91bb29",
+    "src\\route_agent\\maps.py": "211665379b92086ef94e5132a8349e08c8b45e29725df86c041f09c8ae3e98d3",
+    "src\\route_agent\\models.py": "a84ea502ad529001dcaa960cd5585a5fd52d3ca4cc4c9536c13452284b3c6c1a",
+    "src\\route_agent\\parser.py": "416d060741c55a4cc9b08a49016dc41f152f0741ebad1e823c9caef13859c336",
+    "src\\route_agent\\ranking.py": "b536c85a53a192edadd73054bd247e4bedcb63d7c7fe4d09387e527c17b689b6",
+    "src\\route_agent\\routing.py": "caf3fca286f8cda7c7c47e5164391aa0c57958ba4e98e29d3da8b9b644138a2e",
+    "src\\route_agent\\service.py": "78af8ca68f8a9fbc5059313680f356b42596c7789978a64eedbf1ad48667183a",
+    "src\\route_agent\\tools.py": "4f22bccefa9ed8997aa8b2e9f0dc090128f2547a5609d08ff6c284f6b62df681",
+    "src\\route_agent\\traffic.py": "227811d1883019dfad3e34e20db405d0fdf4d06ab55ec2014abab50c34574eec",
+    "src\\route_agent\\verification.py": "3849f47fc9773aff042578471bbc8eafb855d9ed1e0aa469d6e01ac355b3589b"
+  },
+  "packages": {
+    "networkx": "3.6.1",
+    "pydantic": "2.13.5",
+    "osmnx": "2.1.1",
+    "streamlit": "1.64.0"
+  },
+  "limited_search_feasible_retention": 1.0,
+  "mean_score_regret_vs_bounded_no_coarse": 0,
+  "limitations": [
+    "Template-generated synthetic scenarios; not an independent real-world benchmark.",
+    "Rule parser by default; no LLM accuracy claim.",
+    "Static snapshots; no actual trip-time ground truth.",
+    "No-verification variant is evaluation-only and never reports a verified route."
+  ]
+}

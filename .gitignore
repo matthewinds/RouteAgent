@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.venv/
+.venv-fyp/
+.idea/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+data/cache/
+data/osm/*.graphml
+data/osm/*.json
+data/osm/*.geojson
+outputs/
+baselines/mapagent/outputs/
+.DS_Store

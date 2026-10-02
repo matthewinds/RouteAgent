@@ -1,0 +1,175 @@
+{
+  "metadata": {
+    "synthetic": true,
+    "graph_source": "synthetic Singapore-coordinate test graph",
+    "description": "合成机制演示，不是真实道路、店铺或交通导航",
+    "observed_at": "2026-10-01T09:00:00+08:00"
+  },
+  "nodes": [
+    {
+      "id": 1,
+      "lat": 1.2935,
+      "lon": 103.852
+    },
+    {
+      "id": 2,
+      "lat": 1.2985,
+      "lon": 103.843
+    },
+    {
+      "id": 3,
+      "lat": 1.3048,
+      "lon": 103.832
+    },
+    {
+      "id": 4,
+      "lat": 1.298,
+      "lon": 103.844
+    },
+    {
+      "id": 5,
+      "lat": 1.31,
+      "lon": 103.838
+    }
+  ],
+  "edges": [
+    {
+      "u": 1,
+      "v": 2,
+      "length": 900,
+      "base_time_s": 240,
+      "highway": "primary"
+    },
+    {
+      "u": 2,
+      "v": 1,
+      "length": 900,
+      "base_time_s": 240,
+      "highway": "primary"
+    },
+    {
+      "u": 2,
+      "v": 3,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "motorway"
+    },
+    {
+      "u": 3,
+      "v": 2,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "motorway"
+    },
+    {
+      "u": 1,
+      "v": 4,
+      "length": 1100,
+      "base_time_s": 330,
+      "highway": "residential"
+    },
+    {
+      "u": 4,
+      "v": 1,
+      "length": 1100,
+      "base_time_s": 330,
+      "highway": "residential"
+    },
+    {
+      "u": 4,
+      "v": 3,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "residential"
+    },
+    {
+      "u": 3,
+      "v": 4,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 5,
+      "length": 1500,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 5,
+      "v": 1,
+      "length": 1500,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 5,
+      "v": 3,
+      "length": 1400,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 3,
+      "v": 5,
+      "length": 1400,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 2,
+      "v": 4,
+      "length": 200,
+      "base_time_s": 80,
+      "highway": "residential"
+    },
+    {
+      "u": 4,
+      "v": 2,
+      "length": 200,
+      "base_time_s": 80,
+      "highway": "residential"
+    }
+  ],
+  "places": [
+    {
+      "id": "city-hall",
+      "name": "City Hall",
+      "lat": 1.2935,
+      "lon": 103.852,
+      "source": "synthetic landmark"
+    },
+    {
+      "id": "orchard",
+      "name": "Orchard Road",
+      "lat": 1.3048,
+      "lon": 103.832,
+      "source": "synthetic landmark"
+    },
+    {
+      "id": "cafe-central",
+      "name": "Central Cafe",
+      "lat": 1.298,
+      "lon": 103.844,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-scenic",
+      "name": "Garden Cafe",
+      "lat": 1.31,
+      "lon": 103.838,
+      "category": "cafe",
+      "opening_hours": "08:00-20:00",
+      "source": "synthetic POI"
+    }
+  ],
+  "traffic": {
+    "source": "synthetic speed snapshot",
+    "observed_at": "2026-10-01T09:00:00+08:00",
+    "edge_speeds": {},
+    "incidents": []
+  }
+}

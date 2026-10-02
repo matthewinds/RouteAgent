@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-10-02T10:39:19.478236+00:00",
+  "queries": [
+    {
+      "query": "滨海湾金沙（Marina Bay Sands）",
+      "places": [
+        {
+          "id": "pelias:openstreetmap:venue:node/4302905987",
+          "name": "Marina Bay Sands, Bayfront Subzone, Singapore",
+          "lat": 1.283697,
+          "lon": 103.860723,
+          "category": null,
+          "opening_hours": null,
+          "source": "ORS Pelias",
+          "evidence_ids": [
+            "ev-24aa47ecd9e57bef"
+          ],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        }
+      ]
+    },
+    {
+      "query": "新加坡市政厅（City Hall）",
+      "places": [
+        {
+          "id": "pelias:whosonfirst:neighbourhood:1729836579",
+          "name": "City Hall, Singapore",
+          "lat": 1.292538,
+          "lon": 103.852563,
+          "category": null,
+          "opening_hours": null,
+          "source": "ORS Pelias",
+          "evidence_ids": [
+            "ev-5201b03817610bfe"
+          ],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev-24aa47ecd9e57bef",
+      "source": "ORS Pelias",
+      "retrieved_at": "2026-10-02T10:39:17.434080Z",
+      "observed_at": null,
+      "valid_until": "2026-10-03T10:39:17.434080Z",
+      "tool_call_id": "initial",
+      "response_sha256": "7781c7349db86a501b84814116586794e560346588f1dee328aff7ad033004a4",
+      "summary": "ORS Pelias 服务响应"
+    },
+    {
+      "id": "ev-5201b03817610bfe",
+      "source": "ORS Pelias",
+      "retrieved_at": "2026-10-02T10:39:19.475620Z",
+      "observed_at": null,
+      "valid_until": "2026-10-03T10:39:19.475620Z",
+      "tool_call_id": "initial",
+      "response_sha256": "9d3c9c92f4e747d574e9970d611dc963efdb092e34992f8ed1d6f6a928d53a0a",
+      "summary": "ORS Pelias 服务响应"
+    }
+  ],
+  "http_calls": 2,
+  "cache_hits": 0
+}

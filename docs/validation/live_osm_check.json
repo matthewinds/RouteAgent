@@ -1,0 +1,22 @@
+{
+  "synthetic": false,
+  "graph": {
+    "mode": "live",
+    "synthetic": false,
+    "graph_source": "OpenStreetMap",
+    "graph_sha256": "3db421c0cd8fad9f6d1e73085e9eaf0e0ad6e3cc41cb2e4cb59ec32cd8de1415",
+    "scope": "prepared Singapore road graph"
+  },
+  "pois": 552,
+  "nodes": 1463,
+  "edges": 2568,
+  "route_edges": 30,
+  "capture_replay_consistent": true,
+  "origin_snap_m": 9.441259109926726,
+  "destination_snap_m": 31.909220311546477,
+  "result_status": "verified",
+  "run_id": "20261001T094724-30a006c8",
+  "captured_snapshot": "captured-20261001T094724-30a006c8",
+  "traffic": "not queried; no deadline/congestion request",
+  "actual_trip_time_verified": false
+}

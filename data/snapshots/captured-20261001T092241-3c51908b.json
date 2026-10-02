@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "mode": "replay",
+    "synthetic": false,
+    "graph_source": "OpenStreetMap",
+    "graph_sha256": "3db421c0cd8fad9f6d1e73085e9eaf0e0ad6e3cc41cb2e4cb59ec32cd8de1415",
+    "scope": "prepared Singapore road graph",
+    "traffic": {
+      "source": "not requested",
+      "matched_edges": 0,
+      "fresh": false
+    }
+  },
+  "graph_file": "data/osm/singapore.graphml",
+  "graph_sha256": "3db421c0cd8fad9f6d1e73085e9eaf0e0ad6e3cc41cb2e4cb59ec32cd8de1415",
+  "places": [
+    {
+      "id": "1.2935,103.852",
+      "name": "1.2935,103.852",
+      "lat": 1.2935,
+      "lon": 103.852,
+      "category": null,
+      "node": 232147312,
+      "snap_m": 9.441259109926726,
+      "opening_hours": null,
+      "source": "user coordinates"
+    },
+    {
+      "id": "1.3048,103.832",
+      "name": "1.3048,103.832",
+      "lat": 1.3048,
+      "lon": 103.832,
+      "category": null,
+      "node": 595110735,
+      "snap_m": 31.909220311546477,
+      "opening_hours": null,
+      "source": "user coordinates"
+    }
+  ],
+  "traffic": {}
+}

@@ -1,0 +1,1964 @@
+{
+  "schema_version": 2,
+  "run_id": "20261002T102102-4f52dc9a",
+  "status": "verified",
+  "message": "已找到满足当前证据与服务估计下硬约束的方案。",
+  "request": {
+    "original_text": "现在从 1.2900,103.8500 到 1.2920,103.8520，帮我选择合适的出行方式，不需要经停，不查询天气。",
+    "origin": "1.2900,103.8500",
+    "destination": "1.2920,103.8520",
+    "departure_time": "2026-10-02T18:21:06.635598+08:00",
+    "mode": "walking",
+    "max_duration_s": null,
+    "arrival_deadline": null,
+    "poi_category": null,
+    "poi_name": null,
+    "poi_required": false,
+    "multiple_stops": false,
+    "stop_duration_s": null,
+    "avoid_highways": false,
+    "prefer_avoid_highways": false,
+    "prefer_avoid_congestion": false,
+    "max_congestion_fraction": null,
+    "require_open": false,
+    "max_walking_m": null,
+    "weather_required": false,
+    "prefer_avoid_rain": false,
+    "require_dry": false,
+    "parking_name": null,
+    "parking_duration_s": null,
+    "evidence": {
+      "origin": "1.2900,103.8500",
+      "destination": "1.2920,103.8520",
+      "multiple_stops": "不需要经停",
+      "weather_required": "不查询天气"
+    }
+  },
+  "state": {
+    "request": {
+      "original_text": "现在从 1.2900,103.8500 到 1.2920,103.8520，帮我选择合适的出行方式，不需要经停，不查询天气。",
+      "origin": "1.2900,103.8500",
+      "destination": "1.2920,103.8520",
+      "departure_time": "2026-10-02T18:21:06.635598+08:00",
+      "mode": "walking",
+      "max_duration_s": null,
+      "arrival_deadline": null,
+      "poi_category": null,
+      "poi_name": null,
+      "poi_required": false,
+      "multiple_stops": false,
+      "stop_duration_s": null,
+      "avoid_highways": false,
+      "prefer_avoid_highways": false,
+      "prefer_avoid_congestion": false,
+      "max_congestion_fraction": null,
+      "require_open": false,
+      "max_walking_m": null,
+      "weather_required": false,
+      "prefer_avoid_rain": false,
+      "require_dry": false,
+      "parking_name": null,
+      "parking_duration_s": null,
+      "evidence": {
+        "origin": "1.2900,103.8500",
+        "destination": "1.2920,103.8520",
+        "multiple_stops": "不需要经停",
+        "weather_required": "不查询天气"
+      }
+    },
+    "tools": [
+      {
+        "tool": "set_request",
+        "call_id": "call_00_lkQSzfWOdtzgbj2oGJTW9269",
+        "arguments": {
+          "fields": {
+            "origin": "1.2900,103.8500",
+            "destination": "1.2920,103.8520",
+            "multiple_stops": false,
+            "weather_required": false,
+            "mode": null,
+            "evidence": {
+              "origin": "1.2900,103.8500",
+              "destination": "1.2920,103.8520",
+              "multiple_stops": "不需要经停",
+              "weather_required": "不查询天气"
+            }
+          }
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      },
+      {
+        "tool": "resolve_place",
+        "call_id": "call_00_wr4UJXfG4AMZq0lYDPk32805",
+        "arguments": {
+          "role": "origin"
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      },
+      {
+        "tool": "resolve_place",
+        "call_id": "call_01_Tim3XMDD7LSdutxab8sL0182",
+        "arguments": {
+          "role": "destination"
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      },
+      {
+        "tool": "compare_modes",
+        "call_id": "call_00_Po5yZ9audmhGjtBjNbQL8914",
+        "arguments": {},
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 4297.00000000048,
+        "summary": "工具执行完成",
+        "evidence_ids": [
+          "ev-d085268542df425e",
+          "ev-3a3200ed608e7466"
+        ]
+      },
+      {
+        "tool": "choose_mode",
+        "call_id": "call_00_1kIOFHp367yMrYbp0GVr2646",
+        "arguments": {
+          "mode": "walking",
+          "evidence_ids": [
+            "ev-3a3200ed608e7466"
+          ],
+          "reason_codes": [
+            "distance"
+          ]
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      },
+      {
+        "tool": "plan_candidates",
+        "call_id": "call_00_xHGGeAX4BhBUyAJKzCFG0141",
+        "arguments": {
+          "poi_ids": [],
+          "parking_ids": []
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 1688.0000000001019,
+        "summary": "工具执行完成",
+        "evidence_ids": [
+          "ev-accddc8900dcaed8"
+        ]
+      },
+      {
+        "tool": "validate_routes",
+        "call_id": "call_00_QGSy58kLarMZlenY9XSu2667",
+        "arguments": {
+          "route_ids": [
+            "route-cf5adadea00ea440",
+            "route-41660c88b89a0c66",
+            "leg-0452004d2e6b262c"
+          ]
+        },
+        "status": "error",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "候选路线 ID 不存在。",
+        "evidence_ids": []
+      },
+      {
+        "tool": "compare_routes",
+        "call_id": "call_01_sOb5UOawLKQPqyPg3Cql3861",
+        "arguments": {
+          "route_ids": [
+            "route-cf5adadea00ea440",
+            "route-41660c88b89a0c66",
+            "leg-0452004d2e6b262c"
+          ]
+        },
+        "status": "error",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "候选路线 ID 不存在。",
+        "evidence_ids": []
+      },
+      {
+        "tool": "validate_routes",
+        "call_id": "call_00_79KGgnM2r9UcsTd93P2o1837",
+        "arguments": {
+          "route_ids": [
+            "route-cf5adadea00ea440"
+          ]
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      },
+      {
+        "tool": "validate_routes",
+        "call_id": "call_01_81KgRnNgi7FTTR0YsoTQ1938",
+        "arguments": {
+          "route_ids": [
+            "leg-0452004d2e6b262c"
+          ]
+        },
+        "status": "error",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "候选路线 ID 不存在。",
+        "evidence_ids": []
+      },
+      {
+        "tool": "validate_routes",
+        "call_id": "call_00_rPID3Tx3ILkhbD6ne0rs4623",
+        "arguments": {
+          "route_ids": [
+            "route-41660c88b89a0c66"
+          ]
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      },
+      {
+        "tool": "compare_routes",
+        "call_id": "call_01_D49ZXy4By4ZNq8fnVuyg4270",
+        "arguments": {
+          "route_ids": [
+            "route-cf5adadea00ea440",
+            "route-41660c88b89a0c66"
+          ]
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      },
+      {
+        "tool": "finish_plan",
+        "call_id": "call_00_Ft2Tdt1Us6jhcEgeGWw52625",
+        "arguments": {
+          "selected_id": "route-cf5adadea00ea440",
+          "alternative_ids": [
+            "route-41660c88b89a0c66"
+          ],
+          "evidence_ids": [
+            "ev-3a3200ed608e7466",
+            "ev-accddc8900dcaed8"
+          ],
+          "reason_codes": [
+            "time",
+            "distance",
+            "walking"
+          ]
+        },
+        "status": "error",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "推荐依据必须引用该候选真实存在的证据。",
+        "evidence_ids": []
+      },
+      {
+        "tool": "finish_plan",
+        "call_id": "call_00_NYU6eYpjrD9HBayOc4tw3932",
+        "arguments": {
+          "selected_id": "route-cf5adadea00ea440",
+          "alternative_ids": [
+            "route-41660c88b89a0c66"
+          ],
+          "evidence_ids": [
+            "ev-accddc8900dcaed8"
+          ],
+          "reason_codes": [
+            "time",
+            "distance",
+            "walking"
+          ]
+        },
+        "status": "ok",
+        "source": "online",
+        "cached": false,
+        "duration_ms": 0.0,
+        "summary": "工具执行完成",
+        "evidence_ids": []
+      }
+    ],
+    "stages": [
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 1.359,
+        "round": 1
+      },
+      {
+        "stage": "tool",
+        "message": "set_request · 完成",
+        "elapsed_s": 3.671,
+        "tool": "set_request",
+        "status": "ok",
+        "call_id": "call_00_lkQSzfWOdtzgbj2oGJTW9269"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 3.671,
+        "round": 2
+      },
+      {
+        "stage": "tool",
+        "message": "resolve_place · 完成",
+        "elapsed_s": 4.843,
+        "tool": "resolve_place",
+        "status": "ok",
+        "call_id": "call_00_wr4UJXfG4AMZq0lYDPk32805"
+      },
+      {
+        "stage": "tool",
+        "message": "resolve_place · 完成",
+        "elapsed_s": 4.843,
+        "tool": "resolve_place",
+        "status": "ok",
+        "call_id": "call_01_Tim3XMDD7LSdutxab8sL0182"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 4.843,
+        "round": 3
+      },
+      {
+        "stage": "tool",
+        "message": "compare_modes · 完成",
+        "elapsed_s": 10.343,
+        "tool": "compare_modes",
+        "status": "ok",
+        "call_id": "call_00_Po5yZ9audmhGjtBjNbQL8914"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 10.343,
+        "round": 4
+      },
+      {
+        "stage": "mode",
+        "message": "已根据需求与真实路线比较选择步行",
+        "elapsed_s": 12.953
+      },
+      {
+        "stage": "tool",
+        "message": "choose_mode · 完成",
+        "elapsed_s": 12.953,
+        "tool": "choose_mode",
+        "status": "ok",
+        "call_id": "call_00_1kIOFHp367yMrYbp0GVr2646"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 12.953,
+        "round": 5
+      },
+      {
+        "stage": "routes",
+        "message": "正在调用 OSRM 计算真实分段路线",
+        "elapsed_s": 15.062
+      },
+      {
+        "stage": "tool",
+        "message": "plan_candidates · 完成",
+        "elapsed_s": 16.75,
+        "tool": "plan_candidates",
+        "status": "ok",
+        "call_id": "call_00_xHGGeAX4BhBUyAJKzCFG0141"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 16.75,
+        "round": 6
+      },
+      {
+        "stage": "tool",
+        "message": "validate_routes · 失败：候选路线 ID 不存在。",
+        "elapsed_s": 18.078,
+        "tool": "validate_routes",
+        "status": "error",
+        "call_id": "call_00_QGSy58kLarMZlenY9XSu2667"
+      },
+      {
+        "stage": "tool",
+        "message": "compare_routes · 失败：候选路线 ID 不存在。",
+        "elapsed_s": 18.078,
+        "tool": "compare_routes",
+        "status": "error",
+        "call_id": "call_01_sOb5UOawLKQPqyPg3Cql3861"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 18.078,
+        "round": 7
+      },
+      {
+        "stage": "tool",
+        "message": "validate_routes · 完成",
+        "elapsed_s": 19.671,
+        "tool": "validate_routes",
+        "status": "ok",
+        "call_id": "call_00_79KGgnM2r9UcsTd93P2o1837"
+      },
+      {
+        "stage": "tool",
+        "message": "validate_routes · 失败：候选路线 ID 不存在。",
+        "elapsed_s": 19.671,
+        "tool": "validate_routes",
+        "status": "error",
+        "call_id": "call_01_81KgRnNgi7FTTR0YsoTQ1938"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 19.671,
+        "round": 8
+      },
+      {
+        "stage": "tool",
+        "message": "validate_routes · 完成",
+        "elapsed_s": 20.953,
+        "tool": "validate_routes",
+        "status": "ok",
+        "call_id": "call_00_rPID3Tx3ILkhbD6ne0rs4623"
+      },
+      {
+        "stage": "tool",
+        "message": "compare_routes · 完成",
+        "elapsed_s": 20.953,
+        "tool": "compare_routes",
+        "status": "ok",
+        "call_id": "call_01_D49ZXy4By4ZNq8fnVuyg4270"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 20.953,
+        "round": 9
+      },
+      {
+        "stage": "tool",
+        "message": "finish_plan · 失败：推荐依据必须引用该候选真实存在的证据。",
+        "elapsed_s": 25.312,
+        "tool": "finish_plan",
+        "status": "error",
+        "call_id": "call_00_Ft2Tdt1Us6jhcEgeGWw52625"
+      },
+      {
+        "stage": "model",
+        "message": "DeepSeek 正在根据需求与工具证据选择下一步",
+        "elapsed_s": 25.312,
+        "round": 10
+      },
+      {
+        "stage": "complete",
+        "message": "已找到满足当前证据与服务估计下硬约束的方案。",
+        "elapsed_s": 27.015
+      },
+      {
+        "stage": "tool",
+        "message": "finish_plan · 完成",
+        "elapsed_s": 27.015,
+        "tool": "finish_plan",
+        "status": "ok",
+        "call_id": "call_00_NYU6eYpjrD9HBayOc4tw3932"
+      }
+    ],
+    "candidates": [
+      {
+        "id": "route-cf5adadea00ea440",
+        "mode": "walking",
+        "origin": {
+          "id": "coordinate-5572496a9a6e96",
+          "name": "1.2900,103.8500",
+          "lat": 1.29,
+          "lon": 103.85,
+          "category": null,
+          "opening_hours": null,
+          "source": "用户明确提供的坐标",
+          "evidence_ids": [],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        },
+        "destination": {
+          "id": "coordinate-65b2d347cdc6cc",
+          "name": "1.2920,103.8520",
+          "lat": 1.292,
+          "lon": 103.852,
+          "category": null,
+          "opening_hours": null,
+          "source": "用户明确提供的坐标",
+          "evidence_ids": [],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        },
+        "legs": [
+          {
+            "id": "leg-0452004d2e6b262c",
+            "mode": "walking",
+            "origin": {
+              "id": "coordinate-5572496a9a6e96",
+              "name": "1.2900,103.8500",
+              "lat": 1.29,
+              "lon": 103.85,
+              "category": null,
+              "opening_hours": null,
+              "source": "用户明确提供的坐标",
+              "evidence_ids": [],
+              "available_lots": null,
+              "entrance_confirmed": false,
+              "requires_confirmation": false
+            },
+            "destination": {
+              "id": "coordinate-65b2d347cdc6cc",
+              "name": "1.2920,103.8520",
+              "lat": 1.292,
+              "lon": 103.852,
+              "category": null,
+              "opening_hours": null,
+              "source": "用户明确提供的坐标",
+              "evidence_ids": [],
+              "available_lots": null,
+              "entrance_confirmed": false,
+              "requires_confirmation": false
+            },
+            "geometry": {
+              "coordinates": [
+                [
+                  103.850017,
+                  1.289989
+                ],
+                [
+                  103.850092,
+                  1.290104
+                ],
+                [
+                  103.850106,
+                  1.290125
+                ],
+                [
+                  103.850059,
+                  1.290164
+                ],
+                [
+                  103.850094,
+                  1.290214
+                ],
+                [
+                  103.850121,
+                  1.290253
+                ],
+                [
+                  103.850431,
+                  1.290748
+                ],
+                [
+                  103.850694,
+                  1.291191
+                ],
+                [
+                  103.851002,
+                  1.291663
+                ],
+                [
+                  103.851042,
+                  1.291725
+                ],
+                [
+                  103.8511,
+                  1.291824
+                ],
+                [
+                  103.85142,
+                  1.292375
+                ],
+                [
+                  103.851644,
+                  1.29273
+                ],
+                [
+                  103.851974,
+                  1.292547
+                ],
+                [
+                  103.85176,
+                  1.29212
+                ]
+              ],
+              "type": "LineString"
+            },
+            "distance_m": 453.8,
+            "provider_duration_s": 365.2,
+            "source": "OSRM",
+            "evidence_ids": [
+              "ev-accddc8900dcaed8"
+            ],
+            "highways": null,
+            "traffic_coverage": null,
+            "traffic_duration_s": null,
+            "traffic_lower_s": null,
+            "traffic_upper_s": null,
+            "congestion_fraction": null,
+            "traffic_retrieved_at": null,
+            "segments": [
+              {
+                "start": 0,
+                "end": 2,
+                "name": "",
+                "duration_s": 14.4,
+                "distance_m": 18
+              },
+              {
+                "start": 2,
+                "end": 3,
+                "name": "Parliament Place",
+                "duration_s": 5.4,
+                "distance_m": 6.8
+              },
+              {
+                "start": 3,
+                "end": 12,
+                "name": "",
+                "duration_s": 269.5,
+                "distance_m": 334.2
+              },
+              {
+                "start": 12,
+                "end": 14,
+                "name": "",
+                "duration_s": 75.9,
+                "distance_m": 94.8
+              }
+            ]
+          }
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "type": "MultiLineString",
+            "coordinates": [
+              [
+                [
+                  103.850017,
+                  1.289989
+                ],
+                [
+                  103.850092,
+                  1.290104
+                ],
+                [
+                  103.850106,
+                  1.290125
+                ],
+                [
+                  103.850059,
+                  1.290164
+                ],
+                [
+                  103.850094,
+                  1.290214
+                ],
+                [
+                  103.850121,
+                  1.290253
+                ],
+                [
+                  103.850431,
+                  1.290748
+                ],
+                [
+                  103.850694,
+                  1.291191
+                ],
+                [
+                  103.851002,
+                  1.291663
+                ],
+                [
+                  103.851042,
+                  1.291725
+                ],
+                [
+                  103.8511,
+                  1.291824
+                ],
+                [
+                  103.85142,
+                  1.292375
+                ],
+                [
+                  103.851644,
+                  1.29273
+                ],
+                [
+                  103.851974,
+                  1.292547
+                ],
+                [
+                  103.85176,
+                  1.29212
+                ]
+              ]
+            ]
+          }
+        },
+        "poi": null,
+        "parking": null,
+        "distance_m": 453.8,
+        "driving_s": 0.0,
+        "walking_s": 365.2,
+        "walking_m": 453.8,
+        "stop_s": 0.0,
+        "parking_s": 0.0,
+        "provider_total_s": 365.2,
+        "total_s": 365.2,
+        "time_basis": "OSRM 步行服务估计",
+        "traffic_coverage": null,
+        "congestion_fraction": null,
+        "weather": null,
+        "score": 0.8999999999999999,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": [
+              "walking"
+            ],
+            "required": [
+              "walking"
+            ],
+            "reason": "核对实际分段交通方式。",
+            "evidence_ids": [
+              "ev-accddc8900dcaed8"
+            ]
+          },
+          {
+            "constraint": "continuity",
+            "status": "pass",
+            "hard": true,
+            "actual": [],
+            "required": 2,
+            "reason": "API 分段几何连续。",
+            "evidence_ids": [
+              "ev-accddc8900dcaed8"
+            ]
+          }
+        ],
+        "feasibility": "verified",
+        "evidence_ids": [
+          "ev-accddc8900dcaed8"
+        ],
+        "reasons": [
+          "time",
+          "distance",
+          "walking"
+        ]
+      },
+      {
+        "id": "route-41660c88b89a0c66",
+        "mode": "walking",
+        "origin": {
+          "id": "coordinate-5572496a9a6e96",
+          "name": "1.2900,103.8500",
+          "lat": 1.29,
+          "lon": 103.85,
+          "category": null,
+          "opening_hours": null,
+          "source": "用户明确提供的坐标",
+          "evidence_ids": [],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        },
+        "destination": {
+          "id": "coordinate-65b2d347cdc6cc",
+          "name": "1.2920,103.8520",
+          "lat": 1.292,
+          "lon": 103.852,
+          "category": null,
+          "opening_hours": null,
+          "source": "用户明确提供的坐标",
+          "evidence_ids": [],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        },
+        "legs": [
+          {
+            "id": "leg-72367954ba259de4",
+            "mode": "walking",
+            "origin": {
+              "id": "coordinate-5572496a9a6e96",
+              "name": "1.2900,103.8500",
+              "lat": 1.29,
+              "lon": 103.85,
+              "category": null,
+              "opening_hours": null,
+              "source": "用户明确提供的坐标",
+              "evidence_ids": [],
+              "available_lots": null,
+              "entrance_confirmed": false,
+              "requires_confirmation": false
+            },
+            "destination": {
+              "id": "coordinate-65b2d347cdc6cc",
+              "name": "1.2920,103.8520",
+              "lat": 1.292,
+              "lon": 103.852,
+              "category": null,
+              "opening_hours": null,
+              "source": "用户明确提供的坐标",
+              "evidence_ids": [],
+              "available_lots": null,
+              "entrance_confirmed": false,
+              "requires_confirmation": false
+            },
+            "geometry": {
+              "coordinates": [
+                [
+                  103.850017,
+                  1.289989
+                ],
+                [
+                  103.850092,
+                  1.290104
+                ],
+                [
+                  103.850106,
+                  1.290125
+                ],
+                [
+                  103.850059,
+                  1.290164
+                ],
+                [
+                  103.850094,
+                  1.290214
+                ],
+                [
+                  103.850121,
+                  1.290253
+                ],
+                [
+                  103.850431,
+                  1.290748
+                ],
+                [
+                  103.850694,
+                  1.291191
+                ],
+                [
+                  103.851002,
+                  1.291663
+                ],
+                [
+                  103.850934,
+                  1.29171
+                ],
+                [
+                  103.850867,
+                  1.291753
+                ],
+                [
+                  103.85089,
+                  1.29181
+                ],
+                [
+                  103.850931,
+                  1.291876
+                ],
+                [
+                  103.85095,
+                  1.291902
+                ],
+                [
+                  103.851024,
+                  1.291859
+                ],
+                [
+                  103.8511,
+                  1.291824
+                ],
+                [
+                  103.85142,
+                  1.292375
+                ],
+                [
+                  103.851644,
+                  1.29273
+                ],
+                [
+                  103.851974,
+                  1.292547
+                ],
+                [
+                  103.85176,
+                  1.29212
+                ]
+              ],
+              "type": "LineString"
+            },
+            "distance_m": 488.7,
+            "provider_duration_s": 397.1,
+            "source": "OSRM",
+            "evidence_ids": [
+              "ev-accddc8900dcaed8"
+            ],
+            "highways": null,
+            "traffic_coverage": null,
+            "traffic_duration_s": null,
+            "traffic_lower_s": null,
+            "traffic_upper_s": null,
+            "congestion_fraction": null,
+            "traffic_retrieved_at": null,
+            "segments": [
+              {
+                "start": 0,
+                "end": 2,
+                "name": "",
+                "duration_s": 14.4,
+                "distance_m": 18
+              },
+              {
+                "start": 2,
+                "end": 3,
+                "name": "Parliament Place",
+                "duration_s": 5.4,
+                "distance_m": 6.8
+              },
+              {
+                "start": 3,
+                "end": 8,
+                "name": "",
+                "duration_s": 157.1,
+                "distance_m": 196.2
+              },
+              {
+                "start": 8,
+                "end": 10,
+                "name": "",
+                "duration_s": 16.4,
+                "distance_m": 18
+              },
+              {
+                "start": 10,
+                "end": 13,
+                "name": "",
+                "duration_s": 17.2,
+                "distance_m": 19
+              },
+              {
+                "start": 13,
+                "end": 15,
+                "name": "",
+                "duration_s": 17,
+                "distance_m": 18.8
+              },
+              {
+                "start": 15,
+                "end": 17,
+                "name": "",
+                "duration_s": 93.7,
+                "distance_m": 117.1
+              },
+              {
+                "start": 17,
+                "end": 19,
+                "name": "",
+                "duration_s": 75.9,
+                "distance_m": 94.8
+              }
+            ]
+          }
+        ],
+        "geometry": {
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "type": "MultiLineString",
+            "coordinates": [
+              [
+                [
+                  103.850017,
+                  1.289989
+                ],
+                [
+                  103.850092,
+                  1.290104
+                ],
+                [
+                  103.850106,
+                  1.290125
+                ],
+                [
+                  103.850059,
+                  1.290164
+                ],
+                [
+                  103.850094,
+                  1.290214
+                ],
+                [
+                  103.850121,
+                  1.290253
+                ],
+                [
+                  103.850431,
+                  1.290748
+                ],
+                [
+                  103.850694,
+                  1.291191
+                ],
+                [
+                  103.851002,
+                  1.291663
+                ],
+                [
+                  103.850934,
+                  1.29171
+                ],
+                [
+                  103.850867,
+                  1.291753
+                ],
+                [
+                  103.85089,
+                  1.29181
+                ],
+                [
+                  103.850931,
+                  1.291876
+                ],
+                [
+                  103.85095,
+                  1.291902
+                ],
+                [
+                  103.851024,
+                  1.291859
+                ],
+                [
+                  103.8511,
+                  1.291824
+                ],
+                [
+                  103.85142,
+                  1.292375
+                ],
+                [
+                  103.851644,
+                  1.29273
+                ],
+                [
+                  103.851974,
+                  1.292547
+                ],
+                [
+                  103.85176,
+                  1.29212
+                ]
+              ]
+            ]
+          }
+        },
+        "poi": null,
+        "parking": null,
+        "distance_m": 488.7,
+        "driving_s": 0.0,
+        "walking_s": 397.1,
+        "walking_m": 488.7,
+        "stop_s": 0.0,
+        "parking_s": 0.0,
+        "provider_total_s": 397.1,
+        "total_s": 397.1,
+        "time_basis": "OSRM 步行服务估计",
+        "traffic_coverage": null,
+        "congestion_fraction": null,
+        "weather": null,
+        "score": 0.9765258035225964,
+        "checks": [
+          {
+            "constraint": "mode",
+            "status": "pass",
+            "hard": true,
+            "actual": [
+              "walking"
+            ],
+            "required": [
+              "walking"
+            ],
+            "reason": "核对实际分段交通方式。",
+            "evidence_ids": [
+              "ev-accddc8900dcaed8"
+            ]
+          },
+          {
+            "constraint": "continuity",
+            "status": "pass",
+            "hard": true,
+            "actual": [],
+            "required": 2,
+            "reason": "API 分段几何连续。",
+            "evidence_ids": [
+              "ev-accddc8900dcaed8"
+            ]
+          }
+        ],
+        "feasibility": "verified",
+        "evidence_ids": [
+          "ev-accddc8900dcaed8"
+        ],
+        "reasons": []
+      }
+    ],
+    "attempts": [
+      {
+        "attempt": 0,
+        "combinations": [
+          [
+            null,
+            null
+          ]
+        ],
+        "truncated": 0,
+        "verified": 2
+      }
+    ]
+  },
+  "questions": {},
+  "recommended": {
+    "id": "route-cf5adadea00ea440",
+    "mode": "walking",
+    "origin": {
+      "id": "coordinate-5572496a9a6e96",
+      "name": "1.2900,103.8500",
+      "lat": 1.29,
+      "lon": 103.85,
+      "category": null,
+      "opening_hours": null,
+      "source": "用户明确提供的坐标",
+      "evidence_ids": [],
+      "available_lots": null,
+      "entrance_confirmed": false,
+      "requires_confirmation": false
+    },
+    "destination": {
+      "id": "coordinate-65b2d347cdc6cc",
+      "name": "1.2920,103.8520",
+      "lat": 1.292,
+      "lon": 103.852,
+      "category": null,
+      "opening_hours": null,
+      "source": "用户明确提供的坐标",
+      "evidence_ids": [],
+      "available_lots": null,
+      "entrance_confirmed": false,
+      "requires_confirmation": false
+    },
+    "legs": [
+      {
+        "id": "leg-0452004d2e6b262c",
+        "mode": "walking",
+        "origin": {
+          "id": "coordinate-5572496a9a6e96",
+          "name": "1.2900,103.8500",
+          "lat": 1.29,
+          "lon": 103.85,
+          "category": null,
+          "opening_hours": null,
+          "source": "用户明确提供的坐标",
+          "evidence_ids": [],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        },
+        "destination": {
+          "id": "coordinate-65b2d347cdc6cc",
+          "name": "1.2920,103.8520",
+          "lat": 1.292,
+          "lon": 103.852,
+          "category": null,
+          "opening_hours": null,
+          "source": "用户明确提供的坐标",
+          "evidence_ids": [],
+          "available_lots": null,
+          "entrance_confirmed": false,
+          "requires_confirmation": false
+        },
+        "geometry": {
+          "coordinates": [
+            [
+              103.850017,
+              1.289989
+            ],
+            [
+              103.850092,
+              1.290104
+            ],
+            [
+              103.850106,
+              1.290125
+            ],
+            [
+              103.850059,
+              1.290164
+            ],
+            [
+              103.850094,
+              1.290214
+            ],
+            [
+              103.850121,
+              1.290253
+            ],
+            [
+              103.850431,
+              1.290748
+            ],
+            [
+              103.850694,
+              1.291191
+            ],
+            [
+              103.851002,
+              1.291663
+            ],
+            [
+              103.851042,
+              1.291725
+            ],
+            [
+              103.8511,
+              1.291824
+            ],
+            [
+              103.85142,
+              1.292375
+            ],
+            [
+              103.851644,
+              1.29273
+            ],
+            [
+              103.851974,
+              1.292547
+            ],
+            [
+              103.85176,
+              1.29212
+            ]
+          ],
+          "type": "LineString"
+        },
+        "distance_m": 453.8,
+        "provider_duration_s": 365.2,
+        "source": "OSRM",
+        "evidence_ids": [
+          "ev-accddc8900dcaed8"
+        ],
+        "highways": null,
+        "traffic_coverage": null,
+        "traffic_duration_s": null,
+        "traffic_lower_s": null,
+        "traffic_upper_s": null,
+        "congestion_fraction": null,
+        "traffic_retrieved_at": null,
+        "segments": [
+          {
+            "start": 0,
+            "end": 2,
+            "name": "",
+            "duration_s": 14.4,
+            "distance_m": 18
+          },
+          {
+            "start": 2,
+            "end": 3,
+            "name": "Parliament Place",
+            "duration_s": 5.4,
+            "distance_m": 6.8
+          },
+          {
+            "start": 3,
+            "end": 12,
+            "name": "",
+            "duration_s": 269.5,
+            "distance_m": 334.2
+          },
+          {
+            "start": 12,
+            "end": 14,
+            "name": "",
+            "duration_s": 75.9,
+            "distance_m": 94.8
+          }
+        ]
+      }
+    ],
+    "geometry": {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [
+            [
+              103.850017,
+              1.289989
+            ],
+            [
+              103.850092,
+              1.290104
+            ],
+            [
+              103.850106,
+              1.290125
+            ],
+            [
+              103.850059,
+              1.290164
+            ],
+            [
+              103.850094,
+              1.290214
+            ],
+            [
+              103.850121,
+              1.290253
+            ],
+            [
+              103.850431,
+              1.290748
+            ],
+            [
+              103.850694,
+              1.291191
+            ],
+            [
+              103.851002,
+              1.291663
+            ],
+            [
+              103.851042,
+              1.291725
+            ],
+            [
+              103.8511,
+              1.291824
+            ],
+            [
+              103.85142,
+              1.292375
+            ],
+            [
+              103.851644,
+              1.29273
+            ],
+            [
+              103.851974,
+              1.292547
+            ],
+            [
+              103.85176,
+              1.29212
+            ]
+          ]
+        ]
+      }
+    },
+    "poi": null,
+    "parking": null,
+    "distance_m": 453.8,
+    "driving_s": 0.0,
+    "walking_s": 365.2,
+    "walking_m": 453.8,
+    "stop_s": 0.0,
+    "parking_s": 0.0,
+    "provider_total_s": 365.2,
+    "total_s": 365.2,
+    "time_basis": "OSRM 步行服务估计",
+    "traffic_coverage": null,
+    "congestion_fraction": null,
+    "weather": null,
+    "score": 0.8999999999999999,
+    "checks": [
+      {
+        "constraint": "mode",
+        "status": "pass",
+        "hard": true,
+        "actual": [
+          "walking"
+        ],
+        "required": [
+          "walking"
+        ],
+        "reason": "核对实际分段交通方式。",
+        "evidence_ids": [
+          "ev-accddc8900dcaed8"
+        ]
+      },
+      {
+        "constraint": "continuity",
+        "status": "pass",
+        "hard": true,
+        "actual": [],
+        "required": 2,
+        "reason": "API 分段几何连续。",
+        "evidence_ids": [
+          "ev-accddc8900dcaed8"
+        ]
+      }
+    ],
+    "feasibility": "verified",
+    "evidence_ids": [
+      "ev-accddc8900dcaed8"
+    ],
+    "reasons": [
+      "time",
+      "distance",
+      "walking"
+    ]
+  },
+  "alternatives": [
+    {
+      "id": "route-41660c88b89a0c66",
+      "mode": "walking",
+      "origin": {
+        "id": "coordinate-5572496a9a6e96",
+        "name": "1.2900,103.8500",
+        "lat": 1.29,
+        "lon": 103.85,
+        "category": null,
+        "opening_hours": null,
+        "source": "用户明确提供的坐标",
+        "evidence_ids": [],
+        "available_lots": null,
+        "entrance_confirmed": false,
+        "requires_confirmation": false
+      },
+      "destination": {
+        "id": "coordinate-65b2d347cdc6cc",
+        "name": "1.2920,103.8520",
+        "lat": 1.292,
+        "lon": 103.852,
+        "category": null,
+        "opening_hours": null,
+        "source": "用户明确提供的坐标",
+        "evidence_ids": [],
+        "available_lots": null,
+        "entrance_confirmed": false,
+        "requires_confirmation": false
+      },
+      "legs": [
+        {
+          "id": "leg-72367954ba259de4",
+          "mode": "walking",
+          "origin": {
+            "id": "coordinate-5572496a9a6e96",
+            "name": "1.2900,103.8500",
+            "lat": 1.29,
+            "lon": 103.85,
+            "category": null,
+            "opening_hours": null,
+            "source": "用户明确提供的坐标",
+            "evidence_ids": [],
+            "available_lots": null,
+            "entrance_confirmed": false,
+            "requires_confirmation": false
+          },
+          "destination": {
+            "id": "coordinate-65b2d347cdc6cc",
+            "name": "1.2920,103.8520",
+            "lat": 1.292,
+            "lon": 103.852,
+            "category": null,
+            "opening_hours": null,
+            "source": "用户明确提供的坐标",
+            "evidence_ids": [],
+            "available_lots": null,
+            "entrance_confirmed": false,
+            "requires_confirmation": false
+          },
+          "geometry": {
+            "coordinates": [
+              [
+                103.850017,
+                1.289989
+              ],
+              [
+                103.850092,
+                1.290104
+              ],
+              [
+                103.850106,
+                1.290125
+              ],
+              [
+                103.850059,
+                1.290164
+              ],
+              [
+                103.850094,
+                1.290214
+              ],
+              [
+                103.850121,
+                1.290253
+              ],
+              [
+                103.850431,
+                1.290748
+              ],
+              [
+                103.850694,
+                1.291191
+              ],
+              [
+                103.851002,
+                1.291663
+              ],
+              [
+                103.850934,
+                1.29171
+              ],
+              [
+                103.850867,
+                1.291753
+              ],
+              [
+                103.85089,
+                1.29181
+              ],
+              [
+                103.850931,
+                1.291876
+              ],
+              [
+                103.85095,
+                1.291902
+              ],
+              [
+                103.851024,
+                1.291859
+              ],
+              [
+                103.8511,
+                1.291824
+              ],
+              [
+                103.85142,
+                1.292375
+              ],
+              [
+                103.851644,
+                1.29273
+              ],
+              [
+                103.851974,
+                1.292547
+              ],
+              [
+                103.85176,
+                1.29212
+              ]
+            ],
+            "type": "LineString"
+          },
+          "distance_m": 488.7,
+          "provider_duration_s": 397.1,
+          "source": "OSRM",
+          "evidence_ids": [
+            "ev-accddc8900dcaed8"
+          ],
+          "highways": null,
+          "traffic_coverage": null,
+          "traffic_duration_s": null,
+          "traffic_lower_s": null,
+          "traffic_upper_s": null,
+          "congestion_fraction": null,
+          "traffic_retrieved_at": null,
+          "segments": [
+            {
+              "start": 0,
+              "end": 2,
+              "name": "",
+              "duration_s": 14.4,
+              "distance_m": 18
+            },
+            {
+              "start": 2,
+              "end": 3,
+              "name": "Parliament Place",
+              "duration_s": 5.4,
+              "distance_m": 6.8
+            },
+            {
+              "start": 3,
+              "end": 8,
+              "name": "",
+              "duration_s": 157.1,
+              "distance_m": 196.2
+            },
+            {
+              "start": 8,
+              "end": 10,
+              "name": "",
+              "duration_s": 16.4,
+              "distance_m": 18
+            },
+            {
+              "start": 10,
+              "end": 13,
+              "name": "",
+              "duration_s": 17.2,
+              "distance_m": 19
+            },
+            {
+              "start": 13,
+              "end": 15,
+              "name": "",
+              "duration_s": 17,
+              "distance_m": 18.8
+            },
+            {
+              "start": 15,
+              "end": 17,
+              "name": "",
+              "duration_s": 93.7,
+              "distance_m": 117.1
+            },
+            {
+              "start": 17,
+              "end": 19,
+              "name": "",
+              "duration_s": 75.9,
+              "distance_m": 94.8
+            }
+          ]
+        }
+      ],
+      "geometry": {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "MultiLineString",
+          "coordinates": [
+            [
+              [
+                103.850017,
+                1.289989
+              ],
+              [
+                103.850092,
+                1.290104
+              ],
+              [
+                103.850106,
+                1.290125
+              ],
+              [
+                103.850059,
+                1.290164
+              ],
+              [
+                103.850094,
+                1.290214
+              ],
+              [
+                103.850121,
+                1.290253
+              ],
+              [
+                103.850431,
+                1.290748
+              ],
+              [
+                103.850694,
+                1.291191
+              ],
+              [
+                103.851002,
+                1.291663
+              ],
+              [
+                103.850934,
+                1.29171
+              ],
+              [
+                103.850867,
+                1.291753
+              ],
+              [
+                103.85089,
+                1.29181
+              ],
+              [
+                103.850931,
+                1.291876
+              ],
+              [
+                103.85095,
+                1.291902
+              ],
+              [
+                103.851024,
+                1.291859
+              ],
+              [
+                103.8511,
+                1.291824
+              ],
+              [
+                103.85142,
+                1.292375
+              ],
+              [
+                103.851644,
+                1.29273
+              ],
+              [
+                103.851974,
+                1.292547
+              ],
+              [
+                103.85176,
+                1.29212
+              ]
+            ]
+          ]
+        }
+      },
+      "poi": null,
+      "parking": null,
+      "distance_m": 488.7,
+      "driving_s": 0.0,
+      "walking_s": 397.1,
+      "walking_m": 488.7,
+      "stop_s": 0.0,
+      "parking_s": 0.0,
+      "provider_total_s": 397.1,
+      "total_s": 397.1,
+      "time_basis": "OSRM 步行服务估计",
+      "traffic_coverage": null,
+      "congestion_fraction": null,
+      "weather": null,
+      "score": 0.9765258035225964,
+      "checks": [
+        {
+          "constraint": "mode",
+          "status": "pass",
+          "hard": true,
+          "actual": [
+            "walking"
+          ],
+          "required": [
+            "walking"
+          ],
+          "reason": "核对实际分段交通方式。",
+          "evidence_ids": [
+            "ev-accddc8900dcaed8"
+          ]
+        },
+        {
+          "constraint": "continuity",
+          "status": "pass",
+          "hard": true,
+          "actual": [],
+          "required": 2,
+          "reason": "API 分段几何连续。",
+          "evidence_ids": [
+            "ev-accddc8900dcaed8"
+          ]
+        }
+      ],
+      "feasibility": "verified",
+      "evidence_ids": [
+        "ev-accddc8900dcaed8"
+      ],
+      "reasons": []
+    }
+  ],
+  "unverified": [],
+  "explanation": "距离 0.45 公里。 预计总时间 6.1 分钟（OSRM 步行服务估计）。 累计步行 454 米，OSRM 步行服务估计 6.1 分钟。 DeepSeek 依据：时间指标、距离指标、累计步行距离 API 预计时间和预报不保证实际准时、无雨或有停车位。",
+  "evidence": [
+    {
+      "id": "ev-3a3200ed608e7466",
+      "source": "OSRM Route",
+      "retrieved_at": "2026-10-02T10:21:10.721283Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:26:10.721283Z",
+      "tool_call_id": "call_00_Po5yZ9audmhGjtBjNbQL8914",
+      "response_sha256": "71fd72596fae91478d64be9223f32b53bb052451ae3d14f0a1e31ea9abc7d2ef",
+      "summary": "OSRM Route 服务响应"
+    },
+    {
+      "id": "ev-d085268542df425e",
+      "source": "OSRM Route",
+      "retrieved_at": "2026-10-02T10:21:13.310737Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:26:13.310737Z",
+      "tool_call_id": "call_00_Po5yZ9audmhGjtBjNbQL8914",
+      "response_sha256": "1a9a2202a9f0808d5c98c14f9157a208e37b6106d175442c658f8322057b412f",
+      "summary": "OSRM Route 服务响应"
+    },
+    {
+      "id": "ev-accddc8900dcaed8",
+      "source": "OSRM Route",
+      "retrieved_at": "2026-10-02T10:21:19.710340Z",
+      "observed_at": null,
+      "valid_until": "2026-10-02T10:26:19.710340Z",
+      "tool_call_id": "call_00_xHGGeAX4BhBUyAJKzCFG0141",
+      "response_sha256": "4015c99c53fcf1ea061524eca9f509fb8152d46c55d4cc2c5a7d0723b3d20576",
+      "summary": "OSRM Route 服务响应"
+    }
+  ],
+  "context": {
+    "mode": "live",
+    "provider": "DeepSeek",
+    "model": "deepseek-flash",
+    "readiness": {
+      "DEEPSEEK_API_KEY": true,
+      "ORS_API_KEY": true,
+      "LTA_API_KEY": true,
+      "DATAGOVSG_API_KEY": false
+    },
+    "routing": {
+      "engine": "OSRM",
+      "driving_configured": true,
+      "walking_configured": true,
+      "key_required": false,
+      "public_driving_service": true
+    },
+    "mode_comparison": {
+      "options": [
+        {
+          "mode": "walking",
+          "route_id": "leg-0452004d2e6b262c",
+          "reference_distance_m": 453.8,
+          "provider_duration_s": 365.2,
+          "confirmed_stop_s": null,
+          "traffic_duration_s": null,
+          "evidence_ids": [
+            "ev-3a3200ed608e7466"
+          ],
+          "time_basis": "OSRM 直达步行服务估计，未包括经停绕行",
+          "car_access_assumption": false
+        },
+        {
+          "mode": "driving",
+          "route_id": "leg-658d6fe6cd381abb",
+          "reference_distance_m": 862.8,
+          "provider_duration_s": 100.8,
+          "confirmed_stop_s": null,
+          "traffic_duration_s": null,
+          "evidence_ids": [
+            "ev-d085268542df425e"
+          ],
+          "time_basis": "OSRM 直达基础服务估计，未包括经停绕行；驾车非实时 ETA",
+          "car_access_assumption": true
+        }
+      ],
+      "failures": []
+    },
+    "mode_selection": {
+      "selected": "walking",
+      "basis": "DeepSeek 比较真实步行／驾车路线后选择",
+      "reason_codes": [
+        "distance"
+      ],
+      "evidence_ids": [
+        "ev-3a3200ed608e7466"
+      ],
+      "car_access_assumption": false
+    },
+    "tool_failures": [
+      {
+        "tool": "validate_routes",
+        "call_id": "call_00_QGSy58kLarMZlenY9XSu2667",
+        "error": "unknown_id",
+        "message": "候选路线 ID 不存在。"
+      },
+      {
+        "tool": "compare_routes",
+        "call_id": "call_01_sOb5UOawLKQPqyPg3Cql3861",
+        "error": "unknown_id",
+        "message": "候选路线 ID 不存在。"
+      },
+      {
+        "tool": "validate_routes",
+        "call_id": "call_01_81KgRnNgi7FTTR0YsoTQ1938",
+        "error": "unknown_id",
+        "message": "候选路线 ID 不存在。"
+      },
+      {
+        "tool": "finish_plan",
+        "call_id": "call_00_Ft2Tdt1Us6jhcEgeGWw52625",
+        "error": "invalid_evidence",
+        "message": "推荐依据必须引用该候选真实存在的证据。"
+      }
+    ],
+    "ranking_weights": {
+      "time": 0.7,
+      "distance": 0.2,
+      "congestion": 0,
+      "uncertainty": 0.1
+    },
+    "model_evidence_ids": [
+      "ev-accddc8900dcaed8"
+    ]
+  },
+  "metrics": {
+    "latency_s": 27.015,
+    "http_calls": 13,
+    "tool_calls": 14,
+    "model_calls": 10,
+    "model_tokens": 60266,
+    "replans": 0,
+    "candidate_count": 2,
+    "cache_hits": 0,
+    "model": "deepseek-flash",
+    "live_acceptance": "not established by automated/mocked tests"
+  }
+}

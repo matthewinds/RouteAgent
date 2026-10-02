@@ -1,0 +1,646 @@
+{
+  "metadata": {
+    "synthetic": true,
+    "graph_source": "synthetic Singapore-coordinate test graph",
+    "description": "合成机制演示，不是真实道路、店铺或交通导航",
+    "observed_at": "2026-10-01T09:00:00+08:00"
+  },
+  "nodes": [
+    {
+      "id": 1,
+      "lat": 1.2935,
+      "lon": 103.852
+    },
+    {
+      "id": 2,
+      "lat": 1.2985,
+      "lon": 103.843
+    },
+    {
+      "id": 3,
+      "lat": 1.3048,
+      "lon": 103.832
+    },
+    {
+      "id": 4,
+      "lat": 1.298,
+      "lon": 103.844
+    },
+    {
+      "id": 5,
+      "lat": 1.31,
+      "lon": 103.838
+    },
+    {
+      "id": 20,
+      "lat": 1.297,
+      "lon": 103.845
+    },
+    {
+      "id": 21,
+      "lat": 1.2971,
+      "lon": 103.8451
+    },
+    {
+      "id": 22,
+      "lat": 1.2972,
+      "lon": 103.8452
+    },
+    {
+      "id": 23,
+      "lat": 1.2973,
+      "lon": 103.8453
+    },
+    {
+      "id": 24,
+      "lat": 1.2973999999999999,
+      "lon": 103.8454
+    },
+    {
+      "id": 25,
+      "lat": 1.2974999999999999,
+      "lon": 103.8455
+    },
+    {
+      "id": 26,
+      "lat": 1.2975999999999999,
+      "lon": 103.8456
+    },
+    {
+      "id": 27,
+      "lat": 1.2976999999999999,
+      "lon": 103.8457
+    },
+    {
+      "id": 28,
+      "lat": 1.2977999999999998,
+      "lon": 103.8458
+    },
+    {
+      "id": 29,
+      "lat": 1.2978999999999998,
+      "lon": 103.8459
+    },
+    {
+      "id": 30,
+      "lat": 1.311,
+      "lon": 103.843
+    }
+  ],
+  "edges": [
+    {
+      "u": 1,
+      "v": 2,
+      "length": 900,
+      "base_time_s": 240,
+      "highway": "primary"
+    },
+    {
+      "u": 2,
+      "v": 1,
+      "length": 900,
+      "base_time_s": 240,
+      "highway": "primary"
+    },
+    {
+      "u": 2,
+      "v": 3,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "motorway"
+    },
+    {
+      "u": 3,
+      "v": 2,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "motorway"
+    },
+    {
+      "u": 1,
+      "v": 4,
+      "length": 1100,
+      "base_time_s": 330,
+      "highway": "residential"
+    },
+    {
+      "u": 4,
+      "v": 1,
+      "length": 1100,
+      "base_time_s": 330,
+      "highway": "residential"
+    },
+    {
+      "u": 4,
+      "v": 3,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "residential"
+    },
+    {
+      "u": 3,
+      "v": 4,
+      "length": 1300,
+      "base_time_s": 360,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 5,
+      "length": 1500,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 5,
+      "v": 1,
+      "length": 1500,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 5,
+      "v": 3,
+      "length": 1400,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 3,
+      "v": 5,
+      "length": 1400,
+      "base_time_s": 420,
+      "highway": "residential"
+    },
+    {
+      "u": 2,
+      "v": 4,
+      "length": 200,
+      "base_time_s": 80,
+      "highway": "residential"
+    },
+    {
+      "u": 4,
+      "v": 2,
+      "length": 200,
+      "base_time_s": 80,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 20,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 20,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 21,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 21,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 22,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 22,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 23,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 23,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 24,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 24,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 25,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 25,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 26,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 26,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 27,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 27,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 28,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 28,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 29,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 29,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 1100,
+      "highway": "residential"
+    },
+    {
+      "u": 1,
+      "v": 30,
+      "length": 1000,
+      "base_time_s": 300,
+      "highway": "residential"
+    },
+    {
+      "u": 30,
+      "v": 3,
+      "length": 1000,
+      "base_time_s": 300,
+      "highway": "residential"
+    }
+  ],
+  "places": [
+    {
+      "id": "city-hall",
+      "name": "City Hall",
+      "lat": 1.2935,
+      "lon": 103.852,
+      "source": "synthetic landmark"
+    },
+    {
+      "id": "orchard",
+      "name": "Orchard Road",
+      "lat": 1.3048,
+      "lon": 103.832,
+      "source": "synthetic landmark"
+    },
+    {
+      "id": "cafe-0",
+      "name": "Candidate Cafe 0",
+      "lat": 1.297,
+      "lon": 103.845,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-1",
+      "name": "Candidate Cafe 1",
+      "lat": 1.2971,
+      "lon": 103.8451,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-2",
+      "name": "Candidate Cafe 2",
+      "lat": 1.2972,
+      "lon": 103.8452,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-3",
+      "name": "Candidate Cafe 3",
+      "lat": 1.2973,
+      "lon": 103.8453,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-4",
+      "name": "Candidate Cafe 4",
+      "lat": 1.2973999999999999,
+      "lon": 103.8454,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-5",
+      "name": "Candidate Cafe 5",
+      "lat": 1.2974999999999999,
+      "lon": 103.8455,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-6",
+      "name": "Candidate Cafe 6",
+      "lat": 1.2975999999999999,
+      "lon": 103.8456,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-7",
+      "name": "Candidate Cafe 7",
+      "lat": 1.2976999999999999,
+      "lon": 103.8457,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-8",
+      "name": "Candidate Cafe 8",
+      "lat": 1.2977999999999998,
+      "lon": 103.8458,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-9",
+      "name": "Candidate Cafe 9",
+      "lat": 1.2978999999999998,
+      "lon": 103.8459,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    },
+    {
+      "id": "cafe-10",
+      "name": "Candidate Cafe 10",
+      "lat": 1.311,
+      "lon": 103.843,
+      "category": "cafe",
+      "opening_hours": "24/7",
+      "source": "synthetic POI"
+    }
+  ],
+  "traffic": {
+    "source": "synthetic speed snapshot",
+    "observed_at": "2026-10-01T09:00:00+08:00",
+    "edge_speeds": {
+      "1:2:0": {
+        "min_speed": 13.5,
+        "max_speed": 13.5,
+        "confidence": 1
+      },
+      "2:1:0": {
+        "min_speed": 13.5,
+        "max_speed": 13.5,
+        "confidence": 1
+      },
+      "2:3:0": {
+        "min_speed": 13.0,
+        "max_speed": 13.0,
+        "confidence": 1
+      },
+      "3:2:0": {
+        "min_speed": 13.0,
+        "max_speed": 13.0,
+        "confidence": 1
+      },
+      "1:4:0": {
+        "min_speed": 12.0,
+        "max_speed": 12.0,
+        "confidence": 1
+      },
+      "4:1:0": {
+        "min_speed": 12.0,
+        "max_speed": 12.0,
+        "confidence": 1
+      },
+      "4:3:0": {
+        "min_speed": 13.0,
+        "max_speed": 13.0,
+        "confidence": 1
+      },
+      "3:4:0": {
+        "min_speed": 13.0,
+        "max_speed": 13.0,
+        "confidence": 1
+      },
+      "1:5:0": {
+        "min_speed": 12.857142857142858,
+        "max_speed": 12.857142857142858,
+        "confidence": 1
+      },
+      "5:1:0": {
+        "min_speed": 12.857142857142858,
+        "max_speed": 12.857142857142858,
+        "confidence": 1
+      },
+      "5:3:0": {
+        "min_speed": 12.0,
+        "max_speed": 12.0,
+        "confidence": 1
+      },
+      "3:5:0": {
+        "min_speed": 12.0,
+        "max_speed": 12.0,
+        "confidence": 1
+      },
+      "2:4:0": {
+        "min_speed": 9.0,
+        "max_speed": 9.0,
+        "confidence": 1
+      },
+      "4:2:0": {
+        "min_speed": 9.0,
+        "max_speed": 9.0,
+        "confidence": 1
+      },
+      "1:20:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "20:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:21:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "21:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:22:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "22:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:23:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "23:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:24:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "24:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:25:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "25:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:26:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "26:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:27:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "27:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:28:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "28:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:29:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "29:3:0": {
+        "min_speed": 3.2727272727272725,
+        "max_speed": 3.2727272727272725,
+        "confidence": 1
+      },
+      "1:30:0": {
+        "min_speed": 12.0,
+        "max_speed": 12.0,
+        "confidence": 1
+      },
+      "30:3:0": {
+        "min_speed": 12.0,
+        "max_speed": 12.0,
+        "confidence": 1
+      }
+    },
+    "incidents": []
+  }
+}
