@@ -36,6 +36,7 @@ python -m venv .venv-fyp
 
 ## 保存的方案和说明
 
+- [另一台设备使用](docs/SECOND_DEVICE_SETUP.md)：拉取最新代码、安装依赖和配置本地密钥。
 - [OSRM 配置与限制](docs/OSRM_SETUP.md)：驾车／步行端点、避高速限制和真实证据。
 - [API 申请与填写](docs/API_SETUP.md)：需要哪些 Key、官方入口、检查方法。
 - [PyCharm 启动](docs/PYCHARM_SETUP.md)：解释器、运行菜单、网页和测试。
