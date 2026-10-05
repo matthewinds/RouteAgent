@@ -85,6 +85,7 @@ def test_weather_uses_labelled_base_window_when_traffic_time_unknown(tmp_path):
 
 
 def test_generic_checkpoint_filters_blocks_and_duplicate_street(tmp_path,monkeypatch):
+    monkeypatch.setenv("ORS_API_KEY", "test-geocode-key")
     provider=Providers(Settings(root=tmp_path),Budget(Settings(root=tmp_path)))
     names=[("venue:main","Tuas Checkpoint"),("street:main","Tuas Checkpoint"),("street:a3","Tuas Checkpoint - Block A3")]
     def response(*args,**kwargs):
