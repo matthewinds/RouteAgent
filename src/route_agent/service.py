@@ -65,7 +65,7 @@ def plan_route(text,clarifications=None,*,settings=None,progress=None,save=True,
             result.state.candidates = list(agent.routes.values())
         result.metrics = {"latency_s":round(time.monotonic()-budget.started,3),"http_calls":budget.http_calls,
             "tool_calls":budget.tool_calls,"model_calls":agent.model_calls if agent else 0,
-            "model_tokens":agent.model_tokens if agent else 0,"replans":max(0,len(result.state.attempts)-1),
+            "model_tokens":agent.model_tokens if agent else 0,"replans":sum(a.get("replan",i>0) for i,a in enumerate(result.state.attempts)),
             "candidate_count":len(result.state.candidates),"cache_hits":agent.providers.cache_hits if agent else 0,
             "model":settings.model,"live_acceptance":"not established by automated/mocked tests"}
         if save:

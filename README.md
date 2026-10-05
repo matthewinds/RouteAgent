@@ -1,6 +1,6 @@
 # RouteAgent：DeepSeek 真实在线出行规划
 
-网页正常流程：DeepSeek 理解需求 → 自主调用真实地图、POI、路况、天气或停车工具 → 验证和有限重规划 → 比较并选择有证据的方案。支持新加坡驾车、全程步行、驾车后一次停车步行接驳，以及最多一个业务经停点。
+网页正常流程：DeepSeek 理解需求 → 自主调用真实地图、POI、路况、天气或停车工具 → 验证和有限重规划 → 比较并选择有证据的方案。支持新加坡驾车、步行、公交＋地铁＋步行组合、驾车后一次停车步行接驳，以及最多一个业务经停点。
 
 **当前交付是在线接入代码。Key 的填写状态由页面检查；OSM、Open-Meteo 与 OSRM 驾车／步行已完成小范围真实响应检查，一次真实网页自动判断方式、推荐和下载流程已通过；其他场景及效果仍待验收。自动化模拟测试不是接通证明。缺少必需 Key 时网页禁止开始规划，不提供演示或规则回退。**
 
@@ -8,15 +8,26 @@
 
 1. 在根目录 `.env` 填写 `DEEPSEEK_API_KEY`、`ORS_API_KEY`（ORS 仅用于地址定位）；OSRM 算路端点已配置，无需 Key。驾车交通与停车功能另需 `LTA_API_KEY`。不要覆盖已有 Google/OpenRouter 凭据。
 2. 在 PyCharm 选择 **FYP Web**，运行后打开 http://127.0.0.1:8502 。
-3. 直接输入自己的出行需求，没有示例或交通方式选择框。未指定方式时，DeepSeek 比较真实步行／驾车路线再选择；未指定出发时间按现在。点击页面“刷新配置状态”。“已配置”只表示 Key 非空，调用是否成功需要真实运行验证。
+3. 直接输入自己的出行需求，没有示例或交通方式选择框。未指定方式时，DeepSeek 比较完整的步行、公交／地铁组合和已确认可用车辆的自驾行程；临时选择不会锁定整程方式。公共交通需配置 `ONEMAP_TOKEN`；未指定出发时间按现在。点击页面“刷新配置状态”。“已配置”只表示 Key 非空，调用是否成功需要真实运行验证。
 
-也可在项目根目录运行：
+macOS 新环境安装和启动（在项目根目录执行，PyCharm 解释器选择 `.venv/bin/python`，Python 3.11）：
+
+```bash
+python3.11 -m venv .venv
+.venv/bin/python -m pip install -r requirements.lock.txt
+cp -n .env.example .env
+.venv/bin/python -m streamlit run app/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --browser.gatherUsageStats false
+```
+
+安装后可运行 `.venv/bin/python -m pip check` 和 `.venv/bin/python -m pytest -q` 检查依赖与主项目测试。真实在线规划还需在 `.env` 填写上面列出的 Key。
+
+Windows 也可在项目根目录运行：
 
 ```powershell
 .\scripts\start_web.ps1
 ```
 
-新环境：`.venv-fyp\Scripts\python.exe`（Python 3.11）。现有环境依赖已安装。重新安装可使用：
+Windows 新环境：`.venv-fyp\Scripts\python.exe`（Python 3.11）。安装可使用：
 
 ```powershell
 python -m venv .venv-fyp
@@ -47,6 +58,10 @@ baselines/mapagent/          独立原 MapAgent 基线
 ```
 
 OSRM 提供基础服务预计时间，不是实时交通 ETA。LTA 只更新方向和几何匹配且有效的路段；覆盖不完整时完整驾车 ETA 未知。Open-Meteo 是天气模型网格预报，NEA 为可选区域补充；均不能保证全程无雨。当前停车位不能保证未来可用。未知硬约束只能列为待核实。
+
+组合行程与业务经停、候车换乘时序及真实步行接驳的实现与验证见 [组合出行修复](docs/MULTIMODAL_PLANNING_FIX.md)。公交与地铁时刻来自 OneMap，所有接驳几何与时间来自真实路线服务；遮蔽未知时，避雨比较使用步行及等待的潜在暴露参考。
+
+地点描述在提取修正时不得丢失，单店早餐不会当成多个经停；网页显示每次规划中 LTA 的查询与适用状态。实现和真实服务核对见 [地点提取与 LTA 展示修复](docs/ENDPOINT_EXTRACTION_LTA_FIX.md)。
 
 历史 20/60 请求和七种合成策略保留供机制研究，其结果不代表新版 DeepSeek 在线系统效果。旧版导出仍保留，不通过当前在线入口重放。
 

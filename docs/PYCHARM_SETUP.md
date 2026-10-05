@@ -1,10 +1,10 @@
 # PyCharm 启动与环境配置
 
-更新：2026-10-02；项目 `F:\develop\projects\MapAgents`。
+更新：2026-10-02。macOS 当前项目：`/Users/matthew/PycharmProjects/RouteAgent`；原 Windows 项目：`F:\develop\projects\MapAgents`。
 
 ## 日常启动
 
-1. 在 PyCharm 打开项目根目录，解释器使用 `F:\develop\projects\MapAgents\.venv-fyp\Scripts\python.exe`（Python 3.11.5）。
+1. 在 PyCharm 打开项目根目录。macOS 解释器使用 `/Users/matthew/PycharmProjects/RouteAgent/.venv/bin/python`（Python 3.11.9）；Windows 使用 `F:\develop\projects\MapAgents\.venv-fyp\Scripts\python.exe`（Python 3.11）。
 2. 按 [API_SETUP.md](API_SETUP.md) 填写根目录 `.env`。OSRM 驾车／步行端点已补充，无需算路 Key；ORS Key 仅用于地址定位。
 3. 右上角选择 **FYP Web**，点击绿色运行按钮。
 4. 浏览器打开 http://127.0.0.1:8502 。配置为空时页面明确显示缺少 Key，开始按钮禁用。
@@ -30,9 +30,24 @@ run app/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --browser
 | Historical Synthetic Fixture | 明确标注的旧合成重放，只用于研究测试 |
 | Historical Prepare OSM | 旧本地 OSM 图准备；当前在线路线由 OSRM 提供，不依赖它 |
 
-共享配置保存在 `.run/*.run.xml`。旧 `.venv` 留给 MapAgent 基线；新代码使用独立 `.venv-fyp`。依赖无冲突；目前无需增加软件包。
+共享配置保存在 `.run/*.run.xml`，使用各平台的项目解释器。macOS 主项目使用 `.venv`；原 Windows 主项目使用 `.venv-fyp`。`baselines/mapagent` 是独立历史基线，依赖版本与主项目不同，需要单独环境，不能把它的 `requirements.txt` 安装到主项目环境。
 
 ## 终端启动
+
+macOS 在项目根目录执行：
+
+```bash
+python3.11 -m venv .venv
+.venv/bin/python -m pip install -r requirements.lock.txt
+cp -n .env.example .env
+.venv/bin/python -m pip check
+.venv/bin/python -m pytest -q
+.venv/bin/python -m streamlit run app/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --browser.gatherUsageStats false
+```
+
+已有环境只需安装依赖，无需重新创建。`.env` 中留空的 Key 需要本人填写；网页可以启动，但在线规划按钮会在必需 Key 缺失时禁用。
+
+Windows：
 
 ```powershell
 .\scripts\start_web.ps1

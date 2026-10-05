@@ -16,13 +16,16 @@ def weather_context(route, request, payload, evidence):
     if payload.get("provider")!="open_meteo":
         return nea_context(route,request,payload)
     refs = payload["evidence_ids"]
-    unknown = WeatherContext(evidence_ids=refs)
+    unknown = WeatherContext(evidence_ids=refs,unknown_reason="缺少覆盖路线和查询时段的有效预报")
     if any(not evidence.get(e) or not evidence[e].valid_until or evidence[e].valid_until<now_utc() for e in refs):
         return unknown
     duration = route.total_s
+    timing_basis = "按完整路线服务预计时段匹配，非实际到达保证"
     if duration is None:
-        # No fabricated timing for traffic not covered by LTA.
-        return unknown
+        duration = route.estimated_total_s if route.estimated_total_s is not None else route.provider_total_s
+        timing_basis = "按部分路况估计时段提供天气参考；未覆盖道路的延误未知" if route.estimated_total_s is not None else "按基础预计行程时段提供天气参考；未计入未知拥堵、延误或通关时间"
+    if duration is None:
+        return unknown.model_copy(update={"unknown_reason":"缺少基础预计行程时段，无法匹配天气"})
     start = request.departure_time
     end = start+timedelta(seconds=duration)
     samples = []
@@ -61,7 +64,8 @@ def weather_context(route, request, payload, evidence):
             complete = False
     complete = complete and bool(samples) and bool(probabilities)
     return WeatherContext(status="available" if complete else "unknown",valid_start=start,valid_end=end,
-        samples=samples,rain_fraction=max(probabilities) if complete else None,evidence_ids=refs)
+        samples=samples,rain_fraction=max(probabilities) if complete else None,evidence_ids=refs,timing_basis=timing_basis,
+        unknown_reason=None if complete else "部分采样点或查询时段缺少降水预报")
 
 def nea_context(route,request,payload):
     refs = payload["evidence_ids"]
@@ -75,7 +79,8 @@ def nea_context(route,request,payload):
         return WeatherContext(**base)
     item = valid[-1]
     start,end = [datetime.fromisoformat(item["valid_period"][k]) for k in ("start","end")]
-    if route.total_s is None or request.departure_time+timedelta(seconds=route.total_s)>end:
+    duration = route.total_s if route.total_s is not None else route.estimated_total_s if route.estimated_total_s is not None else route.provider_total_s
+    if duration is None or request.departure_time+timedelta(seconds=duration)>end:
         return WeatherContext(valid_start=start,valid_end=end,**base)
     metadata = data.get("area_metadata") or data.get("areaMetadata") or []
     forecasts = {x["area"]:x["forecast"] for x in item["forecasts"]}
@@ -90,4 +95,5 @@ def nea_context(route,request,payload):
     unknown = any(x["forecast"]=="unknown" for x in areas.values()) or not areas
     rain = sum(any(word in x["forecast"].casefold() for word in ("rain","showers","thunder")) for x in areas.values())/len(areas) if areas and not unknown else None
     return WeatherContext(status="unknown" if unknown else "available",valid_start=start,valid_end=end,
-        areas=list(areas.values()),rain_fraction=rain,**base)
+        areas=list(areas.values()),rain_fraction=rain,
+        timing_basis=("按部分路况估计时段提供区域天气参考；未覆盖道路的延误未知" if route.estimated_total_s is not None else "按基础预计行程时段提供区域天气参考；未计入未知延误") if route.total_s is None else "按路线服务预计时段提供区域参考",**base)

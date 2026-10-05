@@ -6,14 +6,25 @@ from .models import TravelRequest
 from .tools import ToolFailure
 SG = ZoneInfo("Asia/Singapore")
 PROMPTS = {"origin":"从哪里出发？","destination":"要去哪里？","mode":"选择驾车、全程步行或驾车后步行接驳。",
-    "departure_time":"什么时候出发？","stop_duration_s":"业务经停预计停留多少分钟？只经过可填 0。",
+    "departure_time":"什么时候出发？","stop_duration_s":"这次经停预计停留多少分钟？系统会自行查找地点；只经过可填 0。",
+    "poi_name":"需要经停做什么，或是否有指定的地点？未指定门店时由系统查找。",
     "parking_duration_s":"为停车及转换交通方式预留多少分钟？请按自己的实际安排填写。",
     "multiple_stops":"目前只支持一个业务经停点，请修改需求或明确仅保留一个。",
     "parking_place_id":"请选择实际使用的停车转换点。",
     "parking_access_confirmed":"是否确认所选停车点可以完成停车到步行的转换？",
     "travel_preferences":"请补充出行偏好或限制，例如是否可以驾车、是否愿意步行。",
+    "car_access":"本次出行是否有可用车辆并愿意自己驾车？出租车和网约车费用不等于自驾费用。",
+    "origin_access_confirmed":"是否确认已完成入境手续，并能从所选口岸位置开始行程？若实际在车站或乘车点，请重新填写该地点。",
     "origin_place_id":"请选择正确的起点。","destination_place_id":"请选择正确的终点。","poi_place_id":"请选择正确的业务经停地点。"}
-USER_ONLY = {"origin_place_id","destination_place_id","poi_place_id","parking_place_id","parking_access_confirmed","travel_preferences"}
+USER_ONLY = {"origin_place_id","destination_place_id","poi_place_id","parking_place_id","parking_access_confirmed","travel_preferences","place_searches","origin_access_confirmed","departure_time_source"}
+
+GENERIC_POIS = {"bakery":"bakery","bakeries":"bakery","面包店":"bakery","面包点":"bakery","面包房":"bakery",
+    "cafe":"cafe","café":"cafe","coffee shop":"cafe","咖啡店":"cafe","咖啡馆":"cafe",
+    "restaurant":"restaurant","餐厅":"restaurant","饭店":"restaurant","hospital":"hospital","医院":"hospital",
+    "fuel":"amenity:fuel","加油站":"amenity:fuel","gas station":"amenity:fuel","petrol station":"amenity:fuel"}
+
+def generic_poi_category(name):
+    return GENERIC_POIS.get((name or "").strip().casefold())
 
 def validate_request(text, fields, clarifications):
     if set(fields)- (set(TravelRequest.model_fields)-{"original_text"}):
@@ -27,6 +38,11 @@ def validate_request(text, fields, clarifications):
         if value != "":
             values[key] = value
     request = TravelRequest(original_text=text,**values)
+    generic=generic_poi_category(request.poi_name)
+    if generic or (request.poi_category and request.poi_name==request.poi_category):
+        generic=generic or request.poi_category
+        raise ToolFailure("类别名称不是指定门店：请将 poi_category 设为 "+generic+
+            "、poi_name 设为 null，再通过 search_pois 自动搜索真实候选；不要要求用户提供门店地址。","invalid_evidence")
     for key in ("departure_time","arrival_deadline"):
         stamp = getattr(request,key)
         if stamp:
@@ -39,15 +55,41 @@ def validate_request(text, fields, clarifications):
             continue  # Explicit user corrections have already replaced model values.
         if field not in TravelRequest.model_fields or not phrase or not any(phrase in source for source in sources):
             raise ToolFailure("需求依据必须是用户原文中的准确短语。", "invalid_evidence")
+    for field in ("origin","destination"):
+        if not getattr(request,field) and field not in clarifications and request.evidence.get(field):
+            raise ToolFailure("已有"+field+"原文依据，不能把地点设为空；请保留用户描述并调用 resolve_place 查询，不要要求重新输入。","invalid_evidence")
+    if request.multiple_stops and "multiple_stops" not in clarifications:
+        excerpts=list(dict.fromkeys(request.multiple_stop_evidence))
+        if len(excerpts)<2 or any(not phrase.strip() or not any(phrase in source for source in sources) for phrase in excerpts):
+            raise ToolFailure("多个业务经停必须提供至少两个不同经停地点的原文片段 multiple_stop_evidence；起终点不算经停，同一家店吃饭或购物只算一次。请修正需求提取。","invalid_evidence")
+        spans=[]
+        for phrase in excerpts:
+            start=text.find(phrase)
+            if start>=0:
+                spans.append((start,start+len(phrase)))
+        if any(a<d and c<b for i,(a,b) in enumerate(spans) for c,d in spans[i+1:]):
+            raise ToolFailure("多个经停的依据不能重复引用同一次经停，请区分真正不同的业务地点。","invalid_evidence")
+    if request.car_access is not None and "car_access" not in clarifications:
+        phrase=request.evidence.get("car_access","")
+        negative=bool(re.search(r"没.*车|无车|不.*(?:开车|自驾|驾车)|no.*car|don.?t.*(?:car|driv)|cannot.*driv",phrase,re.I))
+        positive=bool(re.search(r"有车|开车|自驾|驾车|own.*car|access.*car|can.*driv|will.*driv|driving",phrase,re.I))
+        if not phrase or (request.car_access and (not positive or negative)) or (not request.car_access and not negative):
+            raise ToolFailure("是否有可用车辆必须依据用户原文或用户确认，不能从赶时间推断。","invalid_evidence")
     for field in ("poi_required","avoid_highways","require_open","require_dry","arrival_deadline","max_congestion_fraction"):
         if getattr(request,field) and field not in clarifications and not request.evidence.get(field):
             raise ToolFailure("硬约束必须提供用户原文依据："+field,"invalid_evidence")
+    if request.poi_required and not (request.poi_name or request.poi_category):
+        raise ToolFailure("经停需求尚未提取完整：请根据原文用途选择 poi_category 的 OSM 键和值（如 amenity:fuel），"
+            "不要把未命名的经停任务当成缺少地址。仅原文未说明用途时向用户澄清。", "invalid_evidence")
     guards = {"avoid_highways":r"不能走高速|不能经过高速|必须避开高速|must avoid highways",
               "require_dry":r"保证.*不.*(?:淋雨|下雨)|必须不淋雨|must stay dry",
-              "poi_required":r"必须经过|必须经停|must stop"}
+              "poi_required":r"必须经过|必须经停|must stop",
+              "prefer_low_cost":r"经济实惠|最便宜|省钱|便宜|低成本|cheapest|affordable|low.cost",
+              "prefer_fastest":r"最快|尽快|赶时间|fastest|as soon as possible",
+              "weather_required":r"考虑天气|天气因素|consider.*weather"}
     for key,pattern in guards.items():
         if re.search(pattern,text,re.I) and key not in clarifications and not getattr(request,key):
-            raise ToolFailure("提取遗漏了用户明确的硬约束："+key,"invalid_evidence")
+            raise ToolFailure("提取遗漏了用户明确的要求或偏好："+key,"invalid_evidence")
     for field in ("max_duration_s","stop_duration_s","max_walking_m","parking_duration_s"):
         if field in clarifications or getattr(request,field) is None:
             continue
@@ -69,8 +111,6 @@ def validate_request(text, fields, clarifications):
         questions["stop_duration_s"] = PROMPTS["stop_duration_s"]
     if request.mode=="drive_walk" and request.parking_duration_s is None:
         questions["parking_duration_s"] = PROMPTS["parking_duration_s"]
-    if request.poi_required and not (request.poi_name or request.poi_category):
-        questions["poi_name"] = "必须经停哪个地点或哪类店铺？"
     if request.multiple_stops:
         questions["multiple_stops"] = PROMPTS["multiple_stops"]
     if request.arrival_deadline and request.departure_time and request.arrival_deadline<=request.departure_time:

@@ -6,11 +6,13 @@ import re
 import time
 import threading
 import unicodedata
+from difflib import SequenceMatcher
 from datetime import datetime, timedelta, timezone
 import httpx
 from .cache import JsonCache
 from .models import Evidence, Place, RouteLeg
 from .tools import ToolFailure
+from .poi_categories import category_tag, POI_KEYS
 
 def now_utc():
     return datetime.now(timezone.utc)
@@ -40,9 +42,44 @@ def location_name_matches(query, *names):
     # Complete phrase matching prevents a shared word (e.g. "Bay") from
     # turning a different landmark into a selectable destination.
     def words(value):
-        return " ".join(re.findall(r"[^\W_]+", unicodedata.normalize("NFKC", value).casefold()))
+        text = " ".join(re.findall(r"[^\W_]+", unicodedata.normalize("NFKC", value).casefold()))
+        return re.sub(r"\bcheck point\b", "checkpoint", text)
     needle = words(query)
+    if re.search(r"[\u3400-\u9fff]",needle):
+        # Chinese prose does not separate an entity from its surrounding
+        # sentence with spaces. Preserve the exact phrase, not Latin boundaries.
+        return bool(needle) and any(needle in words(name) for name in names if isinstance(name,str))
     return bool(needle) and any(" "+needle+" " in " "+words(name)+" " for name in names if isinstance(name,str))
+
+def location_name_similar(query, *names):
+    """Allow reordered words and small Latin typos, but retain every query word."""
+    def words(value):
+        return re.findall(r"[^\W_]+", unicodedata.normalize("NFKC", value).casefold())
+    wanted = words(query)
+    if not wanted:
+        return False
+    for name in names:
+        if not isinstance(name, str):
+            continue
+        available = words(name)
+        # Consume exact tokens first so fuzzy words cannot steal a required word.
+        remaining = []
+        for word in wanted:
+            if word in available:
+                available.remove(word)
+            else:
+                remaining.append(word)
+        for word in remaining:
+            matches = [(SequenceMatcher(None, word, candidate).ratio(), candidate)
+                for candidate in available if word.isascii() and word.isalpha() and len(word)>=5
+                and candidate.isascii() and candidate.isalpha() and len(candidate)>=5]
+            score, candidate = max(matches, default=(0, ""))
+            if score<.82:
+                break
+            available.remove(candidate)
+        else:
+            return True
+    return False
 
 class Providers:
     # Shared by all page workers: public OSRM endpoints allow at most 1 request/s.
@@ -57,11 +94,43 @@ class Providers:
         self.cache_hits = 0
         self.last_evidence = []
         self.lta_status = {}
+        self.lta_progress = {}
+        self.request_deadline = None
     def key(self, name):
         key = self.settings.credential(name)
         if not key:
             raise ToolFailure("请在 .env 中配置 " + name + "。", "missing_credential")
         return key
+    def transit_routes(self, origin, destination, request):
+        from .transit import transit_routes
+        return transit_routes(self,origin,destination,request)
+
+    def transit_hubs(self, center, kind="rail", radius=2000, limit=3):
+        """Real access locations; discovery is separate from travel feasibility."""
+        if kind not in ("rail","bus") or not 100<=radius<=5000 or not 1<=limit<=10:
+            raise ToolFailure("接驳站点查询参数不合法。","invalid_arguments")
+        endpoint="getNearestMrtStops" if kind=="rail" else "getNearestBusStops"
+        base=self.settings.onemap_base.removesuffix("/routingsvc").rstrip("/")
+        payload,ev=self.request("GET",base+"/nearbysvc/"+endpoint,"OneMap nearby transport",
+            params={"latitude":center.lat,"longitude":center.lon,"radius_in_meters":radius},
+            headers={"Authorization":self.key("ONEMAP_TOKEN").removeprefix("Bearer ")},ttl=86400)
+        if not isinstance(payload,list):
+            raise ToolFailure("OneMap 接驳站点响应结构无效。","invalid_response")
+        places=[]
+        try:
+            for item in payload:
+                lat,lon=float(item["lat"]),float(item["lon"])
+                if not singapore(lon,lat) or distance([center.lon,center.lat],[lon,lat])>radius+20:
+                    raise ValueError("Invalid hub coordinates")
+                places.append(Place(id="onemap-hub:"+kind+":"+str(item["id"]),name=item["name"],lat=lat,lon=lon,
+                    category="transit_hub",source="OneMap nearby transport",address=item.get("road"),evidence_ids=[ev]))
+        except (KeyError,TypeError,ValueError):
+            raise ToolFailure("OneMap 接驳站点数据无效。","invalid_response") from None
+        places.sort(key=lambda p:distance([center.lon,center.lat],[p.lon,p.lat]))
+        return places[:limit]
+    def company_locations(self, name):
+        from .company_locations import company_locations
+        return company_locations(self,name)
     def send_request(self, client, method, url, *, paced=False, **kwargs):
         if not paced:
             self.budget.http()
@@ -78,8 +147,10 @@ class Providers:
             finally:
                 Providers._routing_last_request = time.monotonic()
 
-    def request(self, method, url, source, *, params=None, body=None, data=None, headers=None, ttl=0, paced=False):
+    def request(self, method, url, source, *, params=None, body=None, data=None, headers=None, ttl=0, paced=False, response_format="json"):
         args = {"method":method,"url":url,"params":params,"body":body,"data":data}
+        if response_format!="json":
+            args["response_format"] = response_format
         cached = self.cache.get(source, args, ttl) if ttl else None
         if cached:
             payload, stamp = cached["payload"], datetime.fromisoformat(cached["retrieved_at"])
@@ -88,18 +159,28 @@ class Providers:
             payload = None
             for attempt in range(3):
                 try:
-                    with httpx.Client(timeout=max(.1, min(20, self.budget.remaining())), trust_env=False,
+                    remaining = min(self.budget.remaining(),self.request_deadline-time.monotonic()) if self.request_deadline else self.budget.remaining()
+                    if remaining<=0:
+                        raise ToolFailure("已达到本次交通查询时限，保留已取得的数据。","pagination_budget")
+                    with httpx.Client(timeout=max(.1, min(20, remaining)), trust_env=False,
                                       follow_redirects=False) as client:
                         reply = self.send_request(client,method,url,paced=paced,params=params,json=body,data=data,headers=headers)
                     if reply.status_code in (429, 500, 502, 503, 504) and attempt < 2:
                         self.budget.check()
-                        time.sleep(min(2**attempt, max(0, self.budget.remaining())))
+                        time.sleep(min(2**attempt, max(0, remaining)))
                         continue
                     if reply.status_code in (401, 403):
                         raise ToolFailure(source+" 拒绝访问，请检查 Key、服务权限或配额。", "authentication_error")
                     if reply.status_code == 429:
                         raise ToolFailure(source+" 配额已用尽，请稍后重试。", "rate_limited")
                     if reply.status_code >= 400:
+                        if source=="OneMap transit" and reply.status_code==404:
+                            try:
+                                message=reply.json().get("error","")
+                            except (ValueError,AttributeError):
+                                message=""
+                            if isinstance(message,str) and "no route found" in message.lower():
+                                raise ToolFailure("OneMap 在这些端点和时段未找到路线；可查询真实车站并验证步行接驳，不能据此判断所有组合不可达。","no_route")
                         if source=="OSRM Route" and reply.status_code==400:
                             code = reply.json().get("code")
                             if code in ("NoRoute","NoSegment"):
@@ -107,7 +188,9 @@ class Providers:
                             if code in ("InvalidValue","InvalidOptions") and params and params.get("exclude"):
                                 raise ToolFailure("此 OSRM 实例不支持避高速排除选项；没有改用普通路线。","unsupported_feature")
                         raise ToolFailure(source+" 未能完成请求（HTTP "+str(reply.status_code)+"）。", "provider_error")
-                    payload = reply.json()
+                    if response_format=="text" and len(reply.content)>2_000_000:
+                        raise ToolFailure("地点来源网页超过读取上限。","invalid_response")
+                    payload = {"text":reply.text} if response_format=="text" else reply.json()
                     break
                 except (httpx.TimeoutException, httpx.NetworkError):
                     if attempt == 2:
@@ -126,6 +209,18 @@ class Providers:
         self.last_evidence.append(ident)
         return payload, ident
 
+    def web_location_sources(self, query):
+        from .web_locations import search_sources
+        return search_sources(self,query)
+
+    def remember_location_source(self, query, url):
+        from .web_locations import remember_source
+        return remember_source(self,query,url)
+
+    def web_location_candidate(self, document_id, place_name, company_name, quote):
+        from .web_locations import source_candidate
+        return source_candidate(self,document_id,place_name,company_name,quote)
+
     def geocode(self, query):
         match = re.fullmatch(r"\s*(1\.\d+)\s*,\s*(10[34]\.\d+)\s*", query)
         if match:
@@ -143,21 +238,70 @@ class Providers:
             if not singapore(lon,lat):
                 continue
             prop = feature.get("properties",{})
-            if not location_name_matches(search_text,prop.get("name"),prop.get("label")):
+            checkpoint = bool(re.search(r"\bcheck\s*point\b",search_text,re.I))
+            if checkpoint and not re.search(r"\bblock\b",search_text,re.I) and re.search(r"\bblock\s+[A-Z]?\d",prop.get("name", ""),re.I):
+                continue  # Generic checkpoint queries must not return individual clearance blocks.
+            exact = location_name_matches(search_text,prop.get("name"),prop.get("label"))
+            if not exact and not location_name_similar(search_text,prop.get("name"),prop.get("label")):
                 continue
             ident = prop.get("gid") or stable(feature)[:16]
             places.append(Place(id="pelias:"+ident,name=prop.get("label") or prop.get("name") or query,
                 lat=lat,lon=lon,source="ORS Pelias",evidence_ids=[ev],
-                requires_confirmation=prop.get("confidence") is None or float(prop["confidence"])<.8))
+                requires_confirmation=checkpoint or not exact or prop.get("confidence") is None or float(prop["confidence"])<.8,
+                location_kind="checkpoint" if checkpoint else prop.get("layer"),
+                access_note="口岸地图位置不等于实际出关后的乘车点，请确认出发位置可通行。" if checkpoint else None))
+        # Pelias can tokenize the compound "checkpoint" as a generic area
+        # search. Retry its spaced spelling without accepting that area as a
+        # substitute. This changes spelling, never the requested landmark.
+        spaced = re.sub(r"\bcheckpoint\b", "check point", search_text, flags=re.I)
+        if not places and spaced!=search_text:
+            places = self.geocode(spaced)
+            for place in places:
+                place.requires_confirmation = True
+        # Keep a venue instead of an adjacent street carrying the same label.
+        places = [place for place in places if not (":street:" in place.id and any(
+            ":venue:" in other.id and other.name==place.name and distance([other.lon,other.lat],[place.lon,place.lat])<200
+            for other in places))]
         return places
 
     def pois(self, center, category, radius=1000, limit=10, name=None):
-        if category not in ("cafe","restaurant","hospital","parking",None) or (category is None and not name):
-            raise ToolFailure("不支持该 POI 类别。", "invalid_arguments")
+        return self._pois([[center.lon,center.lat]],category,radius,limit,name)
+
+    def pois_along_route(self, reference, category, radius=1000, limit=10, name=None):
+        from bisect import bisect_left
+        coords=reference.geometry.get("coordinates",[])
+        if reference.geometry.get("type")=="MultiLineString":
+            coords=[point for leg in reference.geometry["coordinates"] for point in leg]
+        elif reference.geometry.get("type")!="LineString":
+            coords=[]
+        if len(coords)<2:
+            raise ToolFailure("沿途搜索需要真实分段路线几何。","missing_evidence")
+        if not any(self.evidence.get(e) and self.evidence[e].source in ("OSRM Route","OneMap transit") for e in reference.evidence_ids):
+            raise ToolFailure("沿途搜索缺少真实路线服务证据。","missing_evidence")
+        if any(len(p)<2 or not singapore(p[0],p[1]) for p in coords):
+            raise ToolFailure("沿途路线坐标无效。","invalid_response")
+        cumulative=[0]
+        for a,b in zip(coords,coords[1:]):
+            cumulative.append(cumulative[-1]+distance(a,b))
+        # Sample only service-returned vertices, never an invented straight
+        # origin/destination corridor. Keep the external search bounded.
+        centers=list(dict.fromkeys(tuple(coords[min(bisect_left(cumulative,cumulative[-1]*n/4),len(coords)-1)][:2])
+            for n in range(5)))
+        places=self._pois(centers,category,radius,limit,name,reference.origin,reference.destination)
+        for place in places:
+            place.evidence_ids=list(dict.fromkeys([*place.evidence_ids,*reference.evidence_ids]))
+        return places
+
+    def _pois(self, centers, category, radius, limit, name, origin=None, destination=None):
+        search_names=name if isinstance(name,list) else [name] if name else []
+        tag = category_tag(category) if category else None
+        if not category and not name:
+            raise ToolFailure("请提供经停类别或用户指定名称。", "invalid_arguments")
         if radius < 100 or radius > 5000 or limit not in (10,30):
             raise ToolFailure("POI 搜索超出允许范围。", "invalid_arguments")
-        selector = f'["amenity"="{category}"]' if category else '["amenity"~"^(cafe|restaurant|hospital)$"]'
-        query = f'[out:json][timeout:18][maxsize:67108864];nwr(around:{radius},{center.lat},{center.lon}){selector};out center tags;'
+        selectors = [f'["{tag[0]}"="{tag[1]}"]'] if tag else [f'["{key}"]' for key in POI_KEYS]
+        statements="".join(f'nwr(around:{radius},{lat},{lon}){selector};' for lon,lat in centers for selector in selectors)
+        query = '[out:json][timeout:18][maxsize:67108864];('+statements+');out center tags;'
         payload, ev = self.overpass(query,"OSM Overpass")
         places = []
         for el in payload.get("elements",[]):
@@ -165,13 +309,30 @@ class Providers:
             lat, lon = coords.get("lat"), coords.get("lon")
             if lat is None or lon is None or not singapore(lon,lat):
                 continue
-            label = tags.get("name") or tags.get("name:en") or "OSM "+str(tags.get("amenity") or category or "POI")+" "+str(el["id"])
-            if name and name.casefold() not in label.casefold():
+            if tag and tags.get(tag[0])!=tag[1]:
                 continue
-            places.append(Place(id=f'osm:{el["type"]}:{el["id"]}',name=label,lat=lat,lon=lon,
-                category=tags.get("amenity",category),opening_hours=tags.get("opening_hours"),source="OSM Overpass",evidence_ids=[ev]))
-        places.sort(key=lambda p: distance([center.lon,center.lat],[p.lon,p.lat]))
-        return places[:limit]
+            actual_category=category if tag else next(("bakery" if key=="shop" and tags[key]=="bakery" else
+                tags[key] if key=="amenity" else key+":"+tags[key] for key in POI_KEYS if
+                isinstance(tags.get(key),str) and re.fullmatch(r"[a-z][a-z0-9_]{0,63}",tags[key])),None)
+            if actual_category is None:
+                continue
+            label = tags.get("name") or tags.get("name:en") or "OSM "+str(tags.get("amenity") or category or "POI")+" "+str(el["id"])
+            names=list(dict.fromkeys([label,*[v for k,v in tags.items() if isinstance(v,str) and (
+                k in ("brand","alt_name","official_name") or re.fullmatch(r"(?:name|brand|alt_name|official_name):[a-z]{2,3}(?:-[A-Za-z]+)?",k))]]))
+            if search_names and not any(location_name_matches(q,n) for q in search_names for n in names):
+                continue
+            places.append(Place(id=f'osm:{el["type"]}:{el["id"]}',name=label,names=names,lat=lat,lon=lon,
+                category=actual_category,opening_hours=tags.get("opening_hours"),source="OSM Overpass",evidence_ids=[ev],
+                address=tags.get("addr:full") or " ".join(str(tags[k]) for k in ("addr:housenumber","addr:street","addr:postcode") if tags.get(k)) or None,
+                source_url=f'https://www.openstreetmap.org/{el["type"]}/{el["id"]}'))
+        if origin and destination:
+            # Coarse shortlist only. Actual detour time comes from later OSRM
+            # routes; this distance never validates arrival or congestion.
+            places.sort(key=lambda p: distance([origin.lon,origin.lat],[p.lon,p.lat])+
+                distance([p.lon,p.lat],[destination.lon,destination.lat]))
+        else:
+            places.sort(key=lambda p: min(distance(center,[p.lon,p.lat]) for center in centers))
+        return list({p.id:p for p in places}.values())[:limit]
 
     def overpass(self,query,source):
         payload,ev = self.request("GET",self.settings.overpass_url,source,params={"data":query},
@@ -278,13 +439,25 @@ class Providers:
                 highways=False if avoid_highways and mode=="driving" else None))
         return legs
 
-    def lta(self, endpoint, ttl, *, reserve_http=0, allow_partial=False):
+    def lta(self, endpoint, ttl, *, reserve_http=0, allow_partial=False, deadline=None, http_limit=None, resume=False):
         values, refs, fingerprints = [], [], set()
         pages,skip = 0,0
-        self.lta_status[endpoint] = {"complete":False,"pages":0,"record_count":0,"reason":None}
+        progress = self.lta_progress.get(endpoint) if resume else None
+        if progress:
+            valid=all(self.evidence.get(e) and self.evidence[e].valid_until and self.evidence[e].valid_until>=now_utc() for e in progress["refs"])
+            if valid:
+                values,refs,fingerprints = list(progress["values"]),list(progress["refs"]),set(progress["fingerprints"])
+                pages,skip=progress["pages"],progress["skip"]
+                if self.lta_status[endpoint]["complete"]:
+                    return values,refs
+        initial_http = self.budget.http_calls
+        self.lta_status[endpoint] = {"complete":False,"pages":pages,"record_count":len(values),"reason":None,"next_skip":skip}
         try:
             while True:
                 self.budget.check()
+                if (deadline is not None and time.monotonic()>=deadline) or (
+                        http_limit is not None and self.budget.http_calls-initial_http>=http_limit):
+                    raise ToolFailure("交通查询已达到时间或请求上限；仅使用已取得的部分数据。","pagination_budget")
                 if self.budget.http_calls>=self.settings.max_http_calls-reserve_http or (
                     allow_partial and self.budget.remaining()<30):
                     raise ToolFailure("已为后续算路和模型决策保留预算；LTA 数据尚未读完。","pagination_budget")
@@ -303,10 +476,12 @@ class Providers:
                 values.extend(batch)
                 pages+=1
                 self.lta_status[endpoint].update(pages=pages,record_count=len(values))
+                skip+=len(batch)
+                self.lta_status[endpoint]["next_skip"]=skip
+                self.lta_progress[endpoint]={"values":list(values),"refs":list(refs),"fingerprints":set(fingerprints),"pages":pages,"skip":skip}
                 if len(batch)<500:
                     self.lta_status[endpoint]["complete"] = True
                     return values,refs
-                skip+=500
         except ToolFailure as error:
             self.lta_status[endpoint]["reason"] = str(error)
             if not allow_partial or not values:
@@ -314,13 +489,23 @@ class Providers:
             # These are actual successful pages, never an inferred island-wide snapshot.
             return values,refs
 
-    def traffic(self):
-        bands, a = self.lta("v4/TrafficSpeedBands",300,reserve_http=20,allow_partial=True)
+    def traffic(self, continue_collection=False):
+        previous = self.request_deadline
+        self.request_deadline = time.monotonic()+self.settings.traffic_max_seconds
         try:
-            incidents, b = self.lta("TrafficIncidents",120,reserve_http=18,allow_partial=True)
-        except ToolFailure as error:
-            incidents,b = [],[]
-            self.lta_status["TrafficIncidents"] = {"complete":False,"pages":0,"record_count":0,"reason":str(error)}
+            bands, a = self.lta("v4/TrafficSpeedBands",300,reserve_http=20,allow_partial=True,
+                deadline=self.request_deadline,http_limit=self.settings.traffic_max_http_calls,resume=continue_collection)
+            # Incidents must get their own opportunity even when speed-band
+            # paging reaches its limit; still inside the end-to-end budget.
+            self.request_deadline=time.monotonic()+min(3,max(0,self.budget.remaining()-20))
+            try:
+                incidents, b = self.lta("TrafficIncidents",120,reserve_http=18,allow_partial=True,
+                    deadline=self.request_deadline,http_limit=1,resume=continue_collection)
+            except ToolFailure as error:
+                incidents,b = [],[]
+                self.lta_status["TrafficIncidents"] = {"complete":False,"pages":0,"record_count":0,"reason":str(error)}
+        finally:
+            self.request_deadline = previous
         retrieved = min(self.evidence[e].retrieved_at for e in a)
         return {"speed_bands":bands,"incidents":incidents,"retrieved_at":retrieved.isoformat(),"evidence_ids":a+b,
                 "collection":{key:dict(value) for key,value in self.lta_status.items() if key in ("v4/TrafficSpeedBands","TrafficIncidents")}}

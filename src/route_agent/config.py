@@ -23,6 +23,11 @@ class Settings:
     lta_base: str = env("LTA_API_BASE", "https://datamall2.mytransport.sg/ltaodataservice")
     weather_base: str = env("WEATHER_API_BASE", "https://api-open.data.gov.sg/v2/real-time/api")
     open_meteo_base: str = env("OPEN_METEO_BASE_URL", "https://api.open-meteo.com/v1")
+    onemap_base: str = env("ONEMAP_BASE_URL", "https://www.onemap.gov.sg/api/public/routingsvc")
+    company_registry_base: str = env("COMPANY_REGISTRY_BASE_URL", "https://api.gleif.org/api/v1")
+    location_search_base: str = env("LOCATION_SEARCH_BASE_URL", "https://api.tavily.com")
+    traffic_max_seconds: float = 12
+    traffic_max_http_calls: int = 8
     max_rounds: int = 16
     max_tool_calls: int = 32
     max_http_calls: int = 96
@@ -36,7 +41,7 @@ class Settings:
         return os.getenv(name, "").strip()
     def readiness(self):
         return {name: bool(self.credential(name)) for name in
-            ("DEEPSEEK_API_KEY", "ORS_API_KEY", "LTA_API_KEY", "DATAGOVSG_API_KEY")}
+            ("DEEPSEEK_API_KEY", "ORS_API_KEY", "LTA_API_KEY", "DATAGOVSG_API_KEY", "ONEMAP_TOKEN", "TAVILY_API_KEY")}
     def routing_configuration(self):
         return {"engine":"OSRM","driving_configured":bool(self.osrm_driving_base.strip()),
                 "walking_configured":bool(self.osrm_walking_base.strip()),"key_required":False,

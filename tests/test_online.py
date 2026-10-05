@@ -27,6 +27,7 @@ def deny_network(monkeypatch):
     monkeypatch.setenv("DEEPSEEK_API_KEY","test-secret-deepseek")
     monkeypatch.setenv("ORS_API_KEY","test-secret-ors")
     monkeypatch.delenv("LTA_API_KEY",raising=False)
+    monkeypatch.delenv("TAVILY_API_KEY",raising=False)
 
 class FakeProviders:
     def __init__(self):
@@ -44,7 +45,7 @@ class FakeProviders:
     def geocode(self,query):
         return [self.a if query==self.a.name else self.b]
     def routes(self,a,b,mode,*args):
-        return [RouteLeg(id="leg-"+a.id+"-"+b.id,mode=mode,origin=a,destination=b,
+        return [RouteLeg(id="leg-"+mode+"-"+a.id+"-"+b.id,mode=mode,origin=a,destination=b,
             geometry={"type":"LineString","coordinates":[[a.lon,a.lat],[b.lon,b.lat]]},
             distance_m=1000,provider_duration_s=600,evidence_ids=["osrm"])]
     def weather(self,points=None,departure=None):
@@ -61,6 +62,8 @@ def request_fields(mode="walking",**kw):
 
 def make_agent(tmp_path,mode="walking",**kw):
     settings=Settings(root=tmp_path)
+    if mode in ("driving","drive_walk"):
+        kw.setdefault("car_access",True)  # Fixture represents a confirmed self-driving request.
     req=TravelRequest(original_text="测试需求",**request_fields(mode,**kw))
     result=PlanningResult(run_id="test",status="tool_error",message="",request=req,state=TaskState(request=req))
     agent=Agent(result,settings,Budget(settings),lambda *a,**k:None,providers=FakeProviders())
@@ -119,8 +122,8 @@ def test_llm_recovers_after_first_poi_fails(tmp_path):
     fields=request_fields(poi_category="cafe",poi_required=True,stop_duration_s=300,require_open=True,
         evidence={"poi_required":"必须经停","stop_duration_s":"5 分钟","require_open":"要求营业"})
     model=Model([("set_request",{"fields":fields}),("resolve_place",{"role":"origin"}),
-        ("resolve_place",{"role":"destination"}),("get_weather",{}),("search_pois",{"limit":10}),plan_poi,
-        ("compare_routes",{}),("search_pois",{"limit":30}),plan_poi,("compare_routes",{}),finish_from_evidence])
+        ("resolve_place",{"role":"destination"}),("get_weather",{}),("search_pois",{"near":"destination","limit":10}),plan_poi,
+        ("compare_routes",{}),("search_pois",{"near":"destination","limit":30}),plan_poi,("compare_routes",{}),finish_from_evidence])
     result=plan_route("从 City Hall 步行到 Marina Bay，必须经停咖啡店，停留 5 分钟，要求营业。",
         settings=Settings(root=tmp_path),_client=model,_providers=providers,save=False)
     assert result.status=="verified",result.message
@@ -351,8 +354,8 @@ def test_model_selects_transport_after_real_tool_comparison(tmp_path):
     result=plan_route("从 City Hall 到 Marina Bay，请帮我判断出行方式",settings=Settings(root=tmp_path),
         _client=model,_providers=FakeProviders(),save=False)
     assert result.status=="verified",result.message
-    assert result.request.mode=="walking" and not result.questions
-    assert result.context["mode_selection"]["evidence_ids"]==["osrm"]
+    assert result.request.mode is None and result.recommended.mode=="walking" and not result.questions
+    assert "osrm" in result.context["mode_selection"]["evidence_ids"]
     assert {o["mode"] for o in result.context["mode_comparison"]["options"]}=={"walking","driving"}
 
 def test_mode_decision_cannot_override_user_or_use_invented_evidence(tmp_path):
@@ -361,16 +364,19 @@ def test_mode_decision_cannot_override_user_or_use_invented_evidence(tmp_path):
         explicit.compare_modes()
     assert error.value.code=="immutable_request"
     agent=make_agent(tmp_path,mode=None)
-    with pytest.raises(ToolFailure):
-        agent.plan_candidates()
     agent.compare_modes()
     with pytest.raises(ToolFailure) as error:
         agent.choose_mode("walking",["invented"],["distance"])
     assert error.value.code=="invalid_evidence"
     agent.choose_mode("driving",["osrm"],["time"])
-    assert agent.request.mode=="driving" and agent.result.context["mode_selection"]["car_access_assumption"]
-    with pytest.raises(ToolFailure):
-        agent.choose_mode("walking",["osrm"],["distance"])
+    assert "car_access" in agent.result.questions
+    assert agent.request.mode is None
+    agent.done=False
+    agent.request.car_access=True
+    agent.choose_mode("driving",["osrm"],["time"])
+    assert agent.request.mode is None and agent.result.context["mode_selection"]["car_access_confirmed"]
+    agent.choose_mode("walking",["osrm"],["distance"])
+    assert agent.request.mode is None and agent.result.context["mode_selection"]["provisional"]
 
 def test_lta_pagination_reads_beyond_old_40_page_limit(tmp_path,monkeypatch):
     settings=Settings(root=tmp_path)
@@ -508,11 +514,121 @@ def test_location_matching_supports_addresses_and_broad_ambiguity():
     assert not location_name_matches("Marina Bay Sands","Gardens by the Bay, Marina South")
     assert not location_name_matches("Hall","Hallmark Tower")
 
+@pytest.mark.parametrize("query,name,expected",[
+    ("Woodland Checkpoint","Woodlands Checkpoint",True),
+    ("Marina Bay Sand","Marina Bay Sands",False),  # Short words are not fuzzy matches.
+    ("Chinatwon","Chinatown",True),
+    ("Checkpoint Woodlands","Woodlands Checkpoint",True),
+    ("Marina Bay Sands","Marina Bay Suites",False),
+    ("Marina Bay Sands","Gardens by the Bay, Marina South",False),
+    ("Hall","Hallmark Tower",False),
+    ("10 Bayfront Avenue","11 Bayfront Avenue",False),
+    ("Bay Bay","Marina Bay",False),
+])
+def test_conservative_fuzzy_names(query,name,expected):
+    from route_agent.providers import location_name_similar
+    assert location_name_similar(query,name)==expected
+
+def test_high_confidence_typo_hit_still_requires_confirmation(tmp_path,monkeypatch):
+    provider=Providers(Settings(root=tmp_path),Budget(Settings(root=tmp_path)))
+    monkeypatch.setattr(provider,"request",lambda *a,**k:({"features":[{"geometry":{"coordinates":[103.84,1.28]},
+        "properties":{"gid":"chinatown","name":"Chinatown","confidence":1.0}}]},"ev"))
+    places=provider.geocode("Chinatwon")
+    assert len(places)==1 and places[0].requires_confirmation
+    assert places[0].evidence_ids==["ev"]
+
+def test_checkpoint_compound_retry_does_not_replace_landmark_with_neighbourhood(tmp_path,monkeypatch):
+    provider=Providers(Settings(root=tmp_path),Budget(Settings(root=tmp_path)))
+    seen=[]
+    def request(*args,**kwargs):
+        query=kwargs["params"]["text"]
+        seen.append(query)
+        name="Woodlands" if query=="Woodlands Checkpoint" else "Woodlands Checkpoint"
+        return {"features":[{"geometry":{"coordinates":[103.77,1.44]},
+            "properties":{"gid":name,"name":name,"confidence":1.0}}]},"ev-"+str(len(seen))
+    monkeypatch.setattr(provider,"request",request)
+    places=provider.geocode("Woodlands Checkpoint")
+    assert seen==["Woodlands Checkpoint","Woodlands check point"]
+    assert len(places)==1 and places[0].name=="Woodlands Checkpoint"
+    assert places[0].requires_confirmation and places[0].evidence_ids==["ev-2"]
+
+def test_descriptive_origin_searches_real_candidates_and_preserves_wording(tmp_path):
+    agent=make_agent(tmp_path)
+    description="马来西亚新山入境新加坡的口岸"
+    agent.request.origin=description
+    seen=[]
+    def geocode(query):
+        seen.append(query)
+        return {"Woodlands Checkpoint":[agent.providers.a],"Tuas Checkpoint":[agent.providers.b]}.get(query,[])
+    agent.providers.geocode=geocode
+    agent.roles.clear()
+    agent.resolve_place("origin",["Woodlands Checkpoint","Tuas Checkpoint"])
+    assert seen==[description,"Woodlands Checkpoint","Tuas Checkpoint"]
+    assert agent.request.origin==description
+    assert "origin" not in agent.roles
+    assert agent.result.status=="needs_clarification"
+    assert len(agent.choices["origin_place_id"])==2
+    assert all(agent.places[x["id"]].requires_confirmation for x in agent.choices["origin_place_id"])
+
+def test_alias_confirmation_replays_saved_searches_and_deduplicates(tmp_path):
+    agent=make_agent(tmp_path)
+    agent.request.destination="唐人街"
+    place=agent.providers.b
+    seen=[]
+    def geocode(query):
+        seen.append(query)
+        return [place.model_copy(deep=True)] if query in ("Chinatown","Kreta Ayer") else []
+    agent.providers.geocode=geocode
+    agent.roles.pop("destination")
+    agent.resolve_place("destination",["Chinatown","Kreta Ayer","Chinatown"])
+    assert len(agent.choices["destination_place_id"])==1
+    assert "destination" not in agent.roles
+    saved=copy.deepcopy(agent.result.context["place_searches"])
+    agent.done=False
+    agent.clarifications={"destination_place_id":place.id,"place_searches":saved}
+    output=agent.resolve_place("destination")
+    assert seen==["唐人街","Chinatown","Kreta Ayer"]*2
+    assert agent.roles["destination"].id==place.id
+    assert output["user_confirmed"] and not output["resolved"]["requires_confirmation"]
+    # Replacing the location cannot reuse an old alias or confirmed ID.
+    agent.request.destination="City Hall"
+    agent.clarifications.pop("destination_place_id")
+    agent.resolve_place("destination")
+    assert seen[-1]=="City Hall"
+
+def test_empty_direct_geocode_allows_semantic_retry_but_not_unrelated_substitute(tmp_path):
+    agent=make_agent(tmp_path)
+    agent.providers.geocode=lambda _: []
+    output=agent.resolve_place("origin")
+    assert output["retry_with_search_queries"] and not agent.done
+    output=agent.resolve_place("origin",["City Hall"])
+    assert not agent.done and output["resolved"] is None
+    agent.ask_user(["origin"])
+    assert agent.done and agent.result.status=="needs_clarification"
+    assert "origin" in agent.result.questions
+
+def test_semantic_query_schema_is_bounded_and_rejects_generated_coordinates(tmp_path):
+    agent=make_agent(tmp_path)
+    for index,queries in enumerate((["x"]*4,["x"*161],["1.29,103.85"])):
+        output=agent.execute("resolve_place",json.dumps({"role":"origin","search_queries":queries}),"search-"+str(index))
+        assert output["error"]=="invalid_arguments"
+
 def test_native_ask_user_is_executable_and_ends_loop(tmp_path):
     agent=make_agent(tmp_path)
     output=agent.execute("ask_user",json.dumps({"fields":["travel_preferences"]}),"ask-native")
     assert "questions" in output and agent.done
     assert agent.result.status=="needs_clarification"
+
+def test_model_cannot_ask_again_for_a_resolved_endpoint(tmp_path):
+    agent=make_agent(tmp_path)
+    output=agent.execute("ask_user",json.dumps({"fields":["origin"]}),"repeat-origin")
+    assert output["error"]=="already_resolved" and not agent.done
+
+def test_unconfirmed_reresolution_removes_old_route_endpoint(tmp_path):
+    agent=make_agent(tmp_path)
+    agent.providers.geocode=lambda _: [agent.providers.a,agent.providers.b]
+    agent.resolve_place("origin")
+    assert "origin" not in agent.roles and agent.done
 
 def test_schema_error_feedback_names_missing_fields_without_raw_input(tmp_path):
     agent=make_agent(tmp_path)

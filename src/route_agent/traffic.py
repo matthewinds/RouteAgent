@@ -6,6 +6,14 @@ from shapely.strtree import STRtree
 from pyproj import Transformer
 from .providers import distance
 PROJECT = Transformer.from_crs(4326,32648,always_xy=True).transform
+def future_departure(departure, reference=None):
+    """Live observations cannot describe a scheduled future trip."""
+    return bool(departure and departure > (reference or datetime.now(timezone.utc))+timedelta(seconds=60))
+
+def past_departure(departure, reference=None, max_age=600):
+    """Today's live observations are not historical traffic evidence."""
+    return bool(departure and departure < (reference or datetime.now(timezone.utc))-timedelta(seconds=max_age))
+
 def heading(a,b):
     return math.degrees(math.atan2(b[0]-a[0],b[1]-a[1])) % 360
 def prepare_bands(records):
@@ -30,13 +38,13 @@ def prepare_bands(records):
             continue
     return lines, values, STRtree(lines) if lines else None
 
-def apply_traffic(legs, payload, departure, max_age=600, budget=None):
+def apply_traffic(legs, payload, departure, max_age=600, budget=None, prepared=None):
     stamp = datetime.fromisoformat(payload["retrieved_at"])
     current = datetime.now(timezone.utc)
     # A one-minute tolerance only covers immediate submission/clock skew;
     # current conditions cannot certify a scheduled future departure.
     fresh = abs((departure-stamp).total_seconds()) <= max_age and (current-stamp).total_seconds() <= max_age and departure<=current+timedelta(seconds=60)
-    shapes, bands, tree = prepare_bands(payload.get("speed_bands",[])) if fresh else ([],[],None)
+    shapes, bands, tree = (prepared if prepared is not None else prepare_bands(payload.get("speed_bands",[]))) if fresh else ([],[],None)
     for leg in legs:
         if leg.mode != "driving":
             continue
@@ -82,6 +90,7 @@ def apply_traffic(legs, payload, departure, max_age=600, budget=None):
         leg.traffic_coverage = min(1,known/leg.distance_m) if leg.distance_m else None
         covered = leg.traffic_coverage is not None and leg.traffic_coverage>=1-1e-6
         leg.traffic_duration_s = middle if covered else None
+        leg.partial_traffic_duration_s = middle+leg.provider_duration_s*(1-leg.traffic_coverage) if known and leg.traffic_coverage is not None else None
         leg.traffic_lower_s = lower if covered else None
         leg.traffic_upper_s = upper if covered and upper_known else None
         leg.congestion_fraction = congested/known if known else None

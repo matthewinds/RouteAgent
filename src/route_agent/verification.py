@@ -2,9 +2,10 @@
 import re
 from datetime import timedelta
 from .models import CheckResult
-from .providers import distance
-def check(name,state,reason,actual=None,required=None,refs=None):
-    return CheckResult(constraint=name,status=state,reason=reason,actual=actual,required=required,evidence_ids=refs or [])
+from .providers import distance, location_name_matches
+from .traffic import future_departure, past_departure
+def check(name,state,reason,actual=None,required=None,refs=None,hard=True):
+    return CheckResult(constraint=name,status=state,reason=reason,actual=actual,required=required,evidence_ids=refs or [],hard=hard)
 
 def time_bounds(route):
     lower = upper = route.stop_s+(route.parking_s or 0)
@@ -31,21 +32,69 @@ def verify_route(route,request,evidence=None):
             if leg.mode=="driving":
                 leg.traffic_duration_s = leg.traffic_lower_s = leg.traffic_upper_s = None
                 leg.traffic_coverage = 0
+                leg.partial_traffic_duration_s = None
+                leg.congestion_fraction = None
         route.total_s = None
         route.traffic_coverage = 0
+        route.congestion_fraction = None
+        route.estimated_total_s = None
         route.time_basis = "OSRM 基础服务估计，交通证据已过期；非实时总 ETA"
     refs = route.evidence_ids
-    expected = ["driving"] if request.mode=="driving" else ["walking"] if request.mode=="walking" else ["driving","walking"]
+    effective_mode=request.mode or route.mode
+    expected = ["driving"] if effective_mode=="driving" else ["walking"] if effective_mode=="walking" else ["driving","walking"]
     actual_modes = list(dict.fromkeys(x.mode for x in route.legs))
-    checks = [check("mode","pass" if actual_modes==expected else "fail","核对实际分段交通方式。",actual_modes,expected,refs)]
-    gaps = [distance(a.geometry["coordinates"][-1],b.geometry["coordinates"][0]) for a,b in zip(route.legs,route.legs[1:])]
+    mode_ok = actual_modes==expected
+    if effective_mode=="transit":
+        expected=["walking","bus","rail"]
+        mode_ok=bool(set(actual_modes)&{"bus","rail"}) and set(actual_modes)<=set(expected)
+    checks = [check("mode","pass" if mode_ok else "fail","核对实际分段交通方式。",actual_modes,expected,refs)]
+    if request.mode is None and "driving" in actual_modes:
+        checks.append(check("car_access","pass" if request.car_access is True else "fail",
+            "自动规划的自驾段必须有用户确认的可用车辆。",request.car_access,True))
+    if route.mode=="transit":
+        timed=all(l.departure_time is not None and l.arrival_time is not None and l.departure_time<=l.arrival_time for l in route.legs)
+        ordered=timed and all(a.arrival_time<=b.departure_time for a,b in zip(route.legs,route.legs[1:]))
+        total=(route.legs[-1].arrival_time-request.departure_time).total_seconds() if timed else None
+        timing_ok=ordered and route.legs[0].departure_time>=request.departure_time.replace(microsecond=0) and total is not None and abs(total-(route.provider_total_s or 0))<1
+        if route.poi is not None:
+            index=route.poi_leg_index
+            stop_ok=index is not None and 0<=index<len(route.legs)-1
+            if stop_ok:
+                a,b=route.legs[index:index+2]
+                stop_ok=timed and (b.departure_time-a.arrival_time).total_seconds()>=route.stop_s and route.stop_s==(request.stop_duration_s or 0)
+                stop_ok=stop_ok and distance(a.geometry["coordinates"][-1],[route.poi.lon,route.poi.lat])<=150 and distance(b.geometry["coordinates"][0],[route.poi.lon,route.poi.lat])<=150
+            timing_ok=timing_ok and stop_ok
+        checks.append(check("transit_timing","pass" if timing_ok else "fail",
+            "按服务时刻核对候车、换乘顺序和已确认经停时长，完整总时间不得省略等待。",refs=refs))
+    pairs=list(zip(route.legs,route.legs[1:]))
+    gaps = [distance(a.geometry["coordinates"][-1],b.geometry["coordinates"][0]) for a,b in pairs]
+    # Native transit transfers are anchored by the service's stop identities
+    # and schedule. Road centreline geometry need not touch the kerb geometry.
+    # This does not authorize a connector between unrelated places/services.
+    shared_stops=[a.source==b.source=="OneMap transit" and a.destination.id==b.origin.id and
+        distance([a.destination.lon,a.destination.lat],[b.origin.lon,b.origin.lat])<2 and
+        distance(a.geometry["coordinates"][-1],[a.destination.lon,a.destination.lat])<=150 and
+        distance(b.geometry["coordinates"][0],[b.origin.lon,b.origin.lat])<=150 and
+        a.arrival_time is not None and b.departure_time is not None and a.arrival_time<=b.departure_time for a,b in pairs]
+    service_access=[]
+    for a,b in pairs:
+        sourced=all(any(evidence and evidence.get(e) and evidence[e].source in ("OneMap transit","OSRM Route") for e in leg.evidence_ids) for leg in (a,b))
+        service_access.append(sourced and "OneMap transit" in (a.source,b.source) and "walking" in (a.mode,b.mode) and
+            distance([a.destination.lon,a.destination.lat],[b.origin.lon,b.origin.lat])<2 and
+            distance(a.geometry["coordinates"][-1],[a.destination.lon,a.destination.lat])<=150 and
+            distance(b.geometry["coordinates"][0],[b.origin.lon,b.origin.lat])<=150 and
+            a.arrival_time is not None and b.departure_time is not None and a.arrival_time<=b.departure_time)
+    shared_stops=[native or access for native,access in zip(shared_stops,service_access)]
+    unresolved=any(g>2 and not shared for g,shared in zip(gaps,shared_stops))
     # Never silently draw a straight connector or add zero-time transfers.
-    checks.append(check("continuity","unknown" if any(g>2 for g in gaps) else "pass",
-        "API 分段入口存在未建模连接，需核实实际通行。" if any(g>2 for g in gaps) else "API 分段几何连续。",gaps,2,refs))
+    checks.append(check("continuity","unknown" if unresolved else "pass",
+        "API 分段入口存在未建模连接，需核实实际通行。" if unresolved else
+        "核对 API 几何连接及 OneMap 同站点的服务换乘时刻；站点与道路中心线的小量偏移未补画虚构连接。",
+        gaps,"几何≤2米，或 OneMap 同站点及有效换乘时序",refs))
     if request.poi_required:
         ok = route.poi is not None and (not request.poi_category or route.poi.category==request.poi_category)
         if request.poi_name and route.poi:
-            ok &= request.poi_name.casefold() in route.poi.name.casefold()
+            ok &= location_name_matches(request.poi_name,route.poi.name,*route.poi.names)
         checks.append(check("required_poi","pass" if ok else "fail","按真实 POI 身份与经停段检查。",route.poi.name if route.poi else None,request.poi_name or request.poi_category,refs))
     if request.avoid_highways:
         legs = [x for x in route.legs if x.mode=="driving"]
@@ -55,6 +104,8 @@ def verify_route(route,request,evidence=None):
         checks.append(check("walking_distance","pass" if route.walking_m<=request.max_walking_m else "fail",
             "累计所有步行段的 API 距离。",route.walking_m,request.max_walking_m,refs))
     lower,upper = time_bounds(route)
+    if route.mode=="transit":
+        lower=upper=route.provider_total_s
     limits = []
     if request.max_duration_s is not None:
         limits.append(("duration",request.max_duration_s))
@@ -64,11 +115,16 @@ def verify_route(route,request,evidence=None):
         if route.stop_s+(route.parking_s or 0)>limit:
             state,reason = "fail","仅用户确认的停留和停车预留就已超出限制。"
         elif lower is None:
-            state,reason = "unknown","缺少完整驾车交通时间区间或停车预留，不能核实总时间。"
+            state = "unknown"
+            reason = ("当前路况不能核实预约出发时段的到达时间；目前只有基础行程估计。"
+                if future_departure(request.departure_time) else
+                "出发时间已早于实时路况有效窗口，当前数据不能还原该时段；目前只有基础行程估计。"
+                if past_departure(request.departure_time) else
+                "缺少完整驾车交通时间区间或停车预留，不能核实总时间。")
         elif lower>limit:
             state,reason = "fail","服务时间估计的乐观值仍超出限制。"
         elif upper<=limit:
-            state,reason = "pass","按 LTA 速度区间／OSRM 步行服务估计和用户预留满足；不保证实际准时。"
+            state,reason = "pass","按 OneMap 含候车与换乘的服务估计及用户预留满足；不保证实际准时。" if route.mode=="transit" else "按 LTA 速度区间／OSRM 步行服务估计和用户预留满足；不保证实际准时。"
         else:
             state,reason = "unknown","时间估计区间跨越限制。"
         checks.append(check(name,state,reason,route.total_s,limit,refs))
@@ -76,6 +132,12 @@ def verify_route(route,request,evidence=None):
         state = "unknown" if route.traffic_coverage is None or route.traffic_coverage<1-1e-6 or route.congestion_fraction is None else (
             "pass" if route.congestion_fraction<=request.max_congestion_fraction else "fail")
         checks.append(check("congestion",state,"仅按有效匹配的 LTA 路段检查；缺少覆盖不能证明避堵。",route.congestion_fraction,request.max_congestion_fraction,refs))
+    elif request.prefer_avoid_congestion and route.mode in ("driving","drive_walk"):
+        available = route.traffic_coverage is not None and route.traffic_coverage>=1-1e-6 and route.congestion_fraction is not None
+        checks.append(check("congestion_reference","pass" if available else "unknown",
+            "已取得路线拥堵参考，可用于候选比较。" if available else
+            f"有效路况覆盖 {(route.traffic_coverage or 0):.0%}；可比较已覆盖路段，但未覆盖道路的拥堵未知，尚不能核实整条路线更避堵。",
+            route.congestion_fraction,refs=refs,hard=False))
     if request.require_open and not route.poi:
         checks.append(check("opening_hours","unknown","没有经停地点，无法核实营业条件。"))
     if request.require_open and route.poi:
@@ -91,6 +153,8 @@ def verify_route(route,request,evidence=None):
                     break
             partial = route.model_copy(update={"legs":before,"stop_s":0})
             lo,hi = time_bounds(partial)
+            if route.mode=="transit":
+                lo=hi=(route.poi_arrival_time-request.departure_time).total_seconds() if route.poi_arrival_time else None
             if lo is None:
                 state,reason = "unknown","到店时段缺少时间证据。"
             else:
@@ -129,6 +193,24 @@ def verify_route(route,request,evidence=None):
             checks.append(check("named_parking","fail","停车点不符合用户指定名称。",p.name,request.parking_name,p.evidence_ids))
     if request.require_dry:
         checks.append(check("dry_weather","unknown","天气模型网格或区域预报不能证明全程实际不淋雨。",refs=route.weather.evidence_ids if route.weather else []))
+    if request.weather_required or request.prefer_avoid_rain:
+        available=bool(route.weather and route.weather.status=="available")
+        checks.append(check("weather_reference","pass" if available else "unknown",
+            route.weather.timing_basis if available else "请求了天气参考，但目前缺少有效预报。",
+            refs=route.weather.evidence_ids if route.weather else [],hard=False))
+    if request.prefer_avoid_rain:
+        checks.append(check("rain_exposure","unknown",
+            "天气预报可供比较，但未取得经停设施、停车点及楼宇入口的遮蔽证据，不能确认上下车和经停时能避雨。"
+            if route.mode in ("driving","drive_walk") else
+            "天气预报可供比较，但未取得步行及换乘通道的连续遮蔽证据，不能确认实际避雨条件。",
+            refs=route.weather.evidence_ids if route.weather else [],hard=False))
+    if request.prefer_low_cost:
+        checks.append(check("cost","pass" if route.fare_sgd is not None else "unknown",
+            route.fare_basis,route.fare_sgd,"完整交通费用参考",route.fare_evidence_ids,hard=False))
+    if request.prefer_fastest:
+        checks.append(check("speed_reference","pass" if route.total_s is not None else "unknown",
+            "可比较查询到的服务预计时间；不证明全局最快。" if route.total_s is not None else
+            "仅有基础行程时间，完整交通时间未知，不能确认最快。",hard=False))
     if request.multiple_stops:
         checks.append(check("multiple_stops","unknown","只支持一个业务经停点，需用户修改条件。"))
     route.checks = checks
