@@ -105,6 +105,10 @@ class Providers:
         from .transit import transit_routes
         return transit_routes(self,origin,destination,request)
 
+    def transit_journeys(self, origin, destination, request):
+        from .transit import transit_routes
+        return transit_routes(self,origin,destination,request,allow_walking=True)
+
     def transit_hubs(self, center, kind="rail", radius=2000, limit=3):
         """Real access locations; discovery is separate from travel feasibility."""
         if kind not in ("rail","bus") or not 100<=radius<=5000 or not 1<=limit<=10:

@@ -91,7 +91,7 @@ SPECS = {
     "resolve_place":(ResolveArgs,"Unified location search and candidate presentation. Research with present_candidates=false, interpret returned names/type/region, then present a relevant shortlist using candidate_ids from that role. No supplied description should be treated as missing merely because a name query is empty. source=map searches real Pelias names/addresses; source=registry looks up real Singapore company records by canonical name and geocodes their sourced addresses. Use short canonical company names in search_queries for registry, not guessed street addresses or office/Singapore keywords. Source availability/coverage is limited; no match allows a different source/query. Generic unspecified shop categories use search_pois. Supply at most 3 name hypotheses, never generated coordinates. Semantic/corporate results require user confirmation, since a registered address need not be their workplace."),
     "compare_modes":(EmptyArgs,"When mode is unspecified, compare real OSRM car/foot and OneMap public-transport references, available fares and failures. Missing OneMap credentials or car costs mean incomplete cost/speed comparison. These are direct-trip references, not detour verification. Never call unavailable modes cheapest or globally fastest."),
     "choose_mode":(ModeArgs,"Choose driving, walking or transit from returned references. Omit evidence_ids/null to use the backend's tracked reference evidence; supplied IDs must be real. Driving requires confirmed car_access; otherwise the backend asks the user. This is a provisional exploration choice; it never seals an unspecified user mode. Mixed bus/rail/walking itineraries and business stops are supported. Missing fares remain unknown. Explicit user choices cannot be overridden."),
-    "search_pois":(PoisArgs,"Automatically find real OSM stops of requested category/name. Default near=route searches bounded samples of real OSRM/OneMap references across available families without locking travel mode; origin/destination searches are also available. Bakery uses shop=bakery. Choose candidates yourself, plan routes through several returned IDs and compare actual detours; do not ask the user to supply or select an unspecified shop. First limit 10; expand to 30 only after failed validation. No invented POIs."),
+    "search_pois":(PoisArgs,"Automatically find real OSM stops of requested category/name. Default near=route searches bounded samples of real OSRM/OneMap references across available families without locking travel mode; origin/destination searches are also available. Bakery uses shop=bakery. Choose candidates yourself, plan routes through several returned IDs and compare actual detours; do not ask the user to supply or select an unspecified shop. First limit 10; expand to 30 after checking previous candidates or an empty search. No invented POIs."),
     "get_opening_hours":(PlaceArgs,"Retrieve real OSM opening tags for a known POI; missing data remains unknown."),
     "get_roads":(RoadArgs,"Query actual OSM roads near a resolved endpoint: highway, oneway, maxspeed, access, sidewalk and geometry. Missing tags stay unknown; this does not calculate routes or prove closures."),
     "get_traffic":(TrafficArgs,"Fetch LTA speed bands and incidents when relevant. Driving speed preferences, time limits, arrival-dependent opening checks and congestion requirements/preferences require an attempt; otherwise the agent decides. If collection is incomplete and candidate traffic coverage is low, use continue_collection=true to fetch subsequent pages within a bounded budget, then validate and compare again. Regular repeated calls reuse the current data. At most two continuation calls. Complete collection does not mean every road is observed. Partial observations support labelled estimates, not a verified deadline."),
@@ -102,7 +102,7 @@ SPECS = {
     "get_weather":(WeatherArgs,"Query Open-Meteo hourly precipitation probability/amount and weather codes at known route samples (default), or explicit NEA regional supplement. Resolve endpoints first; after routes, supply route_ids for better sample coverage. Required attempt only when weather is requested or a rain constraint/preference exists; walking alone does not require it. Never guarantees dry streets."),
     "get_transit_hubs":(HubArgs,"Discover real OneMap MRT/LRT or bus stops near an endpoint. Decide when hub access might help after no_route or excessive walking. Discovery does not prove connectivity; pass returned IDs to plan_candidates origin_hub_ids/destination_hub_ids to calculate real foot access and time-dependent bus/rail itineraries. Bounded radius up to 5000m, up to 10 discovered hubs; plan up to 3 at a time. Geometric proximity and a station listing do not prove it is operational or reachable. No assumed shelter or parking."),
     "get_parking":(EmptyArgs,"Fetch real LTA car park coordinates and available CAR lots near destination. drive_walk only."),
-    "plan_candidates":(RoutesArgs,"Query real OSRM/OneMap itineraries using ONLY known POI/parking IDs. Unspecified mode defaults to walking, mixed bus/rail/walking transit and confirmed available driving; modes may request additional family exploration after validation. Compare full stop detours, waiting and transfers, not direct references alone. Ten POIs per family, bounded paths; two replans per family after failed validation. Explicit user modes remain binding."),
+    "plan_candidates":(RoutesArgs,"Query real OSRM/OneMap itineraries using ONLY known POI/parking IDs. Unspecified mode defaults to walking, mixed bus/rail/walking transit and confirmed available driving. Compare full stop detours, waiting and transfers, not direct references alone. Ten combinations per family, bounded paths; two additional searches per family after checking its previous candidates. Empty/failed batches may be replanned immediately. Successful candidates survive failed combinations. New hubs/POIs may improve an already feasible route; duplicate combinations are not queried again. Explicit user modes remain binding."),
     "validate_routes":(IdsArgs,"Deterministically validate known candidates against sealed user constraints."),
     "compare_routes":(IdsArgs,"Compute transparent metrics and default preference scores; estimates are labelled, not realtime ETA when LTA incomplete."),
     "ask_user":(AskArgs,"Ask for missing request fields or unresolved place IDs using backend prompts; do not ask for secrets."),
@@ -187,6 +187,12 @@ Do not call every information tool for every request. POI, roads, traffic, weath
 queries must serve the user's requirements or resolve a specific uncertainty. Walking alone
 does not require weather; unconstrained driving may use labelled OSRM base estimates without LTA.
 If none pass, decide whether new real POIs or another mode family can help and replan within budget.
+Check unreachable_combinations/partial failures without discarding successful route_ids. A failed
+batch with no candidates needs no validation before trying new sourced combinations. After checking
+a successful batch, decide whether different POIs/hubs could improve time or another preference.
+Do not treat a pure walking result for a short business-stop segment as broken public transport;
+it can be combined with real scheduled buses/rail on the other segment. Compare only complete
+stop itineraries returned by plan_candidates; compare_modes IDs are direct reference trips.
 For prefer_avoid_rain compare returned walking and waiting times as potential outdoor exposure
 alongside forecast probabilities, transfers and total duration. Sheltered paths are unknown unless
 actually sourced. No amount of rain preference authorizes fabricated shelter or guessed bus times.
@@ -589,28 +595,39 @@ class Agent:
         lookup_name=names if search_names else self.request.poi_name
         empty_first=not self.routes and not self.result.state.attempts and any(
             s["count"]==0 and s.get("limit")==10 for s in self.result.context.get("poi_searches",[]))
-        if limit==30 and not empty_first and (not self.result.state.attempts or self.last_checked_attempt!=len(self.result.state.attempts)-1 or
-                         any(r.feasibility=="verified" for r in self.routes.values())):
-            raise ToolFailure("必须先验证首批候选失败，才能扩大 POI 搜索。","invalid_replan")
+        if limit==30 and not empty_first and (not self.result.state.attempts or
+                         any(not attempt.get("checked",False) for attempt in self.result.state.attempts)):
+            raise ToolFailure("必须先验证首批已生成的候选，才能根据结果扩大 POI 搜索。","invalid_replan")
         if near=="route":
             if not {"origin","destination"}<=self.roles.keys():
                 raise ToolFailure("沿途搜索需要先解析起终点。","missing_information")
-            modes=[self.request.mode] if self.request.mode else list(self.mode_options)
-            if not modes:
-                modes=["walking"]  # A search reference, never a travel-mode constraint.
+            modes=self.candidate_modes()
             found={}
+            buckets=[]
             failures=[]
             for mode in modes:
                 mode="driving" if mode=="drive_walk" else mode
                 try:
                     reference=self.mode_options.get(mode)
                     if reference is None:
-                        reference=(self.providers.transit_routes(self.roles["origin"],self.roles["destination"],self.request)[0]
-                            if mode=="transit" else self.route_legs(self.roles["origin"],self.roles["destination"],mode)[0])
+                        if mode=="transit":
+                            if not hasattr(self.providers,"transit_routes"):
+                                raise ToolFailure("公共交通提供方尚未配置。","missing_configuration")
+                            self.transit_options=self.providers.transit_routes(self.roles["origin"],self.roles["destination"],self.request)
+                            reference=min(self.transit_options,key=lambda r:r.provider_total_s)
+                        else:
+                            reference=self.route_legs(self.roles["origin"],self.roles["destination"],mode)[0]
+                        self.mode_options[mode]=reference
                     matches=self.providers.pois_along_route(reference,self.request.poi_category,radius_m,limit,lookup_name)
-                    found.update({p.id:p for p in matches})
+                    buckets.append(matches)
                 except ToolFailure as error:
                     failures.append({"mode":mode,"error":error.code,"message":str(error)})
+            # A full first family must not crowd out the other real corridors.
+            from itertools import zip_longest
+            for row in zip_longest(*buckets):
+                for place in row:
+                    if place is not None:
+                        found.setdefault(place.id,place)
             places=list(found.values())[:limit]
             basis="围绕已取得的真实参考路线、最多五个采样位置分别搜索；合并有限门店候选，再计算各方式的实际经停行程。搜索不保证覆盖所有门店。"
             if failures:
@@ -797,7 +814,7 @@ class Agent:
                 outputs.append(self._plan_mode_candidates(mode,poi_ids,parking_ids,origin_hub_ids,destination_hub_ids))
             except ToolFailure as error:
                 existing=[r for r in self.routes.values() if r.mode==mode]
-                if self.request.mode is None and error.code in ("duplicate_search","invalid_replan") and existing:
+                if self.request.mode is None and error.code=="duplicate_search" and existing:
                     outputs.append({"route_ids":[r.id for r in existing],"attempt":len(self.result.state.attempts)-1,"reused":True})
                     continue
                 if self.request.mode or error.code in ("missing_information","invalid_arguments","unknown_id"):
@@ -806,6 +823,7 @@ class Agent:
         comparison=self.result.context.setdefault("candidate_mode_comparison",{"attempted_modes":[],"failures":[]})
         comparison["attempted_modes"]=list(dict.fromkeys([*comparison["attempted_modes"],*requested]))
         comparison["failures"]=[f for f in comparison["failures"] if f["mode"] not in requested]+failures
+        comparison["partial_failures"]=[{"mode":a["mode"],**f} for a in self.result.state.attempts for f in a.get("failures",[])]
         if not outputs:
             raise ToolFailure("未取得满足经停需求的可用候选："+"；".join(f["message"] for f in failures),
                 failures[0]["error"] if failures else "no_route")
@@ -822,8 +840,8 @@ class Agent:
         attempt=len(self.result.state.attempts)
         if len(previous)>self.settings.max_replans:
             raise ToolFailure("此方式已达到重规划次数上限。","budget_exhausted")
-        if previous and (self.last_checked_attempt!=attempt-1 or any(r.feasibility=="verified" for r in self.routes.values() if r.mode==mode)):
-            raise ToolFailure("同一方式只有验证失败后才能重规划；仍可探索其他方式。","invalid_replan")
+        if previous and not previous[-1].get("checked",False):
+            raise ToolFailure("请先验证此方式上一轮已生成的候选，再根据结果探索新组合。","invalid_replan")
         pois = [self.known_place(x) for x in poi_ids]
         if request.poi_required and not pois:
             if "poi" in self.roles and not request.poi_category:
@@ -864,12 +882,16 @@ class Agent:
         signature = [tuple(p.id if p else None for p in pair) for pair in pairs[:10]]
         if any(x["combinations"]==signature for x in previous):
             raise ToolFailure("重复的候选组合不会再次规划，请查询新的真实候选。","duplicate_search")
-        self.result.state.attempts.append({"attempt":attempt,"mode":mode,"replan":bool(previous),"combinations":signature,"truncated":max(0,len(pairs)-10),"verified":0})
+        record={"attempt":attempt,"mode":mode,"replan":bool(previous),"combinations":signature,
+            "truncated":max(0,len(pairs)-10),"verified":0,"route_ids":[],"checked":False,"failures":[]}
+        self.result.state.attempts.append(record)
         generated,unreachable = [],[]
-        self.stage("replan" if previous else "routes","根据验证失败扩大真实搜索" if previous else "正在调用路线服务比较真实分段行程")
+        self.stage("replan" if previous else "routes","根据检查结果继续比较真实组合" if previous else "正在调用路线服务比较真实分段行程")
         for poi,park,origin_hub,destination_hub in pairs[:10]:
-            self.budget.check()
             try:
+                self.budget.check()
+                if self.budget.remaining()<35 or self.budget.http_calls>=self.settings.max_http_calls-8:
+                    raise ToolFailure("候选搜索达到预留边界，保留预算用于检查已有行程和完成推荐。","search_budget")
                 if mode=="transit":
                     if not hasattr(self.providers,"transit_routes"):
                         raise ToolFailure("公共交通提供方尚未配置。","missing_configuration")
@@ -899,10 +921,15 @@ class Agent:
                     for legs in itertools.product(*groups):
                         generated.append(assemble(list(legs),request,origin,destination,poi))
             except ToolFailure as error:
-                if error.code!="no_route" or (poi is None and park is None and origin_hub is None and destination_hub is None):
+                if error.code in ("invalid_arguments","unknown_id","missing_information","immutable_request"):
                     raise
                 unreachable.append({"poi_id":poi.id if poi else None,"parking_id":park.id if park else None,"origin_hub_id":origin_hub.id if origin_hub else None,
                     "destination_hub_id":destination_hub.id if destination_hub else None,"error":error.code,"message":str(error)})
+                # Invalid/no-route combinations are local failures. Service-wide
+                # failures stop this batch, but never erase preceding success.
+                if error.code not in ("no_route","invalid_response"):
+                    break
+        record.update(route_ids=list(dict.fromkeys(r.id for r in generated)),failures=unreachable,checked=not generated)
         for r in generated:
             r.evidence_ids = list(dict.fromkeys([*r.evidence_ids,*origin.evidence_ids,*destination.evidence_ids]))
             if self.weather or request.weather_required or request.prefer_avoid_rain or request.require_dry:
@@ -910,6 +937,9 @@ class Agent:
             self.routes[r.id] = r
         self.result.state.candidates = list(self.routes.values())
         if not generated:
+            failure=next((f for f in unreachable if f["error"]!="no_route"),None)
+            if failure:
+                raise ToolFailure(failure["message"],failure["error"])
             raise ToolFailure("本轮经停／接驳组合没有返回可衔接的路线；可根据失败原因更换真实站点或门店重规划。","no_route")
         return {"route_ids":list(dict.fromkeys(r.id for r in generated)),"attempt":attempt,
                 "combination_limit":10,"truncated":max(0,len(pairs)-10),"unreachable_combinations":unreachable}
@@ -972,7 +1002,12 @@ class Agent:
                         check.reason+=" 语义别名「"+alias+"」已与实际地图名称核对；原始名称保持为「"+self.request.poi_name+"」。"
         if self.result.state.attempts:
             self.last_checked_attempt = len(self.result.state.attempts)-1
-            self.result.state.attempts[-1]["verified"] = sum(r.feasibility=="verified" for r in self.routes.values())
+            checked_ids={r.id for r in routes}
+            for attempt in self.result.state.attempts:
+                ids=set(attempt.get("route_ids",[]))
+                attempt["checked_ids"]=list(set(attempt.get("checked_ids",[]))|ids.intersection(checked_ids))
+                attempt["checked"]=ids<=set(attempt["checked_ids"])
+                attempt["verified"]=sum(self.routes[x].feasibility=="verified" for x in ids)
         return [{"id":r.id,"feasibility":r.feasibility,"checks":[c.model_dump(mode="json") for c in r.checks]} for r in routes]
 
     def compare_routes(self,route_ids=None):
@@ -1162,6 +1197,9 @@ class Agent:
                 output["evidence_hint"]="可省略 evidence_ids 或设为 null，后端将使用所选路线的真实证据；不要生成证据 ID。其他推荐理由仍需符合实际数据。"
             if name=="set_request" and output["error"] in ("invalid_evidence","invalid_arguments"):
                 output["repair_hint"]="修正并重新提交完整 fields，保留已给出的起终点和其他约束；这属于提取错误，不能让用户重复填写。未找到地图匹配时也应保留地点描述，由 resolve_place 查询。"
+            if output["error"]=="unknown_id" and name in ("validate_routes","compare_routes","check_lta_routes","finish_plan"):
+                output["repair_hint"]="使用 plan_candidates 返回的完整经停候选 ID；compare_modes 的起终点参考不是经停候选。可省略 route_ids 检查或比较全部已生成候选。"
+                output["available_route_ids"]=list(self.routes)[:15]
             if name=="resolve_place" and output["error"]=="invalid_evidence":
                 output["repair_hint"]="网页检索先取得文档；核验时 company_name 为查询对象名称（包括景点或酒店），place_name 为原文中的地图名称或街道地址，source_quote 必须包含两者且是同一文档的准确原文。来源中的名称若与输入拼写不同，可在 search_queries 加入来源支持的名称假设；保留原始需求并让用户确认候选，不能静默替换。"
             summary = output["message"]

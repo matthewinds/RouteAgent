@@ -254,6 +254,11 @@ def render(result):
             for r in list(best.values())[:12]],hide_index=True,use_container_width=True)
         for failure in full_comparison.get("failures",[]):
             st.info(MODES.get(failure["mode"],failure["mode"])+"完整行程未取得："+failure["message"])
+        if full_comparison.get("partial_failures"):
+            with st.expander("未参与比较的候选组合"):
+                st.caption("以下组合未取得有效行程；已成功返回的其他组合保留并继续验证。")
+                for failure in full_comparison["partial_failures"]:
+                    st.write(MODES.get(failure["mode"],failure["mode"])+"："+failure["message"])
     clarifications_form(result)
     if result.request.poi_category and not result.request.poi_name:
         st.caption("经停需求：由系统搜索沿途"+category_label(result.request.poi_category)+"，比较真实路线后选择，无需指定地点地址。")

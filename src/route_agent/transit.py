@@ -6,6 +6,12 @@ from .models import Place, RouteLeg, RouteCandidate
 from .tools import ToolFailure
 from .providers import stable, singapore, distance
 
+REJECTION_REASONS={"Invalid geometry","Geometry outside Singapore","Missing route geometry","Unsupported transit leg",
+    "Invalid endpoint","Invalid metrics","Geometry does not match stops","Transfer foot route unavailable",
+    "Transfer foot route misses scheduled boarding","Missing journey legs","Invalid transfer timing",
+    "Itinerary/leg timing mismatch","Itinerary departs before requested time","Itinerary does not match requested endpoints",
+    "Invalid fare","Invalid polyline","Incomplete polyline"}
+
 
 def decode_polyline(encoded):
     if not isinstance(encoded,str) or not encoded or len(encoded)>300000:
@@ -36,7 +42,7 @@ def decode_polyline(encoded):
     return points
 
 
-def transit_routes(provider, origin, destination, request):
+def transit_routes(provider, origin, destination, request, *, allow_walking=False):
     token=provider.key("ONEMAP_TOKEN")
     stamp=request.departure_time.astimezone(ZoneInfo("Asia/Singapore"))
     # The live service normalizes time to minute resolution. Round upward so
@@ -59,6 +65,8 @@ def transit_routes(provider, origin, destination, request):
         raise ToolFailure("OneMap 在此地点和出发时段未找到公共交通路线。","no_route")
     routes=[]
     rejected=0
+    walk_only=0
+    rejection_reasons=[]
     for itinerary in itineraries[:3]:
         try:
             legs=[]
@@ -112,8 +120,8 @@ def transit_routes(provider, origin, destination, request):
                         connected.append(connector)
                 connected.append(leg)
             legs=connected
-            if not legs or not any(leg.mode in ("bus","rail") for leg in legs):
-                raise ValueError("No public transport legs")
+            if not legs:
+                raise ValueError("Missing journey legs")
             if any(a.arrival_time>b.departure_time for a,b in zip(legs,legs[1:])):
                 raise ValueError("Invalid transfer timing")
             start=datetime.fromtimestamp(itinerary["startTime"]/1000,timezone.utc)
@@ -126,25 +134,34 @@ def transit_routes(provider, origin, destination, request):
             if distance(legs[0].geometry["coordinates"][0],[origin.lon,origin.lat])>150 or distance(
                     legs[-1].geometry["coordinates"][-1],[destination.lon,destination.lat])>150:
                 raise ValueError("Itinerary does not match requested endpoints")
+            public_transport=any(leg.mode in ("bus","rail") for leg in legs)
             total=(end-request.departure_time).total_seconds()  # Includes initial waiting and transfers.
             raw_fare=itinerary.get("fare")
             fare=float(raw_fare) if isinstance(raw_fare,(str,int,float)) and not isinstance(raw_fare,bool) and raw_fare!="" else None
             if fare is not None and (not math.isfinite(fare) or fare<0):
                 raise ValueError("Invalid fare")
+            if not public_transport and not allow_walking:
+                walk_only+=1
+                continue
             walking=[leg for leg in legs if leg.mode=="walking"]
             refs=list(dict.fromkeys([ev,*[e for leg in legs for e in leg.evidence_ids],*origin.evidence_ids,*destination.evidence_ids]))
             routes.append(RouteCandidate(id="transit-route:"+stable([itinerary,origin.id,destination.id,stamp.isoformat()])[:16],
-                mode="transit",origin=origin,destination=destination,legs=legs,
+                mode="transit" if public_transport else "walking",origin=origin,destination=destination,legs=legs,
                 geometry={"type":"MultiLineString","coordinates":[leg.geometry["coordinates"] for leg in legs]},
                 distance_m=sum(leg.distance_m for leg in legs),walking_m=sum(leg.distance_m for leg in walking),
                 walking_s=sum(leg.provider_duration_s for leg in walking),provider_total_s=total,total_s=total,
-                time_basis="OneMap 公交／地铁服务预计时间，含候车与换乘；非准时保证",evidence_ids=refs,
+                time_basis="OneMap 公交／地铁服务预计时间，含候车与换乘；非准时保证" if public_transport else "OneMap 步行服务预计时间；非准时保证",evidence_ids=refs,
                 fare_sgd=fare,fare_evidence_ids=[ev] if fare is not None else [],
                 fare_basis="OneMap 返回的公共交通参考票价（SGD），实际支付规则需核实" if fare is not None else "OneMap 未返回完整票价，费用未知"))
-        except (KeyError,TypeError,ValueError,OverflowError):
+        except (KeyError,TypeError,ValueError,OverflowError) as error:
             rejected+=1
+            # Diagnostic categories contain no payload, credentials or URLs.
+            rejection_reasons.append(str(error) if str(error) in REJECTION_REASONS else type(error).__name__)
     if not routes:
-        raise ToolFailure("OneMap 路线的几何、时刻或票价数据无效；未生成替代路线。","invalid_response") from None
+        if walk_only and not rejected:
+            raise ToolFailure("OneMap 此段只返回有效步行行程，可查询真实步行接驳。","no_route")
+        raise ToolFailure("OneMap 路线的几何、时刻或票价数据无效；未生成替代路线。检查原因："+
+            "、".join(dict.fromkeys(rejection_reasons)),"invalid_response") from None
     if rejected:
         for route in routes:
             route.source_warnings.append(f"OneMap 有 {rejected} 条候选的几何、时刻或票价数据无效，未参与比较；保留其他有效候选。")
@@ -162,9 +179,12 @@ def transit_via(provider, origin, destination, poi, request):
         raise ToolFailure("经停需要确认停留时间，不能从到达时限推断。","missing_information")
 
     def journeys(a,b,departure):
+        budget=getattr(provider,"budget",None)
+        if budget and (budget.remaining()<35 or budget.http_calls>=budget.settings.max_http_calls-8):
+            raise ToolFailure("经停候选搜索达到预留边界，保留预算用于检查已有行程和完成推荐。","search_budget")
         onward=request.model_copy(update={"departure_time":departure})
         try:
-            return provider.transit_routes(a,b,onward)
+            return getattr(provider,"transit_journeys",provider.transit_routes)(a,b,onward)
         except ToolFailure as error:
             if error.code!="no_route":
                 raise
@@ -185,7 +205,11 @@ def transit_via(provider, origin, destination, poi, request):
         try:
             endings=journeys(poi,destination,departure)
         except ToolFailure as error:
-            if error.code!="no_route":
+            if error.code not in ("no_route","invalid_response"):
+                if output:
+                    for route in output:
+                        route.source_warnings.append("其他经停后出发时刻的查询未完成："+str(error))
+                    break
                 raise
             failures.append(error)
             continue
@@ -211,6 +235,8 @@ def transit_via(provider, origin, destination, poi, request):
                 fare_basis=transit_parts[0].fare_basis if len(transit_parts)==1 else
                     "经停前后分别查询公共交通，未核实一体化换乘计费；完整费用未知"))
     if not output:
+        if failures and any(error.code!="no_route" for error in failures):
+            raise next(error for error in failures if error.code!="no_route")
         raise ToolFailure("此经停地点和出发时段未找到可衔接的公共交通方案。","no_route")
     return output
 

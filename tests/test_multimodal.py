@@ -309,3 +309,121 @@ def test_replanning_one_family_reuses_other_complete_candidates(tmp_path,mixed_p
     output=agent.plan_candidates()  # Default comparison must not treat old walking success as a failure.
     assert not output['failures'] and {r.mode for r in agent.routes.values()}=={'walking','transit'}
     assert not agent.result.context['candidate_mode_comparison']['failures']
+
+
+def test_valid_onemap_walking_segment_can_join_a_scheduled_business_trip(transit_setup):
+    provider,a,b,request,payload,seen=transit_setup
+    payload['plan']['itineraries'][0]['legs'][1]['mode']='WALK'
+    with pytest.raises(ToolFailure) as failure:provider.transit_routes(a,b,request)
+    assert failure.value.code=='no_route'
+    journey=provider.transit_journeys(a,b,request)[0]
+    assert journey.mode=='walking' and journey.total_s==900
+    assert all(l.mode=='walking' and l.source=='OneMap transit' for l in journey.legs)
+    payload['plan']['itineraries'][0]['legs'][1].pop('legGeometry')
+    with pytest.raises(ToolFailure) as failure:provider.transit_journeys(a,b,request)
+    assert failure.value.code=='invalid_response'  # Malformed data never becomes foot access.
+
+
+def test_failed_later_departure_does_not_erase_completed_stop_journey(mixed_provider,monkeypatch):
+    provider,a,b,request,seen=mixed_provider
+    poi=Place(id='poi',name='MOCK Cafe',lat=1.295,lon=103.855,category='cafe',source='MOCK')
+    request=request.model_copy(update={'poi_required':True,'stop_duration_s':300})
+    real=provider.transit_journeys
+    calls=[]
+    def journeys(a,b,req):
+        calls.append(req.departure_time)
+        if len(calls)==3:raise ToolFailure('MOCK invalid onward geometry','invalid_response')
+        routes=real(a,b,req)
+        return routes*2 if len(calls)==1 else routes
+    monkeypatch.setattr(provider,'transit_journeys',journeys)
+    routes=transit_via(provider,a,b,poi,request)
+    assert routes and len(calls)==3
+    verify_route(routes[0],request,provider.evidence)
+    assert routes[0].feasibility=='verified' and routes[0].stop_s==300
+
+
+@pytest.mark.parametrize('failure_code',['invalid_response','budget_exhausted'])
+def test_failed_combination_keeps_prior_success_and_records_source_reason(tmp_path,mixed_provider,failure_code):
+    provider,a,b,request,seen=mixed_provider
+    agent=make_agent(tmp_path,mode=None,departure_time=request.departure_time,poi_required=True,poi_category='cafe',stop_duration_s=300)
+    agent.providers.evidence.update(provider.evidence)
+    pois=[Place(id=f'poi{i}',name='MOCK Cafe',lat=1.295+i*.001,lon=103.855,category='cafe',source='MOCK') for i in range(3)]
+    agent.places.update({p.id:p for p in pois})
+    calls=[]
+    def service(a,b,req):
+        calls.append(b.id)
+        if b.id==pois[1].id:raise ToolFailure('MOCK source failure',failure_code)
+        return provider.transit_journeys(a,b,req)
+    agent.providers.transit_routes=service
+    output=agent.plan_candidates(poi_ids=[p.id for p in pois],modes=['transit'])
+    assert output['route_ids'] and any(r.poi.id==pois[0].id for r in agent.routes.values())
+    assert any(r.poi.id==pois[2].id for r in agent.routes.values())==(failure_code=='invalid_response')
+    assert agent.result.state.attempts[0]['failures'][0]['error']==failure_code
+    assert agent.result.context['candidate_mode_comparison']['partial_failures']
+    agent.validate_routes(output['route_ids'])
+    assert all(r.feasibility=='verified' for r in agent.routes.values())
+
+
+def test_empty_failed_family_can_replan_after_other_family_succeeds(tmp_path,mixed_provider):
+    provider,a,b,request,seen=mixed_provider
+    agent=make_agent(tmp_path,mode=None,departure_time=request.departure_time,poi_required=True,poi_category='cafe',stop_duration_s=300)
+    agent.providers.evidence.update(provider.evidence)
+    pois=[Place(id=f'poi{i}',name='MOCK Cafe',lat=1.295+i*.001,lon=103.855,category='cafe',source='MOCK') for i in range(2)]
+    agent.places.update({p.id:p for p in pois})
+    agent.providers.transit_routes=lambda *args:(_ for _ in ()).throw(ToolFailure('MOCK bad geometry','invalid_response'))
+    initial=agent.plan_candidates(poi_ids=[pois[0].id])
+    agent.validate_routes(initial['route_ids'])
+    agent.providers.transit_routes=provider.transit_journeys
+    output=agent.plan_candidates(poi_ids=[pois[1].id],modes=['transit'])
+    assert output['route_ids'] and agent.result.state.attempts[-1]['replan']
+    assert not agent.result.context['candidate_mode_comparison']['failures']
+
+
+def test_checking_successful_family_allows_improved_poi_search_independently(tmp_path,mixed_provider):
+    provider,a,b,request,seen=mixed_provider
+    agent=make_agent(tmp_path,mode=None,departure_time=request.departure_time,poi_required=True,poi_category='cafe',stop_duration_s=300)
+    agent.providers.evidence.update(provider.evidence);agent.providers.transit_routes=provider.transit_journeys
+    pois=[Place(id=f'poi{i}',name='MOCK Cafe',lat=1.295+i*.001,lon=103.855,category='cafe',source='MOCK') for i in range(2)]
+    agent.places.update({p.id:p for p in pois})
+    first=agent.plan_candidates(poi_ids=[pois[0].id],modes=['transit'])
+    agent.plan_candidates(poi_ids=[pois[0].id],modes=['walking'])
+    agent.validate_routes(first['route_ids'])
+    assert agent.result.state.attempts[0]['checked'] and not agent.result.state.attempts[1]['checked']
+    assert agent.plan_candidates(poi_ids=[pois[1].id],modes=['transit'])['route_ids']
+
+
+def test_checked_feasible_route_does_not_block_broader_poi_search(tmp_path):
+    agent=make_agent(tmp_path,poi_required=True,poi_category='cafe',stop_duration_s=300)
+    poi=Place(id='poi',name='MOCK Cafe',lat=1.295,lon=103.855,category='cafe',source='MOCK')
+    agent.places[poi.id]=poi
+    agent.providers.pois=lambda *args:[poi]
+    agent.plan_candidates(poi_ids=[poi.id]);agent.validate_routes()
+    assert agent.search_pois(near='origin',limit=30)['places']
+
+
+def test_business_search_reserves_budget_and_keeps_completed_options(mixed_provider,monkeypatch):
+    provider,a,b,request,seen=mixed_provider
+    poi=Place(id='poi',name='MOCK Cafe',lat=1.295,lon=103.855,category='cafe',source='MOCK')
+    request=request.model_copy(update={'poi_required':True,'stop_duration_s':300})
+    real=provider.transit_journeys
+    def journeys(*args):
+        routes=real(*args)
+        if len(seen)==2:provider.budget.http_calls=provider.settings.max_http_calls-8
+        return routes*2 if len(seen)==1 else routes
+    monkeypatch.setattr(provider,'transit_journeys',journeys)
+    routes=transit_via(provider,a,b,poi,request)
+    assert routes and len(seen)==2 and routes[0].source_warnings
+
+
+def test_poi_corridors_include_transit_before_any_mode_comparison(tmp_path,mixed_provider):
+    provider,a,b,request,seen=mixed_provider
+    agent=make_agent(tmp_path,mode=None,departure_time=request.departure_time,poi_required=True,poi_category='cafe',stop_duration_s=300)
+    agent.providers.evidence.update(provider.evidence);agent.providers.transit_routes=provider.transit_routes
+    families=[]
+    def along(reference,*args):
+        families.append(reference.mode)
+        return [Place(id=reference.mode+str(i),name='MOCK Cafe',lat=1.295,lon=103.855,category='cafe',source='MOCK') for i in range(10)]
+    agent.providers.pois_along_route=along
+    output=agent.search_pois()
+    assert families==['walking','transit'] and agent.request.mode is None
+    assert len(output['places'])==10 and {p['id'].startswith('transit') for p in output['places']}=={True,False}
