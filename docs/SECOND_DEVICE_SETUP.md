@@ -13,6 +13,8 @@ cd RouteAgent
 
 已有项目时，在项目根目录运行 `git pull --ff-only origin main`。若提示本地改动冲突，先保存自己的修改再更新。
 
+这次 LTA 扩展加入了 GTFS 解析依赖。已有虚拟环境只需重新运行下面的依赖安装命令，无需重新创建环境。
+
 ## 安装和启动
 
 安装 Python 3.11。在 macOS / Linux 的项目根目录运行：

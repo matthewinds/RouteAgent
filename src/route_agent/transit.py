@@ -72,7 +72,9 @@ def transit_routes(provider, origin, destination, request):
                     if not singapore(value["lon"],value["lat"]):
                         raise ValueError("Invalid endpoint")
                     return Place(id="onemap-stop:"+stable([value.get("stopId"),value["lat"],value["lon"]])[:16],
-                        name=value["name"],lat=value["lat"],lon=value["lon"],source="OneMap transit",evidence_ids=[ev])
+                        name=value["name"],lat=value["lat"],lon=value["lon"],source="OneMap transit",evidence_ids=[ev],
+                        stop_code=str(value["stopCode"]) if value.get("stopCode") is not None else None,
+                        source_stop_id=str(value["stopId"]) if value.get("stopId") is not None else None)
                 a,b=endpoint("from"),endpoint("to")
                 start=datetime.fromtimestamp(item["startTime"]/1000,timezone.utc)
                 end=datetime.fromtimestamp(item["endTime"]/1000,timezone.utc)
@@ -85,6 +87,8 @@ def transit_routes(provider, origin, destination, request):
                 legs.append(RouteLeg(id="transit-leg:"+stable([item,ev])[:16],mode=mode,origin=a,destination=b,
                     geometry={"type":"LineString","coordinates":coords},distance_m=meters,provider_duration_s=duration,
                     source="OneMap transit",evidence_ids=[ev],service_name=item.get("routeShortName") or item.get("route") or None,
+                    source_route_id=str(item["routeId"]) if item.get("routeId") is not None else None,
+                    source_trip_id=str(item["tripId"]) if item.get("tripId") is not None else None,
                     departure_time=start,arrival_time=end))
             connected=[]
             for leg in legs:

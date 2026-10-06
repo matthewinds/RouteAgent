@@ -182,7 +182,30 @@ def render(result):
     message = "已生成参考方案。"+verification_summary(routes[0]) if result.status=="unverified" and routes else result.message
     {"verified":st.success,"unverified":st.info,"needs_clarification":st.info,"search_exhausted":st.info,"tool_error":st.error}[result.status](message)
     st.subheader("LTA 交通信息")
-    st.caption("LTA 在本项目中提供道路实时车速、事故和停车信息；公交／地铁组合行程由 OneMap 提供。道路车速不能直接当作公交班次或地铁时间。")
+    st.caption("LTA 提供道路、公交到站、地铁中断、车站拥挤、设施维护及其他交通数据；公交／地铁组合行程由 OneMap 计算，驾车／步行由 OSRM 计算。Agent 按需求查询，实时信息与历史统计分开使用。")
+    lta_queries=result.context.get("lta_queries",[])
+    if lta_queries:
+        from route_agent.lta_data import DATASETS
+        st.dataframe([{"查询信息":DATASETS.get(q["dataset"],{}).get("label",q["dataset"]),
+            "结果":"已取得" if q.get("status")=="available" else "未取得",
+            "采集时间":q.get("retrieved_at","—"),"数据范围":q.get("temporal_basis","—"),
+            "完整性":"文件尚未读取" if q.get("file") and not q["file"].get("read") else "部分文件内容" if (q.get("file") or {}).get("truncated") else
+                "已读完本次查询" if q.get("collection",{}).get("complete") else "部分分页" if q.get("status")=="available" else q.get("message","服务未提供可用数据")}
+            for q in lta_queries],hide_index=True,use_container_width=True)
+        with st.expander("LTA 与路线的核对结果"):
+            for route_id,entry in result.context.get("lta_route_checks",{}).items():
+                candidate=next((r for r in result.state.candidates if r.id==route_id),None)
+                if candidate and candidate in routes:
+                    for c in entry["checks"]:st.write(LABELS.get(c["constraint"],c["constraint"])+"："+c["reason"])
+                    for advisory in entry.get("advisories",[]):
+                        st.write(DATASETS.get(advisory["dataset"],{}).get("label",advisory["dataset"]));st.json(advisory)
+    if result.context.get("lta_images"):
+        with st.expander("LTA 道路摄像头参考"):
+            from pathlib import Path
+            for image in result.context["lta_images"]:
+                path=Path(image["path"])
+                if path.is_file() and path.resolve().is_relative_to((ROOT/"outputs"/"lta-media").resolve()):
+                    st.image(str(path),caption="摄像头 "+image["camera_id"]+" · "+image["retrieved_at"])
     traffic_called=any(t.tool=="get_traffic" for t in result.state.tools)
     if traffic.get("missing"):
         st.info(("道路实时路况未采集：" if traffic.get("applicability") in ("future_departure","past_departure") else "道路路况查询未完成：")+traffic["missing"])
@@ -193,7 +216,7 @@ def render(result):
         if result.status=="needs_clarification":
             st.info("尚未查询 LTA：规划仍在确认需求或地点，还未进入道路路况检查。")
         elif result.state.candidates and all(r.mode in ("walking","transit") for r in result.state.candidates):
-            st.info("本次未调用 LTA 道路车速：当前候选为步行或公交／地铁；公共交通时刻来自 OneMap。")
+            st.info("本次未调用 LTA 道路车速：当前候选为步行或公交／地铁；公共交通时刻来自 OneMap。公交到站和地铁状态的 LTA 核对结果见上方。" if lta_queries else "本次未调用 LTA 道路车速：当前候选为步行或公交／地铁；公共交通时刻来自 OneMap。")
         else:
             st.info("本次尚未查询 LTA 道路路况；服务配置状态不等于本次查询成功。")
         if future_departure(result.request.departure_time):
@@ -274,6 +297,8 @@ def render(result):
              traffic_label if traffic_unavailable and route.mode in ("driving","drive_walk") else f"{route.traffic_coverage:.0%}" if route.traffic_coverage is not None else "不适用" if route.mode in ("walking","transit") else "未知"]):
             col.metric(label,value)
         st.caption(route.time_basis if route.mode=="transit" else "基础总时长＝道路服务时间＋已确认的停留／停车预留；自驾未计入未知交通延误。")
+        if route.mode=="transit":
+            st.caption("LTA 的公交到站与地铁状态用于实时核对；当前未据此单独计算整程修正时间。候车或换乘变化时，需要重新查询完整行程。")
         st.write("费用参考："+(f"S${route.fare_sgd:.2f}" if route.fare_sgd is not None else "未知")+" · "+route.fare_basis)
         arrival_note = base_arrival_note(route,result.request)
         if arrival_note:
@@ -364,7 +389,7 @@ with st.sidebar:
     ready = settings.readiness()
     st.markdown("**API 配置状态**")
     for name,label,optional in [("DEEPSEEK_API_KEY","DeepSeek",False),("ORS_API_KEY","ORS 地址定位",False),
-        ("LTA_API_KEY","LTA 交通与停车",False)]:
+        ("LTA_API_KEY","LTA 交通数据（33 类）",False)]:
         st.write(("✅ " if ready[name] else "○ ")+label+"："+("已配置" if ready[name] else "可选，基础接口无需 Key" if optional else "缺少 Key"))
     st.caption("“已配置”只表示填写了 Key，不代表已验证服务可用。")
     st.caption("地点搜索使用地图、公司登记和公开网页来源；景点、酒店等也可检索，存在歧义时确认实际地点。")

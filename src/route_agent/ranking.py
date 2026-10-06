@@ -8,7 +8,9 @@ CHECK_LABELS = {"mode":"交通方式","required_poi":"必经地点","avoid_highw
     "walking_distance":"累计步行距离","parking":"当前停车位","parking_access":"停车转换入口",
     "named_parking":"指定停车点","dry_weather":"全程不淋雨","multiple_stops":"多个经停点",
     "cost":"交通费用","weather_reference":"天气参考","speed_reference":"完整预计时间",
-    "congestion_reference":"避堵比较","rain_exposure":"避雨条件","transit_timing":"候车、换乘与经停时序","car_access":"车辆可用性"}
+    "congestion_reference":"避堵比较","rain_exposure":"避雨条件","transit_timing":"候车、换乘与经停时序","car_access":"车辆可用性",
+    "lta_train_status":"LTA 地铁运行状态","lta_current_reference":"LTA 当前交通参考",
+    **{"lta_bus_arrival_"+str(i):"LTA 第 "+str(i)+" 段公交到站参考" for i in range(1,21)}}
 
 def historical_traffic(request, context=None):
     context = context or {}

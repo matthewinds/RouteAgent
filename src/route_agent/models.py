@@ -31,6 +31,8 @@ class Place(Record):
     company_name: str | None = None
     address: str | None = None
     source_url: str | None = None
+    stop_code: str | None = None
+    source_stop_id: str | None = None
 class TravelRequest(Record):
     original_text: str
     origin: str | None = Field(default=None,description="Preserve the user's supplied start description, including vague names, Chinese names and typos. Null only when genuinely absent, never because its location is not yet known.")
@@ -86,6 +88,8 @@ class RouteLeg(Record):
     id: str
     mode: Literal["driving", "walking", "bus", "rail"]
     service_name: str | None = None
+    source_route_id: str | None = None
+    source_trip_id: str | None = None
     departure_time: datetime | None = None
     arrival_time: datetime | None = None
     origin: Place

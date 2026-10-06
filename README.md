@@ -39,6 +39,7 @@ python -m venv .venv-fyp
 - [另一台设备使用](docs/SECOND_DEVICE_SETUP.md)：拉取最新代码、安装依赖和配置本地密钥。
 - [OSRM 配置与限制](docs/OSRM_SETUP.md)：驾车／步行端点、避高速限制和真实证据。
 - [API 申请与填写](docs/API_SETUP.md)：需要哪些 Key、官方入口、检查方法。
+- [LTA 完整动态数据接入](docs/LTA_INTEGRATION.md)：33 类数据、公共交通实时核对、文件读取与实际覆盖范围。
 - [PyCharm 启动](docs/PYCHARM_SETUP.md)：解释器、运行菜单、网页和测试。
 - [模块实施方案](docs/FYP_IMPLEMENTATION_PLAN.md)：U00–U04、证据规则、限额与剩余验收。
 - [新版验收记录](docs/VALIDATION.md)：自动化与真实在线验收分开记录。

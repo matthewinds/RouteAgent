@@ -489,6 +489,10 @@ class Providers:
             # These are actual successful pages, never an inferred island-wide snapshot.
             return values,refs
 
+    def query_lta(self, **kwargs):
+        from .lta_data import query
+        return query(self, **kwargs)
+
     def traffic(self, continue_collection=False):
         previous = self.request_deadline
         self.request_deadline = time.monotonic()+self.settings.traffic_max_seconds

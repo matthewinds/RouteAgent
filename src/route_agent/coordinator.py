@@ -18,6 +18,17 @@ class Args(BaseModel):
     model_config = ConfigDict(extra="forbid")
 class TrafficArgs(Args):
     continue_collection: bool = False
+class LtaArgs(Args):
+    dataset: str
+    parameters: dict[str, str | float] = Field(default_factory=dict)
+    filters: dict[str, str] = Field(default_factory=dict,description="Exact local record filters, e.g. ServiceNo or Description; not additional HTTP parameters. Partial scans cannot prove no match.")
+    max_pages: int = Field(default=1,ge=1,le=8)
+    skip: int = Field(default=0,ge=0,le=100000)
+    limit: int = Field(default=50,ge=1,le=100)
+    read_file: bool = Field(default=True,description="Decode the real official download; false only retrieves a manifest, which is not evidence the file was read.")
+    file_table: str | None = Field(default=None,max_length=100,description="Actual CSV/TXT table basename returned in a file (e.g. stops.txt). With this field, filters select actual table rows while scanning within bounds; partial scans cannot prove absence.")
+class LtaImageArgs(Args):
+    camera_id: str = Field(min_length=1,max_length=50)
 class RequestArgs(Args):
     fields: dict
 class ResolveArgs(Args):
@@ -84,6 +95,10 @@ SPECS = {
     "get_opening_hours":(PlaceArgs,"Retrieve real OSM opening tags for a known POI; missing data remains unknown."),
     "get_roads":(RoadArgs,"Query actual OSM roads near a resolved endpoint: highway, oneway, maxspeed, access, sidewalk and geometry. Missing tags stay unknown; this does not calculate routes or prove closures."),
     "get_traffic":(TrafficArgs,"Fetch LTA speed bands and incidents when relevant. Driving speed preferences, time limits, arrival-dependent opening checks and congestion requirements/preferences require an attempt; otherwise the agent decides. If collection is incomplete and candidate traffic coverage is low, use continue_collection=true to fetch subsequent pages within a bounded budget, then validate and compare again. Regular repeated calls reuse the current data. At most two continuation calls. Complete collection does not mean every road is observed. Partial observations support labelled estimates, not a verified deadline."),
+    "get_lta_catalog":(EmptyArgs,"List all 33 official DataMall dynamic datasets, parameter names, time basis and versions. Select relevant datasets autonomously; never fetch every dataset for every trip."),
+    "get_lta_data":(LtaArgs,"Query one official LTA dataset with grounded station/line/postal/layer parameters. Supports bounded pagination, bus arrivals, train alerts, crowding, maintenance, taxis, EV charging, road events, historical passenger/flow files, GTFS and geospatial files. Use next_skip to continue an incomplete scan. Exact filters are applied locally. Download tokens are never exposed. No observation/permission/size limit must stay explicit; historical data is not current ETA."),
+    "check_lta_routes":(IdsArgs,"Bind retrieved LTA facts to candidate legs and current departure: actual bus stop codes/services, rail line/station disruptions, freshness and required follow-up queries. Does not query a fixed list itself. Use returned required_queries with get_lta_data, then recheck/replan. A delayed arrival cannot be substituted into an existing transfer schedule without querying a new complete itinerary. Call for shortlisted transit candidates before finish."),
+    "get_lta_image":(LtaImageArgs,"Read one real traffic camera image using a CameraID returned by get_lta_data traffic_images. The UI can display the local image; signed URL stays private. Images do not supply a measured delay or border queue duration."),
     "get_weather":(WeatherArgs,"Query Open-Meteo hourly precipitation probability/amount and weather codes at known route samples (default), or explicit NEA regional supplement. Resolve endpoints first; after routes, supply route_ids for better sample coverage. Required attempt only when weather is requested or a rain constraint/preference exists; walking alone does not require it. Never guarantees dry streets."),
     "get_transit_hubs":(HubArgs,"Discover real OneMap MRT/LRT or bus stops near an endpoint. Decide when hub access might help after no_route or excessive walking. Discovery does not prove connectivity; pass returned IDs to plan_candidates origin_hub_ids/destination_hub_ids to calculate real foot access and time-dependent bus/rail itineraries. Bounded radius up to 5000m, up to 10 discovered hubs; plan up to 3 at a time. Geometric proximity and a station listing do not prove it is operational or reachable. No assumed shelter or parking."),
     "get_parking":(EmptyArgs,"Fetch real LTA car park coordinates and available CAR lots near destination. drive_walk only."),
@@ -212,6 +227,25 @@ building. Do not confuse a proposed move, an event venue or a same-name legal en
 the office. Use company_name for the searched entity even for a non-company landmark. Web references require user confirmation. Missing TAVILY_API_KEY is a service
 configuration gap, not evidence that the user failed to provide a destination.
 Report failure honestly within finite search limits. The backend makes the final publication decision."""
+SYSTEM += """
+LTA DataMall now has a single general catalogue/query interface for all 33 official dynamic
+datasets. Decide what matters for the request; do not query every dataset on every trip.
+For shortlisted transit routes, call check_lta_routes with their IDs. Follow its required_queries
+using get_lta_data, then recheck before finishing. OneMap stop_code/source_route_id/source_trip_id
+are preserved when returned; use only real codes. Missing codes may require BusStops pagination
+and exact name/location review; do not guess a nearby stop code. The catalogue supplies official
+parameter names and LTA line codes; OneMap EW/NS/NE/CC/DT/TE map to EWL/NSL/NEL/CCL/DTL/TEL.
+If an affected rail line/station, missed boarding or excessive crowding makes a candidate unsuitable,
+query different real hubs/complete itineraries and validate again. Never add a made-up delay or
+shift a single leg while leaving later transfers unchanged. A live arrival covers only returned
+forthcoming buses; it cannot certify distant/future onward boardings. Source failures/expired/partial
+data remain explicit. For rain/accessibility requests consider flood alerts, maintenance and sourced
+geospatial covered link ways; a broadcast circle is not a flooded polygon and a lift notice does
+not prove every exit inaccessible. Crowd forecasts must match the service's date/time/station.
+Taxi availability is not a booked ride or a fare. Historic passenger/traffic-flow files are statistics,
+not live speed. EV availability must come from actual station/connector statuses. GTFS identifiers
+require a sourced join to the route; do not assume they equal OneMap trip IDs.
+"""
 
 def tool_schemas():
     schemas = [{"type":"function","function":{"name":name,"description":desc,"parameters":args.model_json_schema()}}
@@ -220,6 +254,8 @@ def tool_schemas():
     request_schema["properties"].pop("original_text")
     request_schema["required"] = ["origin","destination"]
     schemas[0]["function"]["parameters"]["properties"]["fields"] = request_schema
+    from .lta_data import DATASETS
+    next(x for x in schemas if x["function"]["name"]=="get_lta_data")["function"]["parameters"]["properties"]["dataset"]["enum"]=list(DATASETS)
     return schemas
 
 class Agent:
@@ -247,6 +283,8 @@ class Agent:
         self.candidate_searches = {}
         self.rejected_location_candidates = {}
         self.poi_search_aliases = set()
+        self.lta_checked = set()
+        self.lta_attempts = set()
 
     def need_request(self):
         if self.request is None:
@@ -876,6 +914,40 @@ class Agent:
         return {"route_ids":list(dict.fromkeys(r.id for r in generated)),"attempt":attempt,
                 "combination_limit":10,"truncated":max(0,len(pairs)-10),"unreachable_combinations":unreachable}
 
+    def get_lta_catalog(self):
+        from .lta_data import catalogue
+        return catalogue()
+
+    def get_lta_image(self, camera_id):
+        from .lta_data import camera_image
+        value=camera_image(self.providers,camera_id)
+        self.result.context.setdefault("lta_images",[]).append(value)
+        return value
+
+    def get_lta_data(self, dataset, parameters=None, **kwargs):
+        parameters=parameters or {}
+        if "Lat" in parameters or "Long" in parameters:
+            if not any(abs(float(parameters.get("Lat",0))-p.lat)<1e-6 and abs(float(parameters.get("Long",0))-p.lon)<1e-6 for p in self.places.values()):
+                raise ToolFailure("LTA 附近查询坐标必须来自已解析的真实地点。","invalid_evidence")
+        self.lta_attempts.add(dataset)
+        entry={"dataset":dataset,"parameters":parameters}
+        self.result.context.setdefault("lta_queries",[]).append(entry)
+        try:
+            value=self.providers.query_lta(dataset=dataset,parameters=parameters,**kwargs)
+            entry.update({k:v for k,v in value.items() if k not in ("records","next_step")})
+            entry["status"]="available";entry["samples"]=value["records"][:5]
+            return value
+        except ToolFailure as error:
+            entry.update(status=error.code,message=str(error))
+            raise
+
+    def check_lta_routes(self, route_ids=None):
+        routes=self.chosen_routes(route_ids or [])
+        self.lta_checked.update(r.id for r in routes)
+        self.validate_routes([r.id for r in routes])
+        return {"routes":self.result.context.get("lta_route_checks",{}),
+                "next_step":"查询缺少的相关数据（参数来自真实站点），重新检查。运营中断/时序冲突要重新调用完整路线服务并比较，不能编造修正总时长。"}
+
     def validate_routes(self,route_ids=None):
         routes = self.chosen_routes(route_ids or [])
         for r in routes:
@@ -886,6 +958,13 @@ class Agent:
             if alias and alias!=request.poi_name:
                 request=request.model_copy(update={"poi_name":alias})
             verify_route(r,request,self.providers.evidence)
+            if r.id in self.lta_checked:
+                from .lta_verification import operational_checks
+                checks,required,advisories=operational_checks(r,self.request,getattr(self.providers,"lta_queries",[]),self.providers.evidence)
+                r.checks.extend(checks)
+                r.evidence_ids=list(dict.fromkeys([*r.evidence_ids,*[e for c in checks for e in c.evidence_ids]]))
+                r.feasibility="violated" if any(c.status=="fail" and c.hard for c in r.checks) else "unverified" if any(c.status=="unknown" and c.hard for c in r.checks) else "verified"
+                self.result.context.setdefault("lta_route_checks",{})[r.id]={"checks":[c.model_dump(mode="json") for c in checks],"required_queries":required,"advisories":advisories}
             if alias and alias!=self.request.poi_name:
                 for check in r.checks:
                     if check.constraint=="required_poi":
@@ -938,6 +1017,18 @@ class Agent:
             self.request.require_open)
         if traffic_needed and not self.traffic_attempted:
             raise ToolFailure("时间、避堵或到店营业要求需要尝试查询真实 LTA 交通。","missing_evidence")
+        if hasattr(self.providers,"query_lta") and any(r.mode=="transit" and r.id not in self.lta_checked for r in selected):
+            raise ToolFailure("请先用 check_lta_routes 核对公共交通实时证据并处理缺口。","missing_evidence")
+        if hasattr(self.providers,"query_lta") and selected:
+            self.validate_routes([r.id for r in selected])
+            required=[q for r in selected for q in self.result.context.get("lta_route_checks",{}).get(r.id,{}).get("required_queries",[])]
+            def attempted(q):
+                return any(entry.get("status") not in (None,"invalid_arguments","invalid_evidence","tool_error") and entry["dataset"]==q["dataset"] and (q["dataset"]!="bus_arrival" or
+                    entry.get("parameters",{}).get("BusStopCode")==q.get("parameters",{}).get("BusStopCode") and
+                    entry.get("parameters",{}).get("ServiceNo") in (None,q.get("parameters",{}).get("ServiceNo")))
+                    for entry in self.result.context.get("lta_queries",[]))
+            if any(not attempted(q) for q in required):
+                raise ToolFailure("尚未尝试查询该公共交通行程需要的 LTA 数据；按 check_lta_routes 返回的真实站点/线路查询后再核对。","missing_evidence")
         if (self.request.weather_required or self.request.prefer_avoid_rain or self.request.require_dry) and not self.weather_attempted:
             raise ToolFailure("天气要求需要尝试查询真实天气预报。","missing_evidence")
         if self.request.mode is None and (self.request.prefer_fastest or self.request.prefer_low_cost or self.request.prefer_avoid_rain):

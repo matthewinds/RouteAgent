@@ -1,0 +1,814 @@
+{
+  "guide_version": "6.10 (2026-10-01)",
+  "documentation": "https://datamall.lta.gov.sg/content/dam/datamall/datasets/LTA_DataMall_API_User_Guide.pdf",
+  "scope": "Small real queries, not full island/route acceptance. Files marked manifest were not read during the connectivity pass. Older records may be from cache; retrieved_at is retained.",
+  "connectivity": [
+    {
+      "dataset": "bus_arrival",
+      "label": "公交预计到站",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:00:56.584212+00:00",
+      "record_count": 3,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-485c9090d6e8a724"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "bus_services",
+      "label": "公交运营与班次资料",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:37:16.572695+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-5b4ef2dfeac95f69"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "bus_routes",
+      "label": "公交线路与站序",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:37:18.475738+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-66208e1a5edb01c4"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "bus_stops",
+      "label": "公交站点",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:37:20.307361+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-fcec9d0ac00b2f85"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "passenger_bus",
+      "label": "公交站历史客流",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:00:58.649416+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-4e391f9410d99edb"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "passenger_od_bus",
+      "label": "公交起终点历史客流",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:00.597907+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-4a5e63685bd5bd47"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "passenger_od_train",
+      "label": "地铁起终点历史客流",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:02.473628+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-a08fba54cbd4135f"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "passenger_train",
+      "label": "地铁站历史客流",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:04.264879+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-1bfb6dfd5e1ef993"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "taxi_availability",
+      "label": "可载客出租车位置",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:06.163918+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-ad279024cee40398"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "taxi_stands",
+      "label": "出租车站",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:37:47.250127+00:00",
+      "record_count": 316,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-754946b2d39e56f8"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "train_alerts",
+      "label": "地铁运营中断",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:07.904955+00:00",
+      "record_count": 1,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-e3e3d708798ba80a"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "carpark_availability",
+      "label": "停车位余量",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:10.000507+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-374f1f5645c1ef65"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "expressway_times",
+      "label": "高速公路分段预计时间",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:11.832401+00:00",
+      "record_count": 192,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-f6e7fb644c4be13a"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "faulty_lights",
+      "label": "交通灯故障",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:13.543292+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-5617b46053b5da9b"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "road_openings",
+      "label": "计划道路开放",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:38:00.652234+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-d5f9712cf72ab564"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "road_works",
+      "label": "批准的道路施工",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:38:02.605202+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-e0a58f2ff022a753"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "traffic_images",
+      "label": "道路与口岸摄像头",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:15.391770+00:00",
+      "record_count": 8,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-3989e6a65c61674f"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "traffic_incidents",
+      "label": "道路事故与阻塞",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:17.174906+00:00",
+      "record_count": 23,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-d3e0621f89e366a0"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "speed_bands",
+      "label": "道路实时车速",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:19.955746+00:00",
+      "record_count": 500,
+      "collection": {
+        "complete": false,
+        "pages": 1,
+        "next_skip": 500,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-24db053c11b0ee7a"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "traffic_advisories",
+      "label": "道路信息牌提示",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:21.895911+00:00",
+      "record_count": 25,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-bbc6dae675eebc28"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "bicycle_parking",
+      "label": "自行车停车设施",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:24.072999+00:00",
+      "record_count": 15,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-c28f1bc50f5bb94e"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "geospatial",
+      "label": "全岛地图图层",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:25.931264+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-173c62708bb3ef50"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "facilities_maintenance",
+      "label": "地铁电梯维护",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:27.742864+00:00",
+      "record_count": 3,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-fde6108ba6fe8f00"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "station_crowd",
+      "label": "车站实时拥挤程度",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:29.872342+00:00",
+      "record_count": 37,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-5e8ad56e5e443e78"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "station_crowd_forecast",
+      "label": "车站拥挤预测",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:38:22.385874+00:00",
+      "record_count": 1,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-d50d024208d0dcb3"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "traffic_flow",
+      "label": "历史道路流量",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:32.528809+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-a7fc69871f5a7169"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "planned_bus_routes",
+      "label": "计划公交线路变更",
+      "status": "available",
+      "retrieved_at": "2026-10-06T02:38:26.174284+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-8e9d01f69ea1f71e"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "ev_charging",
+      "label": "电动车充电设施与状态",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:34.305609+00:00",
+      "record_count": 1,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-a35956876111bc09"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "ev_batch",
+      "label": "全岛充电设施与状态",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:36.378010+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-3d823a70363902af"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "flood_alerts",
+      "label": "积水预警",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:40.405514+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-091723a402de04e6"
+      ],
+      "file": null
+    },
+    {
+      "dataset": "gtfs_schedule",
+      "label": "地铁时刻与网络文件",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:42.247158+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-413c230f9f04e59c"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "gtfs_alerts",
+      "label": "地铁实时 GTFS 通告",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:44.094327+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-5d200e780c1c61a2"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "gtfs_updates",
+      "label": "地铁中断期间 GTFS 班次更新",
+      "status": "available",
+      "retrieved_at": "2026-10-06T03:01:45.864483+00:00",
+      "record_count": 0,
+      "collection": {
+        "complete": true,
+        "pages": 1,
+        "next_skip": null,
+        "reason": null
+      },
+      "evidence_ids": [
+        "ev-6a6dcb350c6d2871"
+      ],
+      "file": {
+        "format": "manifest",
+        "read": false,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    }
+  ],
+  "file_checks": [
+    {
+      "dataset": "passenger_bus",
+      "status": "available",
+      "record_count": 203480,
+      "complete": true,
+      "file": {
+        "format": "csv_zip",
+        "read": true,
+        "record_count": 203480,
+        "truncated": true,
+        "header": null
+      },
+      "evidence_ids": [
+        "ev-ea7efeb37abd5f54",
+        "ev-lta-file-54022a2c4fbb4273-1791254706"
+      ],
+      "retrieved_at": "2026-10-06T02:45:01.754911+00:00"
+    },
+    {
+      "dataset": "passenger_od_bus",
+      "status": "download_limit",
+      "message": "LTA 文件超过交互下载上限，可缩小范围或离线分析；没有将文件当作已读取。"
+    },
+    {
+      "dataset": "passenger_od_train",
+      "status": "available",
+      "record_count": null,
+      "file": {
+        "format": "csv_zip",
+        "read": true,
+        "record_count": null,
+        "truncated": true,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "passenger_train",
+      "status": "available",
+      "record_count": 7379,
+      "complete": true,
+      "file": {
+        "format": "csv_zip",
+        "read": true,
+        "record_count": 7379,
+        "truncated": true,
+        "header": null
+      },
+      "evidence_ids": [
+        "ev-e94c468dc5fbb363",
+        "ev-lta-file-27137d34735d3b91-1791254747"
+      ],
+      "retrieved_at": "2026-10-06T02:45:44.713972+00:00"
+    },
+    {
+      "dataset": "geospatial",
+      "status": "available",
+      "record_count": 234,
+      "file": {
+        "format": "geojson",
+        "read": true,
+        "record_count": 234,
+        "truncated": true,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "traffic_flow",
+      "status": "available",
+      "record_count": 1,
+      "complete": true,
+      "file": {
+        "format": "json",
+        "read": true,
+        "record_count": 1,
+        "truncated": false,
+        "header": null
+      },
+      "evidence_ids": [
+        "ev-989b7c69465744fb",
+        "ev-lta-file-722b2411cf5f3a56-1791254483"
+      ],
+      "retrieved_at": "2026-10-06T02:41:23.998287+00:00"
+    },
+    {
+      "dataset": "ev_batch",
+      "status": "available",
+      "record_count": 2780,
+      "file": {
+        "format": "json",
+        "read": true,
+        "record_count": 2780,
+        "truncated": true,
+        "observation_fresh": null
+      }
+    },
+    {
+      "dataset": "gtfs_schedule",
+      "status": "available",
+      "record_count": 352084,
+      "complete": true,
+      "file": {
+        "format": "csv_zip",
+        "read": true,
+        "record_count": 352084,
+        "truncated": true,
+        "header": null
+      },
+      "evidence_ids": [
+        "ev-0c8ea32a35e911e9",
+        "ev-lta-file-e39bd35048133efe-1791254466"
+      ],
+      "retrieved_at": "2026-10-06T02:41:06.381062+00:00"
+    },
+    {
+      "dataset": "gtfs_alerts",
+      "status": "available",
+      "record_count": 0,
+      "file": {
+        "format": "gtfs_realtime",
+        "read": true,
+        "record_count": 0,
+        "truncated": false,
+        "observation_fresh": true
+      }
+    },
+    {
+      "dataset": "gtfs_updates",
+      "status": "available",
+      "record_count": 0,
+      "complete": true,
+      "file": {
+        "format": "gtfs_realtime",
+        "read": true,
+        "record_count": 0,
+        "truncated": false,
+        "header": {
+          "gtfs_realtime_version": "2.0",
+          "incrementality": "FULL_DATASET",
+          "timestamp": "1791254763"
+        }
+      },
+      "evidence_ids": [
+        "ev-83eb1cfb8c3f0e57",
+        "ev-lta-file-d3a0a49c78ab5243-1791254795"
+      ],
+      "retrieved_at": "2026-10-06T02:46:33.347454+00:00"
+    },
+    {
+      "dataset": "traffic_images",
+      "status": "available",
+      "record_count": 8,
+      "file": {
+        "format": null,
+        "read": null,
+        "record_count": null,
+        "truncated": null,
+        "observation_fresh": null
+      }
+    }
+  ],
+  "camera_image_read": false,
+  "regression_tests_passed": 325,
+  "native_ui": {
+    "run_id": "20261006T030346-395a1e79",
+    "request": "从 Chinatown MRT Station 去 Bayfront MRT Station，现在出发，乘公交或地铁，尽快到达。",
+    "status": "verified",
+    "mode": "transit",
+    "provider_total_s": 804.0,
+    "lta_datasets": [
+      "train_alerts"
+    ],
+    "lta_checks": [
+      {
+        "constraint": "lta_train_status",
+        "status": "pass",
+        "hard": false,
+        "actual": 1,
+        "required": null,
+        "reason": "LTA 当前报告正常服务或轻微延误；不是后续运行的准时保证。",
+        "evidence_ids": [
+          "ev-cd4ea19b15f9c3ff"
+        ]
+      }
+    ]
+  }
+}
