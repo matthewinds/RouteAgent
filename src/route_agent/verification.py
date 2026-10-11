@@ -3,7 +3,7 @@ import re
 from datetime import timedelta
 from .models import CheckResult
 from .providers import distance, location_name_matches
-from .traffic import future_departure, past_departure
+from .traffic import future_departure, past_departure, UNOBSERVED_FLOOR_KMH, STOPPED_FLOOR_KMH
 def check(name,state,reason,actual=None,required=None,refs=None,hard=True):
     return CheckResult(constraint=name,status=state,reason=reason,actual=actual,required=required,evidence_ids=refs or [],hard=hard)
 
@@ -22,15 +22,69 @@ def time_bounds(route):
             upper+=leg.provider_duration_s
     return lower,upper
 
+def bounded_upper(route):
+    """Pessimistic total for partially observed driving; None when any leg lacks it."""
+    if route.parking is not None and route.parking_s is None:
+        return None
+    total = route.stop_s+(route.parking_s or 0)
+    for leg in route.legs:
+        if leg.mode=="driving":
+            value = leg.traffic_upper_s if leg.traffic_upper_s is not None else leg.bounded_upper_s
+            if value is None:
+                return None
+            total += value
+        else:
+            total += leg.provider_duration_s
+    return total
+
+def hours_state(hours,lo,hi,departure,dwell_s):
+    """Interpret a simple OSM opening_hours tag against an arrival interval (seconds after departure)."""
+    if hours=="24/7":
+        return "pass","OSM 营业标签为全天开放；标签不代表现场核验。"
+    if not re.fullmatch(r"\d{2}:\d{2}-\d{2}:\d{2}",hours or ""):
+        return "unknown","缺少可可靠解释的营业时间，未猜测复杂表达式。"
+    if lo is None:
+        return "unknown","到店时段缺少时间证据。"
+    a,b = hours.split("-")
+    try:
+        ah,am = map(int,a.split(":")); bh,bm = map(int,b.split(":"))
+        earliest = departure+timedelta(seconds=lo)
+        latest = departure+timedelta(seconds=hi+dwell_s)
+        opening = earliest.replace(hour=ah,minute=am,second=0,microsecond=0)
+        closing = earliest.replace(hour=bh,minute=bm,second=0,microsecond=0)
+    except ValueError:
+        return "unknown","营业时间标签格式无效。"
+    if closing<=opening:
+        return "unknown","跨夜营业标签尚不能可靠核实。"
+    if opening<=earliest and latest<=closing:
+        return "pass","预计整个经停时段处于 OSM 标注的营业区间。"
+    if earliest>=closing or latest<=opening:
+        return "fail","预计经停时段处于营业区间之外。"
+    return "unknown","预计时段跨越营业边界。"
+
+def stop_matches(place,spec):
+    if place is None:
+        return False
+    ok = not spec.poi_category or place.category==spec.poi_category
+    if spec.poi_name:
+        ok &= location_name_matches(spec.poi_name,place.name,*place.names)
+    return ok
+
 def verify_route(route,request,evidence=None):
     from .providers import now_utc
+    if route.fare_components and route.fare_sgd is not None and evidence is not None and any(
+            ident not in evidence or evidence[ident].valid_until is not None and evidence[ident].valid_until<=now_utc()
+            for ident in route.fare_evidence_ids):
+        route.fare_sgd=route.fare_known_subtotal_sgd=None
+        route.fare_basis="票价证据已过期或缺失，需要重新查询；不能继续使用旧整程金额。"
+        route.fare_components=[]
     # Recheck freshness at publication; never retain an expired complete ETA.
     stale = any(leg.mode=="driving" and leg.traffic_retrieved_at and
         (now_utc()-leg.traffic_retrieved_at).total_seconds()>600 for leg in route.legs)
     if stale:
         for leg in route.legs:
             if leg.mode=="driving":
-                leg.traffic_duration_s = leg.traffic_lower_s = leg.traffic_upper_s = None
+                leg.traffic_duration_s = leg.traffic_lower_s = leg.traffic_upper_s = leg.bounded_upper_s = None
                 leg.traffic_coverage = 0
                 leg.partial_traffic_duration_s = None
                 leg.congestion_fraction = None
@@ -64,6 +118,19 @@ def verify_route(route,request,evidence=None):
                 stop_ok=timed and (b.departure_time-a.arrival_time).total_seconds()>=route.stop_s and route.stop_s==(request.stop_duration_s or 0)
                 stop_ok=stop_ok and distance(a.geometry["coordinates"][-1],[route.poi.lon,route.poi.lat])<=150 and distance(b.geometry["coordinates"][0],[route.poi.lon,route.poi.lat])<=150
             timing_ok=timing_ok and stop_ok
+        if route.stops:
+            stops_ok=len(route.stop_leg_indices)==len(route.stops)==len(route.stop_durations_s)
+            for place,index,dwell in zip(route.stops,route.stop_leg_indices,route.stop_durations_s):
+                if not (stops_ok and 0<=index<len(route.legs)-1):
+                    stops_ok=False
+                    break
+                a,b=route.legs[index:index+2]
+                stops_ok=(timed and (b.departure_time-a.arrival_time).total_seconds()>=dwell and
+                    distance(a.geometry["coordinates"][-1],[place.lon,place.lat])<=150 and
+                    distance(b.geometry["coordinates"][0],[place.lon,place.lat])<=150)
+                if not stops_ok:
+                    break
+            timing_ok=timing_ok and stops_ok
         checks.append(check("transit_timing","pass" if timing_ok else "fail",
             "按服务时刻核对候车、换乘顺序和已确认经停时长，完整总时间不得省略等待。",refs=refs))
     pairs=list(zip(route.legs,route.legs[1:]))
@@ -91,7 +158,11 @@ def verify_route(route,request,evidence=None):
         "API 分段入口存在未建模连接，需核实实际通行。" if unresolved else
         "核对 API 几何连接及 OneMap 同站点的服务换乘时刻；站点与道路中心线的小量偏移未补画虚构连接。",
         gaps,"几何≤2米，或 OneMap 同站点及有效换乘时序",refs))
-    if request.poi_required:
+    if request.stops:
+        ok = len(route.stops)==len(request.stops) and all(stop_matches(place,spec) for place,spec in zip(route.stops,request.stops))
+        checks.append(check("required_stops","pass" if ok else "fail","按用户顺序逐个核对经停地点的真实类别／名称。",
+            [s.name for s in route.stops],[spec.poi_name or spec.poi_category for spec in request.stops],refs))
+    elif request.poi_required:
         ok = route.poi is not None and (not request.poi_category or route.poi.category==request.poi_category)
         if request.poi_name and route.poi:
             ok &= location_name_matches(request.poi_name,route.poi.name,*route.poi.names)
@@ -114,6 +185,9 @@ def verify_route(route,request,evidence=None):
     for name,limit in limits:
         if route.stop_s+(route.parking_s or 0)>limit:
             state,reason = "fail","仅用户确认的停留和停车预留就已超出限制。"
+        elif lower is None and route.mode!="transit" and (bound:=bounded_upper(route)) is not None and bound<=limit:
+            state,reason = "pass",(f"部分路段有 LTA 观测：已观测路段按速度区间下限（0–9 km/h 区间按 {STOPPED_FLOOR_KMH} km/h）、未观测路段按 {UNOBSERVED_FLOOR_KMH} km/h 与服务估计中较慢者计算，"
+                f"总时间上界约 {bound/60:.1f} 分钟仍在限制内；这是保守上界，不是实时 ETA，也不保证实际准时。")
         elif lower is None:
             state = "unknown"
             reason = ("当前路况不能核实预约出发时段的到达时间；目前只有基础行程估计。"
@@ -138,45 +212,33 @@ def verify_route(route,request,evidence=None):
             "已取得路线拥堵参考，可用于候选比较。" if available else
             f"有效路况覆盖 {(route.traffic_coverage or 0):.0%}；可比较已覆盖路段，但未覆盖道路的拥堵未知，尚不能核实整条路线更避堵。",
             route.congestion_fraction,refs=refs,hard=False))
-    if request.require_open and not route.poi:
+    if request.require_open and route.stops:
+        prior=0.0
+        for number,(place,index,dwell) in enumerate(zip(route.stops,route.stop_leg_indices,route.stop_durations_s),1):
+            if route.mode=="transit":
+                arrival=route.stop_arrival_times[number-1] if len(route.stop_arrival_times)>=number else None
+                lo=hi=(arrival-request.departure_time).total_seconds() if arrival else None
+            else:
+                partial=route.model_copy(update={"legs":route.legs[:index+1],"stop_s":prior,"parking":None,"parking_s":0})
+                lo,hi=time_bounds(partial)
+            state,reason=hours_state(place.opening_hours or "",lo,hi,request.departure_time,dwell)
+            checks.append(check("opening_hours_"+str(number),state,f"第 {number} 个经停「{place.name}」："+reason,
+                place.opening_hours,"open",place.evidence_ids))
+            prior+=dwell
+    if request.require_open and not route.poi and not route.stops:
         checks.append(check("opening_hours","unknown","没有经停地点，无法核实营业条件。"))
     if request.require_open and route.poi:
         hours = route.poi.opening_hours or ""
-        if hours=="24/7":
-            state,reason = "pass","OSM 营业标签为全天开放；标签不代表现场核验。"
-        elif re.fullmatch(r"\d{2}:\d{2}-\d{2}:\d{2}",hours):
-            # Arrival interval up to the actual leg ending at the POI.
-            before = []
-            for leg in route.legs:
-                before.append(leg)
-                if leg.destination.id==route.poi.id:
-                    break
-            partial = route.model_copy(update={"legs":before,"stop_s":0})
-            lo,hi = time_bounds(partial)
-            if route.mode=="transit":
-                lo=hi=(route.poi_arrival_time-request.departure_time).total_seconds() if route.poi_arrival_time else None
-            if lo is None:
-                state,reason = "unknown","到店时段缺少时间证据。"
-            else:
-                a,b = hours.split("-")
-                try:
-                    ah,am = map(int,a.split(":")); bh,bm = map(int,b.split(":"))
-                    earliest = request.departure_time+timedelta(seconds=lo)
-                    latest = request.departure_time+timedelta(seconds=hi+route.stop_s)
-                    opening = earliest.replace(hour=ah,minute=am,second=0,microsecond=0)
-                    closing = earliest.replace(hour=bh,minute=bm,second=0,microsecond=0)
-                    if closing<=opening:
-                        state,reason = "unknown","跨夜营业标签尚不能可靠核实。"
-                    elif opening<=earliest and latest<=closing:
-                        state,reason = "pass","预计整个经停时段处于 OSM 标注的营业区间。"
-                    elif earliest>=closing or latest<=opening:
-                        state,reason = "fail","预计经停时段处于营业区间之外。"
-                    else:
-                        state,reason = "unknown","预计时段跨越营业边界。"
-                except ValueError:
-                    state,reason = "unknown","营业时间标签格式无效。"
-        else:
-            state,reason = "unknown","缺少可可靠解释的营业时间，未猜测复杂表达式。"
+        # Arrival interval up to the actual leg ending at the POI.
+        before = []
+        for leg in route.legs:
+            before.append(leg)
+            if leg.destination.id==route.poi.id:
+                break
+        lo,hi = time_bounds(route.model_copy(update={"legs":before,"stop_s":0}))
+        if route.mode=="transit":
+            lo=hi=(route.poi_arrival_time-request.departure_time).total_seconds() if route.poi_arrival_time else None
+        state,reason = hours_state(hours,lo,hi,request.departure_time,route.stop_s)
         checks.append(check("opening_hours",state,reason,hours,"open",route.poi.evidence_ids))
     if route.parking:
         p = route.parking
@@ -211,8 +273,8 @@ def verify_route(route,request,evidence=None):
         checks.append(check("speed_reference","pass" if route.total_s is not None else "unknown",
             "可比较查询到的服务预计时间；不证明全局最快。" if route.total_s is not None else
             "仅有基础行程时间，完整交通时间未知，不能确认最快。",hard=False))
-    if request.multiple_stops:
-        checks.append(check("multiple_stops","unknown","只支持一个业务经停点，需用户修改条件。"))
+    if request.multiple_stops and not request.stops:
+        checks.append(check("multiple_stops","unknown","最多支持 3 个经停点，需用户精简条件。"))
     route.checks = checks
     route.feasibility = "violated" if any(c.status=="fail" for c in checks if c.hard) else "unverified" if any(c.status=="unknown" for c in checks if c.hard) else "verified"
     return route

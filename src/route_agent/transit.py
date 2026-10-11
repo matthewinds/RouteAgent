@@ -137,6 +137,9 @@ def transit_routes(provider, origin, destination, request, *, allow_walking=Fals
             public_transport=any(leg.mode in ("bus","rail") for leg in legs)
             total=(end-request.departure_time).total_seconds()  # Includes initial waiting and transfers.
             raw_fare=itinerary.get("fare")
+            # Observed OneMap sentinel: the itinerary is usable, fare unknown.
+            if raw_fare=="info unavailable":
+                raw_fare=None
             fare=float(raw_fare) if isinstance(raw_fare,(str,int,float)) and not isinstance(raw_fare,bool) and raw_fare!="" else None
             if fare is not None and (not math.isfinite(fare) or fare<0):
                 raise ValueError("Invalid fare")
@@ -179,23 +182,7 @@ def transit_via(provider, origin, destination, poi, request):
         raise ToolFailure("经停需要确认停留时间，不能从到达时限推断。","missing_information")
 
     def journeys(a,b,departure):
-        budget=getattr(provider,"budget",None)
-        if budget and (budget.remaining()<35 or budget.http_calls>=budget.settings.max_http_calls-8):
-            raise ToolFailure("经停候选搜索达到预留边界，保留预算用于检查已有行程和完成推荐。","search_budget")
-        onward=request.model_copy(update={"departure_time":departure})
-        try:
-            return getattr(provider,"transit_journeys",provider.transit_routes)(a,b,onward)
-        except ToolFailure as error:
-            if error.code!="no_route":
-                raise
-            from .routing import assemble
-            options=[]
-            for leg in provider.routes(a,b,"walking",False,3):
-                leg=leg.model_copy(deep=True)
-                leg.departure_time=departure
-                leg.arrival_time=departure+timedelta(seconds=leg.provider_duration_s)
-                options.append(assemble([leg],onward.model_copy(update={"mode":"walking"}),a,b))
-            return options
+        return stop_segment_journeys(provider,a,b,departure,request)
 
     output=[]
     failures=[]
@@ -238,6 +225,87 @@ def transit_via(provider, origin, destination, poi, request):
         if failures and any(error.code!="no_route" for error in failures):
             raise next(error for error in failures if error.code!="no_route")
         raise ToolFailure("此经停地点和出发时段未找到可衔接的公共交通方案。","no_route")
+    return output
+
+
+def stop_segment_journeys(provider, a, b, departure, request):
+    """Real PT itineraries for one segment departing at a known time; a short
+    segment the PT service cannot serve may use a real foot route."""
+    budget=getattr(provider,"budget",None)
+    if budget:
+        budget.check_search()
+    if budget and (budget.remaining()<budget.settings.completion_reserve_seconds or budget.http_calls>=budget.settings.max_http_calls-budget.settings.completion_reserve_http_calls):
+        raise ToolFailure("经停候选搜索达到预留边界，保留预算用于检查已有行程和完成推荐。","search_budget")
+    onward=request.model_copy(update={"departure_time":departure})
+    try:
+        return getattr(provider,"transit_journeys",provider.transit_routes)(a,b,onward)
+    except ToolFailure as error:
+        if error.code!="no_route":
+            raise
+        from .routing import assemble
+        options=[]
+        for leg in provider.routes(a,b,"walking",False,3):
+            leg=leg.model_copy(deep=True)
+            leg.departure_time=departure
+            leg.arrival_time=departure+timedelta(seconds=leg.provider_duration_s)
+            options.append(assemble([leg],onward.model_copy(update={"mode":"walking"}),a,b))
+        return options
+
+
+def transit_chain(provider, origin, destination, stops, durations, request, keep=3):
+    """Ordered 2-3 stops: each onward segment departs at the real arrival plus that stop's dwell.
+
+    Only the earliest-arriving few partial itineraries are extended, so the
+    number of time-dependent queries stays bounded. No transfer is invented.
+    """
+    if len(stops)!=len(durations) or any(d is None for d in durations):
+        raise ToolFailure("每个经停点都需要确认停留时间，不能从到达时限推断。","missing_information")
+    points=[origin,*stops,destination]
+    partials=[([],[],[],request.departure_time,[])]  # legs, stop indices, stop arrivals, ready time, parts
+    for k,(a,b) in enumerate(zip(points,points[1:])):
+        extended=[]
+        for legs,indices,arrivals,ready,parts in partials:
+            try:
+                options=stop_segment_journeys(provider,a,b,ready,request)
+            except ToolFailure as error:
+                if error.code not in ("no_route","invalid_response"):
+                    if extended:
+                        break
+                    raise
+                continue
+            for option in options[:2]:
+                arrival=option.legs[-1].arrival_time
+                if b is destination:
+                    extended.append(([*legs,*option.legs],indices,arrivals,arrival,[*parts,option]))
+                else:
+                    extended.append(([*legs,*option.legs],[*indices,len(legs)+len(option.legs)-1],[*arrivals,arrival],
+                        arrival+timedelta(seconds=durations[k]),[*parts,option]))
+        if not extended:
+            raise ToolFailure("这组经停点在该出发时段未找到可衔接的公共交通方案。","no_route")
+        partials=sorted(extended,key=lambda x:x[3])[:keep]
+    output=[]
+    for legs,indices,arrivals,arrival,parts in partials:
+        if not any(l.mode in ("bus","rail") for l in legs):
+            continue
+        walking=[l for l in legs if l.mode=="walking"]
+        transit_parts=[r for r in parts if r.mode=="transit"]
+        fare=transit_parts[0].fare_sgd if len(transit_parts)==1 else None
+        refs=list(dict.fromkeys([e for r in parts for e in r.evidence_ids]+[e for s in stops for e in s.evidence_ids]))
+        total=(arrival-request.departure_time).total_seconds()
+        output.append(RouteCandidate(id="transit-chain:"+stable([r.id for r in parts]+[s.id for s in stops]+[request.departure_time.isoformat()])[:16],
+            mode="transit",origin=origin,destination=destination,legs=legs,stops=list(stops),stop_durations_s=list(durations),
+            stop_leg_indices=indices,stop_arrival_times=arrivals,
+            geometry={"type":"MultiLineString","coordinates":[l.geometry["coordinates"] for l in legs]},
+            distance_m=sum(l.distance_m for l in legs),walking_m=sum(l.distance_m for l in walking),
+            walking_s=sum(l.provider_duration_s for l in walking),stop_s=sum(durations),
+            provider_total_s=total,total_s=total,evidence_ids=refs,
+            source_warnings=list(dict.fromkeys(w for r in parts for w in r.source_warnings)),
+            time_basis="真实公共交通分段服务预计时间，按顺序含候车、换乘及各经停点已确认停留；非准时保证",
+            fare_sgd=fare,fare_evidence_ids=transit_parts[0].fare_evidence_ids if fare is not None else [],
+            fare_basis=transit_parts[0].fare_basis if len(transit_parts)==1 else
+                "各经停点之间分别查询公共交通，未核实一体化换乘计费；完整费用未知"))
+    if not output:
+        raise ToolFailure("这组经停点只取得全程步行行程，没有公共交通组合。","no_route")
     return output
 
 

@@ -103,3 +103,40 @@ def test_confirmed_company_replays_source_and_query_without_reasking(tmp_path):
     output=agent.resolve_place("destination")
     assert seen==["Example"]*2 and output["user_confirmed"]
     assert not output["resolved"]["requires_confirmation"] and not agent.done
+
+
+def test_area_centroid_needs_confirmation_and_official_buildings_are_offered(tmp_path,monkeypatch):
+    from route_agent.config import Settings
+    from route_agent.providers import Providers
+    from route_agent.tools import Budget
+    provider=Providers(Settings(root=tmp_path),Budget(Settings(root=tmp_path)))
+    def request(method,url,source,**kwargs):
+        if source=="OneMap search":
+            return {"results":[{"SEARCHVAL":"CHANGI AIRPORT TERMINAL 1 BUILDING","LATITUDE":"1.361708","LONGITUDE":"103.99034",
+                "POSTAL":"819642","ADDRESS":"80 AIRPORT BOULEVARD"},
+                {"SEARCHVAL":"UNRELATED PLACE","LATITUDE":"1.30","LONGITUDE":"103.85","POSTAL":"NIL"}]},"ev-onemap"
+        return {"features":[{"geometry":{"coordinates":[104.001417,1.347289]},"bbox":[103.971,1.309,104.033,1.392],
+            "properties":{"gid":"whosonfirst:neighbourhood:1","name":"Changi Airport","label":"Changi Airport, Singapore",
+                "layer":"neighbourhood","confidence":1.0}}]},"ev-pelias"
+    monkeypatch.setattr(provider,"request",request)
+    places=provider.geocode("Changi Airport")
+    area=next(p for p in places if p.source=="ORS Pelias")
+    assert area.location_kind=="area" and area.requires_confirmation and "区域中心" in area.access_note
+    terminal=next(p for p in places if p.source=="OneMap search")
+    assert terminal.name.startswith("Changi Airport Terminal 1") and terminal.requires_confirmation
+    assert terminal.evidence_ids==["ev-onemap"] and not any("Unrelated" in p.name for p in places)
+
+
+def test_clear_exact_match_does_not_consult_secondary_source(tmp_path,monkeypatch):
+    from route_agent.config import Settings
+    from route_agent.providers import Providers
+    from route_agent.tools import Budget
+    provider=Providers(Settings(root=tmp_path),Budget(Settings(root=tmp_path)))
+    sources=[]
+    def request(method,url,source,**kwargs):
+        sources.append(source)
+        return {"features":[{"geometry":{"coordinates":[103.9447,1.3525]},
+            "properties":{"gid":"osm:venue:1","name":"Tampines Mall","label":"Tampines Mall, Singapore","layer":"venue","confidence":1.0}}]},"ev"
+    monkeypatch.setattr(provider,"request",request)
+    places=provider.geocode("Tampines Mall")
+    assert sources==["ORS Pelias"] and len(places)==1 and not places[0].requires_confirmation

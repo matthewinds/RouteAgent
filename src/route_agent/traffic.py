@@ -5,6 +5,13 @@ from shapely.geometry import LineString
 from shapely.strtree import STRtree
 from pyproj import Transformer
 from .providers import distance
+# Deliberately slower than congested Singapore urban traffic; used only to
+# bound unobserved road time from above, never as an estimated speed.
+UNOBSERVED_FLOOR_KMH = 10
+# LTA band 1 reports 0-9 km/h; its zero minimum makes a strict bound infinite,
+# so the pessimistic bound assumes a 3 km/h crawl there (labelled assumption).
+STOPPED_FLOOR_KMH = 3
+BOUND_MIN_COVERAGE = .5
 PROJECT = Transformer.from_crs(4326,32648,always_xy=True).transform
 def future_departure(departure, reference=None):
     """Live observations cannot describe a scheduled future trip."""
@@ -51,7 +58,7 @@ def apply_traffic(legs, payload, departure, max_age=600, budget=None, prepared=N
         coords = leg.geometry["coordinates"]
         total_geom = sum(distance(a,b) for a,b in zip(coords,coords[1:]))
         scale = leg.distance_m/total_geom if total_geom else 0
-        known = middle = lower = upper = congested = 0.0
+        known = middle = lower = upper = bound = congested = 0.0
         upper_known = True
         for index,(a,b) in enumerate(zip(coords,coords[1:])):
             if budget and index%50==0:
@@ -79,6 +86,7 @@ def apply_traffic(legs, payload, departure, max_age=600, budget=None, prepared=N
                 known += metres
                 middle += metres/(((band["low"]+band["high"])/2)/3.6)
                 lower += metres/(band["high"]/3.6)
+                bound += metres/(max(band["low"],STOPPED_FLOOR_KMH)/3.6)
                 if band["low"]>0:
                     upper += metres/(band["low"]/3.6)
                 else:
@@ -93,6 +101,11 @@ def apply_traffic(legs, payload, departure, max_age=600, budget=None, prepared=N
         leg.partial_traffic_duration_s = middle+leg.provider_duration_s*(1-leg.traffic_coverage) if known and leg.traffic_coverage is not None else None
         leg.traffic_lower_s = lower if covered else None
         leg.traffic_upper_s = upper if covered and upper_known else None
+        unobserved = max(0.0,leg.distance_m-known)
+        # Never faster than the service's own estimate for the unobserved share.
+        unobserved_s = max(unobserved/(UNOBSERVED_FLOOR_KMH/3.6),leg.provider_duration_s*unobserved/leg.distance_m if leg.distance_m else 0)
+        leg.bounded_upper_s = (bound+unobserved_s
+            if leg.traffic_coverage is not None and leg.traffic_coverage>=BOUND_MIN_COVERAGE else None)
         leg.congestion_fraction = congested/known if known else None
         leg.traffic_retrieved_at = stamp
         leg.evidence_ids = list(dict.fromkeys([*leg.evidence_ids,*payload.get("evidence_ids",[])]))

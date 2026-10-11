@@ -36,7 +36,7 @@ def test_open_stop_categories_are_autonomous_not_missing_addresses(category):
 
 def test_refuelling_extraction_cannot_end_with_missing_stop_address(tmp_path):
     agent=make_agent(tmp_path);agent.request=None
-    fields=request_fields(mode="driving",poi_required=True,evidence={"poi_required":"途中加个油"})
+    fields=request_fields(mode=None,poi_required=True,evidence={"poi_required":"途中加个油"})
     agent.result.request.original_text="途中加个油"
     with pytest.raises(ToolFailure,match="经停需求尚未提取完整"):
         agent.set_request(fields)

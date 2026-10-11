@@ -1,12 +1,12 @@
-# 历史项目归档
+# 歷史項目歸檔
 
-归档目录：F:\develop\archives\MapAgents\20261001-165441
+歸檔目錄：F:\develop\archives\MapAgents\20261001-165441
 
-校验清单：F:\develop\archives\MapAgents\20261001-165441\archive_manifest.json
+校驗清單：F:\develop\archives\MapAgents\20261001-165441\archive_manifest.json
 
-已逐文件核对大小和 SHA-256，共 1391 个文件。根目录凭据、Git 历史和原环境未移动。
+已逐文件核對大小和 SHA-256，共 1391 個文件。根目錄憑據、Git 歷史和原環境未移動。
 
-独立基线：baselines/mapagent。仅调整配置文件读取位置到项目根目录；提示词、推理和计算逻辑保留。离线基线测试通过后才删除旧路径。
+獨立基線：baselines/mapagent。僅調整配置文件讀取位置到項目根目錄；提示詞、推理和計算邏輯保留。離線基線測試通過後才刪除舊路徑。
 
-恢复：从归档按 manifest 中相对路径复制回目标目录；先校验哈希，再使用原环境运行。归档未包含凭据和虚拟环境。
+恢復：從歸檔按 manifest 中相對路徑複製回目標目錄；先校驗哈希，再使用原環境運行。歸檔未包含憑據和虛擬環境。
 

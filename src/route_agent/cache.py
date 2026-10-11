@@ -34,3 +34,42 @@ class JsonCache:
         finally:
             if os.path.exists(temporary):
                 os.unlink(temporary)
+
+
+class EvidenceStore:
+    """Content-addressed raw responses, kept so any saved result can be audited later.
+
+    Unlike JsonCache (keyed by request, overwritten by newer responses), an entry
+    is named by the SHA-256 of its payload and is never replaced. Request headers
+    and credentials are not stored.
+    """
+
+    def __init__(self, directory: Path):
+        self.directory = directory
+
+    def path(self, digest):
+        return self.directory / digest[:2] / (digest + ".json.gz")
+
+    def put(self, digest, source, retrieved_at, payload):
+        import gzip
+        path = self.path(digest)
+        if path.exists():
+            return
+        path.parent.mkdir(parents=True, exist_ok=True)
+        fd, temporary = tempfile.mkstemp(dir=path.parent, suffix=".tmp")
+        try:
+            with os.fdopen(fd, "wb") as raw, gzip.GzipFile(fileobj=raw, mode="wb") as stream:
+                stream.write(json.dumps({"source": source, "retrieved_at": retrieved_at, "payload": payload},
+                                        ensure_ascii=False, default=str).encode())
+            os.replace(temporary, path)
+        finally:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+
+    def get(self, digest):
+        import gzip
+        try:
+            with gzip.open(self.path(digest), "rb") as stream:
+                return json.loads(stream.read())
+        except (FileNotFoundError, OSError, ValueError):
+            return None

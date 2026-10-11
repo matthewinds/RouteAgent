@@ -15,3 +15,4 @@ data/osm/*.geojson
 outputs/
 baselines/mapagent/outputs/
 .DS_Store
+data/evidence/

@@ -8,7 +8,8 @@ CHECK_LABELS = {"mode":"交通方式","required_poi":"必经地点","avoid_highw
     "walking_distance":"累计步行距离","parking":"当前停车位","parking_access":"停车转换入口",
     "named_parking":"指定停车点","dry_weather":"全程不淋雨","multiple_stops":"多个经停点",
     "cost":"交通费用","weather_reference":"天气参考","speed_reference":"完整预计时间",
-    "congestion_reference":"避堵比较","rain_exposure":"避雨条件","transit_timing":"候车、换乘与经停时序","car_access":"车辆可用性",
+    "congestion_reference":"避堵比较","rain_exposure":"避雨条件","transit_timing":"候车、换乘与经停时序","car_access":"车辆可用性","required_stops":"按顺序经停",
+    **{"opening_hours_"+str(i):"第 "+str(i)+" 个经停营业时间" for i in range(1,4)},
     "lta_train_status":"LTA 地铁运行状态","lta_current_reference":"LTA 当前交通参考",
     **{"lta_bus_arrival_"+str(i):"LTA 第 "+str(i)+" 段公交到站参考" for i in range(1,21)}}
 
@@ -24,16 +25,22 @@ def place_label(place):
     return place.name
 
 def diverse_references(routes, limit=3):
-    """Show the best option for different stops before small path variations."""
-    picked, remaining, seen = [], [], set()
+    """Best option of each travel family first, then different stops, then path variations.
+
+    A family must not disappear just because another family's stop variants
+    happen to rank above it (e.g. driving still waiting for traffic evidence).
+    """
+    families, stops, remaining, seen_modes, seen_stops = [], [], [], set(), set()
     for route in routes:
-        key=(route.mode,route.poi.id if route.poi else None,route.parking.id if route.parking else None)
-        if key in seen:
-            remaining.append(route)
+        key=(route.mode,route.poi.id if route.poi else tuple(p.id for p in getattr(route,"stops",[]) or []) or None,
+             route.parking.id if route.parking else None)
+        if route.mode not in seen_modes:
+            seen_modes.add(route.mode); seen_stops.add(key); families.append(route)
+        elif key not in seen_stops:
+            seen_stops.add(key); stops.append(route)
         else:
-            seen.add(key)
-            picked.append(route)
-    return (picked+remaining)[:limit]
+            remaining.append(route)
+    return (families+stops+remaining)[:limit]
 
 def poi_search_summary(searches):
     if not searches:
@@ -154,7 +161,7 @@ def time_notes(route,traffic_context=None,request=None):
         if incomplete:
             notes.append("部分交通数据未读取完整，已保留成功结果；采集详情见工具记录。")
         notes.append(f"有效交通证据覆盖 {route.traffic_coverage:.0%} 的驾车距离，尚不足以核实完整交通修正时间。"
-            if route.traffic_coverage is not None else "尚无有效驾车交通时间证据。")
+            if route.traffic_coverage is not None else "本次未查询 LTA 路况（规划提前结束或未调用），驾车时间只是不含路况的基础估计。")
     notes.extend(c.reason for c in route.checks if c.constraint in ("duration","arrival_deadline") and c.status=="unknown")
     return list(dict.fromkeys(notes))
 
@@ -171,6 +178,8 @@ def explain(route,include_unknown=True):
         pieces.append(f"结合已覆盖路段的部分路况估计 {route.estimated_total_s/60:.1f} 分钟；未覆盖部分沿用基础估计。")
     if route.poi:
         pieces.append(f"经停 {place_label(route.poi)}，停留 {route.stop_s/60:g} 分钟。")
+    if route.stops:
+        pieces.append("依次经停 "+" → ".join(f"{place_label(p)}（停留 {d/60:g} 分钟）" for p,d in zip(route.stops,route.stop_durations_s))+"。")
     if route.parking:
         pieces.append(f"停车转换点：{route.parking.name}；当前车位 {route.parking.available_lots if route.parking.available_lots is not None else '未知'}，不保证到达时可用。")
     if route.mode!="driving":

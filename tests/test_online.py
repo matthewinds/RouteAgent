@@ -104,6 +104,7 @@ def test_native_tool_loop_preserves_reasoning_but_never_exports_it(tmp_path):
     assert result.recommended.total_s==600 and result.recommended.distance_m==1000
     assert len(model.seen)==7 and result.metrics["tool_calls"]==7
     for call in model.seen[1:]:
+        assert call["messages"][0]==model.seen[0]["messages"][0]  # Stable history prefix for prompt caching.
         assert call["extra_body"]=={"thinking":{"type":"enabled"}}
         assert all(m.get("reasoning_content") for m in call["messages"] if m["role"]=="assistant")
     saved="".join(p.read_text(encoding="utf8") for p in (tmp_path/"outputs"/result.run_id).glob("*"))
@@ -159,7 +160,9 @@ def test_partial_and_stale_traffic_cannot_pass_deadline(tmp_path):
     assert 0<leg.traffic_coverage<1 and leg.traffic_duration_s is None
     route=assemble([leg],agent.request,agent.providers.a,agent.providers.b)
     verify_route(route,agent.request,agent.providers.evidence)
-    assert next(c for c in route.checks if c.constraint=="duration").status=="unknown"
+    # Partial coverage passes only through the labelled pessimistic bound, never as an ETA.
+    check=next(c for c in route.checks if c.constraint=="duration")
+    assert check.status=="pass" and "保守上界" in check.reason and route.total_s is None
     route.legs[0].traffic_duration_s=100; route.legs[0].traffic_lower_s=90; route.legs[0].traffic_upper_s=120
     route.legs[0].traffic_retrieved_at=now_utc()-timedelta(hours=1); route.total_s=100
     verify_route(route,agent.request,agent.providers.evidence)
@@ -207,10 +210,11 @@ def test_unknown_deadline_cannot_publish(tmp_path):
     agent.traffic_attempted=True
     agent.plan_candidates()
     ident=next(iter(agent.routes))
-    with pytest.raises(ToolFailure,match="不能发布"):
-        agent.finish_plan(ident,evidence_ids=["osrm"])
-    agent.finish_plan(None)
-    assert agent.result.status=="unverified" and agent.result.unverified[0].total_s is None
+    # Selecting an unverified route never publishes it as the recommendation;
+    # it becomes the first labelled reference without another model round.
+    agent.finish_plan(ident,evidence_ids=["osrm"])
+    assert agent.result.recommended is None and agent.result.status=="unverified"
+    assert agent.result.unverified[0].id==ident and agent.result.unverified[0].total_s is None
 
 @pytest.mark.parametrize("mode",["walking","driving"])
 def test_unconstrained_trip_can_finish_without_unrelated_information_tools(tmp_path,mode):
@@ -325,8 +329,8 @@ def test_replan_gates_and_limit(tmp_path):
 
 def test_numeric_extraction_is_validated():
     with pytest.raises(ToolFailure,match="单位"):
-        validate_request("最多 30 分钟",request_fields(max_duration_s=30,evidence={"max_duration_s":"30 分钟"}),{})
-    req,_=validate_request("最多 30 分钟",request_fields(max_duration_s=1800,evidence={"max_duration_s":"30 分钟"}),{})
+        validate_request("最多 30 分钟",request_fields(mode=None,max_duration_s=30,evidence={"max_duration_s":"30 分钟"}),{})
+    req,_=validate_request("最多 30 分钟",request_fields(mode=None,max_duration_s=1800,evidence={"max_duration_s":"30 分钟"}),{})
     assert req.max_duration_s==1800
     req,qs=validate_request("驾车后步行",request_fields(mode="drive_walk"),{})
     assert "parking_duration_s" in qs
@@ -541,6 +545,8 @@ def test_checkpoint_compound_retry_does_not_replace_landmark_with_neighbourhood(
     provider=Providers(Settings(root=tmp_path),Budget(Settings(root=tmp_path)))
     seen=[]
     def request(*args,**kwargs):
+        if args[2]=="OneMap search":
+            return {"results":[]},"ev-onemap"  # Secondary source has no extra match here.
         query=kwargs["params"]["text"]
         seen.append(query)
         name="Woodlands" if query=="Woodlands Checkpoint" else "Woodlands Checkpoint"
@@ -559,14 +565,18 @@ def test_descriptive_origin_searches_real_candidates_and_preserves_wording(tmp_p
     seen=[]
     def geocode(query):
         seen.append(query)
-        return {"Woodlands Checkpoint":[agent.providers.a],"Tuas Checkpoint":[agent.providers.b]}.get(query,[])
+        return {"Woodlands Checkpoint":[agent.providers.a],"Tuas Checkpoint":[agent.providers.b],
+            "Marina Bay":[agent.providers.b.model_copy(update={"id":"marina-bay"})]}.get(query,[])
     agent.providers.geocode=geocode
     agent.roles.clear()
-    agent.resolve_place("origin",["Woodlands Checkpoint","Tuas Checkpoint"])
+    held=agent.resolve_place("origin",["Woodlands Checkpoint","Tuas Checkpoint"])
     assert seen==[description,"Woodlands Checkpoint","Tuas Checkpoint"]
     assert agent.request.origin==description
     assert "origin" not in agent.roles
-    assert agent.result.status=="needs_clarification"
+    # The choice waits until the other endpoint is researched, then both go out in one round.
+    assert held["awaiting_user_choice"] and not agent.done
+    agent.resolve_place("destination")
+    assert agent.result.status=="needs_clarification" and "origin_place_id" in agent.result.questions
     assert len(agent.choices["origin_place_id"])==2
     assert all(agent.places[x["id"]].requires_confirmation for x in agent.choices["origin_place_id"])
 

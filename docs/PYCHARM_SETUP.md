@@ -1,40 +1,40 @@
-# PyCharm 启动与环境配置
+# PyCharm 啟動與環境配置
 
-更新：2026-10-02。macOS 当前项目：`/Users/matthew/PycharmProjects/RouteAgent`；原 Windows 项目：`F:\develop\projects\MapAgents`。
+更新：2026-10-02。macOS 當前項目：`/Users/matthew/PycharmProjects/RouteAgent`；原 Windows 項目：`F:\develop\projects\MapAgents`。
 
-## 日常启动
+## 日常啟動
 
-1. 在 PyCharm 打开项目根目录。macOS 解释器使用 `/Users/matthew/PycharmProjects/RouteAgent/.venv/bin/python`（Python 3.11.9）；Windows 使用 `F:\develop\projects\MapAgents\.venv-fyp\Scripts\python.exe`（Python 3.11）。
-2. 按 [API_SETUP.md](API_SETUP.md) 填写根目录 `.env`。OSRM 驾车／步行端点已补充，无需算路 Key；ORS Key 仅用于地址定位。
-3. 右上角选择 **FYP Web**，点击绿色运行按钮。
-4. 浏览器打开 http://127.0.0.1:8502 。配置为空时页面明确显示缺少 Key，开始按钮禁用。
-5. 填入 Key 后重启服务或点击“刷新配置状态”，再输入真实需求。服务认证失败会显示错误；不会生成离线结果。
-6. 停止服务使用红色停止按钮。同一端口已运行时先停止旧实例。
+1. 在 PyCharm 打開項目根目錄。macOS 解釋器使用 `/Users/matthew/PycharmProjects/RouteAgent/.venv/bin/python`（Python 3.11.9）；Windows 使用 `F:\develop\projects\MapAgents\.venv-fyp\Scripts\python.exe`（Python 3.11）。
+2. 按 [API_SETUP.md](API_SETUP.md) 填寫根目錄 `.env`。OSRM 駕車／步行端點已補充，無需算路 Key；ORS Key 僅用於地址定位。
+3. 右上角選擇 **FYP Web**，點擊綠色運行按鈕。
+4. 瀏覽器打開 http://127.0.0.1:8502 。配置為空時頁面明確顯示缺少 Key，開始按鈕禁用。
+5. 填入 Key 後重啟服務或點擊“刷新配置狀態”，再輸入真實需求。服務認證失敗會顯示錯誤；不會生成離線結果。
+6. 停止服務使用紅色停止按鈕。同一端口已運行時先停止舊實例。
 
-运行方式必须是模块 `streamlit`，参数：
+運行方式必須是模塊 `streamlit`，參數：
 
 ```text
 run app/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --browser.gatherUsageStats false
 ```
 
-工作目录为项目根目录。运行配置使用项目解释器；环境变量保留 `PYTHONUNBUFFERED=1`、`PYTHONUTF8=1`；正常网页设 `FYP_MODE=live`，已移除强制 `FYP_PARSER=rules`。认证密钥只从后端 `.env` 读取，不写入运行菜单。
+工作目錄為項目根目錄。運行配置使用項目解釋器；環境變量保留 `PYTHONUNBUFFERED=1`、`PYTHONUTF8=1`；正常網頁設 `FYP_MODE=live`，已移除強制 `FYP_PARSER=rules`。認證密鑰只從後端 `.env` 讀取，不寫入運行菜單。
 
-## 运行菜单
+## 運行菜單
 
-| 名称 | 用途 |
+| 名稱 | 用途 |
 | --- | --- |
-| FYP Web | 正常 DeepSeek 在线网页，8502 |
-| FYP Tests | 新版协议／页面模拟测试＋独立旧版回归 |
-| FYP Check APIs | 只检查配置存在性，不自动消费真实 API；可手动加 --smoke 或 --plan |
-| Historical Synthetic Evaluate Dev / Test | 旧 20／60 请求和合成机制对照，不能算新系统在线验收 |
-| Historical Synthetic Fixture | 明确标注的旧合成重放，只用于研究测试 |
-| Historical Prepare OSM | 旧本地 OSM 图准备；当前在线路线由 OSRM 提供，不依赖它 |
+| FYP Web | 正常 DeepSeek 在線網頁，8502 |
+| FYP Tests | 新版協議／頁面模擬測試＋獨立舊版迴歸 |
+| FYP Check APIs | 只檢查配置存在性，不自動消費真實 API；可手動加 --smoke 或 --plan |
+| Historical Synthetic Evaluate Dev / Test | 舊 20／60 請求和合成機制對照，不能算新系統在線驗收 |
+| Historical Synthetic Fixture | 明確標註的舊合成重放，只用於研究測試 |
+| Historical Prepare OSM | 舊本地 OSM 圖準備；當前在線路線由 OSRM 提供，不依賴它 |
 
-共享配置保存在 `.run/*.run.xml`，使用各平台的项目解释器。macOS 主项目使用 `.venv`；原 Windows 主项目使用 `.venv-fyp`。`baselines/mapagent` 是独立历史基线，依赖版本与主项目不同，需要单独环境，不能把它的 `requirements.txt` 安装到主项目环境。
+共享配置保存在 `.run/*.run.xml`，使用各平臺的項目解釋器。macOS 主項目使用 `.venv`；原 Windows 主項目使用 `.venv-fyp`。`baselines/mapagent` 是獨立歷史基線，依賴版本與主項目不同，需要單獨環境，不能把它的 `requirements.txt` 安裝到主項目環境。
 
-## 终端启动
+## 終端啟動
 
-macOS 在项目根目录执行：
+macOS 在項目根目錄執行：
 
 ```bash
 python3.11 -m venv .venv
@@ -45,7 +45,7 @@ cp -n .env.example .env
 .venv/bin/python -m streamlit run app/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --browser.gatherUsageStats false
 ```
 
-已有环境只需安装依赖，无需重新创建。`.env` 中留空的 Key 需要本人填写；网页可以启动，但在线规划按钮会在必需 Key 缺失时禁用。
+已有環境只需安裝依賴，無需重新創建。`.env` 中留空的 Key 需要本人填寫；網頁可以啟動，但在線規劃按鈕會在必需 Key 缺失時禁用。
 
 Windows：
 
@@ -54,10 +54,10 @@ Windows：
 .\.venv-fyp\Scripts\python.exe -m pytest -q
 ```
 
-自动化通过不能证明 Key 有效。一次真实自动方式判断、推荐和下载流程已通过，复杂接驳、失败恢复及完整评测仍待验收；旧版 PyCharm 启动和合成演示证据保存在 [history/PYCHARM_SETUP_V1.md](history/PYCHARM_SETUP_V1.md)。
+自動化通過不能證明 Key 有效。一次真實自動方式判斷、推薦和下載流程已通過，複雜接駁、失敗恢復及完整評測仍待驗收；舊版 PyCharm 啟動和合成演示證據保存在 [history/PYCHARM_SETUP_V1.md](history/PYCHARM_SETUP_V1.md)。
 
-## 自然语言输入新版
+## 自然語言輸入新版
 
-启动配置和依赖不变。页面只输入自己的需求，不需要选择示例、方式或初始出发时间。方式未指定时 DeepSeek 比较 OSRM 步行／驾车结果后选择；接驳从需求识别。未来出发时间直接写入需求，未指定按现在。结果中的基础总时长与交通修正时间分开，后者无法核实时有具体原因。
+啟動配置和依賴不變。頁面只輸入自己的需求，不需要選擇示例、方式或初始出發時間。方式未指定時 DeepSeek 比較 OSRM 步行／駕車結果後選擇；接駁從需求識別。未來出發時間直接寫入需求，未指定按現在。結果中的基礎總時長與交通修正時間分開，後者無法核實時有具體原因。
 
-已通过一次真实网页自动选择步行、地图推荐和下载测试；其余复杂场景仍需验收，见 [FREE_TEXT_AND_TRAFFIC_FIX.md](FREE_TEXT_AND_TRAFFIC_FIX.md)。
+已通過一次真實網頁自動選擇步行、地圖推薦和下載測試；其餘複雜場景仍需驗收，見 [FREE_TEXT_AND_TRAFFIC_FIX.md](FREE_TEXT_AND_TRAFFIC_FIX.md)。

@@ -273,6 +273,33 @@ def test_partial_preferences_show_reference_cost_and_failed_modes(monkeypatch):
     assert frame.iloc[0]["状态"]=="基础检查通过；偏好比较不完整"
 
 
+@pytest.mark.parametrize("complete",[True,False])
+def test_fare_components_show_total_or_partial_subtotal_distinctly(monkeypatch,complete):
+    def planner(text,*args,**kwargs):
+        result=result_for(text)
+        route=result.recommended
+        route.fare_sgd=5.68 if complete else None
+        route.fare_known_subtotal_sgd=5.68 if complete else 1.59
+        route.fare_profile="MOCK 成人标准票价参考"
+        route.fare_basis="MOCK 完整费用" if complete else "MOCK 部分来源缺失"
+        route.fare_components=[{"service":"30","boarding":"MOCK Origin","alighting":"MOCK Stop",
+            "fare_sgd":1.59,"journey_group":1,"transfer_basis":"MOCK 首次上车","source_url":"https://www.lta.gov.sg/"},
+            {"service":"SS","boarding":"MOCK Mainland","alighting":"MOCK Island",
+            "fare_sgd":4 if complete else None,"journey_group":2,"transfer_basis":"MOCK 单独计费","source_url":"https://b2b.sentosa.com.sg/faq"}]
+        return result
+    monkeypatch.setattr(route_agent,"plan_route",planner)
+    app=AppTest.from_file(str(ROOT/"app/streamlit_app.py")).run(timeout=20)
+    app.text_area[0].set_value("MOCK 票价页面测试")
+    button(app,"开始在线规划").click().run();app=wait_for_job(app)
+    assert not app.exception
+    assert any(e.label=="交通费用明细与计费依据" for e in app.expander)
+    frames=[d.value for d in app.dataframe if "本段应计金额（SGD）" in d.value]
+    assert len(frames)==1
+    assert frames[0].iloc[1]["本段应计金额（SGD）"]==("S$4.00" if complete else "未知")
+    if not complete:
+        assert any("小计 S$1.59" in c.value and "不能当作整程总价" in c.value for c in app.caption)
+
+
 def test_scheduled_route_shows_specific_pending_check_and_base_slack(monkeypatch):
     def planner(text,*args,**kwargs):
         result=result_for(text)
@@ -391,3 +418,67 @@ def test_lta_status_is_visible_with_reason_even_without_road_result(monkeypatch,
         'transit':'本次未调用 LTA 道路车速','fetched':'已取得 LTA 道路路况'}[scenario]
     assert any(expected in x.value for x in app.info)
     assert any('公交／地铁组合行程由 OneMap' in x.value for x in app.caption)
+
+
+def test_ambiguous_deadline_offers_readings_without_preselecting(monkeypatch):
+    received=[]
+    readings=[{"id":"2026-10-11T00:00:00+08:00","name":"今天午夜 24:00（约 22 分钟后）"},
+              {"id":"2026-10-11T12:00:00+08:00","name":"明天 12:00（约 12 小时 22 分钟后）"}]
+    def planner(text,clarifications=None,**kwargs):
+        received.append(clarifications or {})
+        result=result_for(text)
+        if "arrival_deadline" not in (clarifications or {}):
+            result.status="needs_clarification";result.recommended=None
+            result.questions={"arrival_deadline":"「我需要在十二点前到达」可以理解为不同时刻，请确认到达时限。"}
+            result.context["choices"]={"arrival_deadline":readings}
+        return result
+    monkeypatch.setattr(route_agent,"plan_route",planner)
+    app=AppTest.from_file(str(ROOT/"app/streamlit_app.py")).run(timeout=20)
+    app.text_area[0].set_value("我需要在十二点前到达")
+    button(app,"开始在线规划").click().run();app=wait_for_job(app)
+    assert app.radio[0].value is None and not app.selectbox
+    button(app,"确认并继续在线规划").click().run()
+    assert len(received)==1 and any("不会默认" in w.value for w in app.warning)
+    app.radio[0].set_value(readings[0]["id"])
+    button(app,"确认并继续在线规划").click().run();app=wait_for_job(app)
+    assert received[-1]["arrival_deadline"]=="2026-10-11T00:00:00+08:00" and not app.exception
+
+
+def test_ordered_stops_are_shown_in_table_and_details(monkeypatch):
+    def planner(text,*args,**kwargs):
+        result=result_for(text)
+        req=result.request
+        a,b=result.recommended.origin,result.recommended.destination
+        post=Place(id="post",name="MOCK Post",lat=1.293,lon=103.853,category="amenity:post_office",source="MOCK")
+        bakery=Place(id="bakery",name="MOCK Bakery",lat=1.296,lon=103.856,category="shop:bakery",source="MOCK")
+        def leg(i,x,y):
+            return RouteLeg(id="leg"+str(i),mode="walking",origin=x,destination=y,distance_m=400,provider_duration_s=300,
+                geometry={"type":"LineString","coordinates":[[x.lon,x.lat],[y.lon,y.lat]]})
+        result.recommended=assemble([leg(0,a,post),leg(1,post,bakery),leg(2,bakery,b)],req,a,b,
+            stops=[post,bakery],stop_durations=[300,120],stop_leg_indices=[0,1])
+        return result
+    monkeypatch.setattr(route_agent,"plan_route",planner)
+    app=AppTest.from_file(str(ROOT/"app/streamlit_app.py")).run(timeout=20)
+    app.text_area[0].set_value("先去邮局再去面包店")
+    button(app,"开始在线规划").click().run();app=wait_for_job(app)
+    assert not app.exception
+    frame=next(d.value for d in app.dataframe if "经停" in d.value.columns)
+    assert frame.iloc[0]["经停"]=="MOCK Post → MOCK Bakery"
+    assert any("经停地点（按顺序）"==s.value for s in app.subheader)
+
+
+def test_placeholder_leg_endpoints_show_real_stop_names():
+    from route_agent.models import RouteCandidate
+    # Load only the pure helper; importing the page module would render it.
+    source=(ROOT/"app/streamlit_app.py").read_text(encoding="utf-8")
+    start=source.index("def boundary_places(route):");end=source.index("def trip_card(")
+    namespace={};exec(source[start:end],namespace)
+    a=Place(id="a",name="City Hall",lat=1.29,lon=103.85,source="MOCK");b=Place(id="b",name="Marina Bay",lat=1.30,lon=103.86,source="MOCK")
+    post=Place(id="post",name="MOCK Post",lat=1.293,lon=103.853,source="MOCK")
+    placeholder=Place(id="onemap-stop:x",name="Destination",lat=1.293,lon=103.853,source="OneMap transit")
+    leg=lambda i,x,y:RouteLeg(id="l"+str(i),mode="walking",origin=x,destination=y,distance_m=1,provider_duration_s=1,
+        geometry={"type":"LineString","coordinates":[[x.lon,x.lat],[y.lon,y.lat]]})
+    route=RouteCandidate(id="r",mode="transit",origin=a,destination=b,legs=[leg(0,a,placeholder),leg(1,placeholder,placeholder)],
+        geometry={},distance_m=2,stops=[post],stop_durations_s=[60],stop_leg_indices=[0])
+    names=[(p.name,tag) for p,tag in namespace["boundary_places"](route)]
+    assert names==[("City Hall",""),("MOCK Post","经停 1"),("Marina Bay","")]

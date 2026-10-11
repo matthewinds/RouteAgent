@@ -33,6 +33,16 @@ class Place(Record):
     source_url: str | None = None
     stop_code: str | None = None
     source_stop_id: str | None = None
+MAX_STOPS = 3
+class StopRequest(Record):
+    """One of several ordered business stops (2-3). A single stop keeps using poi_* fields."""
+    poi_category: str | None = Field(default=None,
+        pattern=r"^(?:(?:amenity|shop|leisure|tourism|healthcare):)?[a-z][a-z0-9_]{0,63}$",
+        description="OSM key:value category for this stop when no specific business is named.")
+    poi_name: str | None = Field(default=None,description="Only a user-named business or branch for this stop; never a generic category.")
+    stop_duration_s: float | None = Field(default=None,ge=0,description="Confirmed dwell at this stop in seconds; null if the user gave none.")
+    evidence: str = Field(min_length=1,description="Exact user excerpt naming this stop.")
+    duration_evidence: str | None = Field(default=None,description="Exact user excerpt with this stop's dwell time, when stated.")
 class TravelRequest(Record):
     original_text: str
     origin: str | None = Field(default=None,description="Preserve the user's supplied start description, including vague names, Chinese names and typos. Null only when genuinely absent, never because its location is not yet known.")
@@ -54,6 +64,8 @@ class TravelRequest(Record):
     multiple_stop_evidence: list[str] = Field(default_factory=list,max_length=8,
         description="Exact, separate user excerpts naming each distinct business stop when multiple_stops is true. Exclude endpoints and multiple activities at the same place. A single business stop needs no list.")
     stop_duration_s: float | None = Field(default=None, ge=0)
+    stops: list[StopRequest] = Field(default_factory=list,max_length=MAX_STOPS,
+        description="Two or three distinct business stops in the user's visiting order. Leave poi_category/poi_name null when used; a single stop uses poi_* fields instead. stop_duration_s at request level applies to stops without their own duration.")
     avoid_highways: bool = False
     prefer_avoid_highways: bool = False
     prefer_avoid_congestion: bool = False
@@ -105,6 +117,9 @@ class RouteLeg(Record):
     partial_traffic_duration_s: float | None = Field(default=None,ge=0)
     traffic_lower_s: float | None = None
     traffic_upper_s: float | None = None
+    # Partial coverage only: observed parts at the band minimum speed plus
+    # unobserved parts at UNOBSERVED_FLOOR_KMH. A pessimistic bound, never an ETA.
+    bounded_upper_s: float | None = None
     congestion_fraction: float | None = None
     traffic_retrieved_at: datetime | None = None
     segments: list[dict[str, Any]] = Field(default_factory=list)
@@ -138,6 +153,11 @@ class RouteCandidate(Record):
     poi_arrival_time: datetime | None = None
     poi_departure_time: datetime | None = None
     poi_leg_index: int | None = Field(default=None,ge=0)
+    # Ordered multi-stop itineraries (2-3 stops); single-stop routes use poi*.
+    stops: list[Place] = Field(default_factory=list)
+    stop_durations_s: list[float] = Field(default_factory=list)
+    stop_leg_indices: list[int] = Field(default_factory=list)
+    stop_arrival_times: list[datetime] = Field(default_factory=list)
     parking_s: float | None = None
     provider_total_s: float | None = None
     total_s: float | None = None
@@ -155,6 +175,9 @@ class RouteCandidate(Record):
     fare_sgd: float | None = Field(default=None,ge=0)
     fare_basis: str = "缺少完整费用数据，不能证明经济实惠"
     fare_evidence_ids: list[str] = Field(default_factory=list)
+    fare_components: list[dict[str, Any]] = Field(default_factory=list)
+    fare_known_subtotal_sgd: float | None = Field(default=None,ge=0)
+    fare_profile: str | None = None
     source_warnings: list[str] = Field(default_factory=list)
 class TaskState(Record):
     request: TravelRequest

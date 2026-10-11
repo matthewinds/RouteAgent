@@ -1,16 +1,16 @@
-# RouteAgent：DeepSeek 真实在线出行规划
+# RouteAgent：DeepSeek 真實在線出行規劃
 
-网页正常流程：DeepSeek 理解需求 → 自主调用真实地图、POI、路况、天气或停车工具 → 验证和有限重规划 → 比较并选择有证据的方案。支持新加坡驾车、步行、公交＋地铁＋步行组合、驾车后一次停车步行接驳，以及最多一个业务经停点。
+網頁正常流程：DeepSeek 理解需求 → 自主調用真實地圖、POI、路況、天氣或停車工具 → 驗證和有限重規劃 → 比較並選擇有證據的方案。支持新加坡駕車、步行、公交＋地鐵＋步行組合、駕車後一次停車步行接駁，以及最多一個業務經停點。
 
-**当前交付是在线接入代码。Key 的填写状态由页面检查；OSM、Open-Meteo 与 OSRM 驾车／步行已完成小范围真实响应检查，一次真实网页自动判断方式、推荐和下载流程已通过；其他场景及效果仍待验收。自动化模拟测试不是接通证明。缺少必需 Key 时网页禁止开始规划，不提供演示或规则回退。**
+**當前交付是在線接入代碼。Key 的填寫狀態由頁面檢查；OSM、Open-Meteo 與 OSRM 駕車／步行已完成小範圍真實響應檢查，一次真實網頁自動判斷方式、推薦和下載流程已通過；其他場景及效果仍待驗收。自動化模擬測試不是接通證明。缺少必需 Key 時網頁禁止開始規劃，不提供演示或規則回退。**
 
-## 启动
+## 啟動
 
-1. 在根目录 `.env` 填写 `DEEPSEEK_API_KEY`、`ORS_API_KEY`（ORS 仅用于地址定位）；OSRM 算路端点已配置，无需 Key。驾车交通与停车功能另需 `LTA_API_KEY`。不要覆盖已有 Google/OpenRouter 凭据。
-2. 在 PyCharm 选择 **FYP Web**，运行后打开 http://127.0.0.1:8502 。
-3. 直接输入自己的出行需求，没有示例或交通方式选择框。未指定方式时，DeepSeek 比较完整的步行、公交／地铁组合和已确认可用车辆的自驾行程；临时选择不会锁定整程方式。公共交通需配置 `ONEMAP_TOKEN`；未指定出发时间按现在。点击页面“刷新配置状态”。“已配置”只表示 Key 非空，调用是否成功需要真实运行验证。
+1. 在根目錄 `.env` 填寫 `DEEPSEEK_API_KEY`、`ORS_API_KEY`（ORS 僅用於地址定位）；OSRM 算路端點已配置，無需 Key。駕車交通與停車功能另需 `LTA_API_KEY`。不要覆蓋已有 Google/OpenRouter 憑據。
+2. 在 PyCharm 選擇 **FYP Web**，運行後打開 http://127.0.0.1:8502 。
+3. 直接輸入自己的出行需求，沒有示例或交通方式選擇框。未指定方式時，DeepSeek 比較完整的步行、公交／地鐵組合和已確認可用車輛的自駕行程；臨時選擇不會鎖定整程方式。公共交通需配置 `ONEMAP_TOKEN`；未指定出發時間按現在。點擊頁面“刷新配置狀態”。“已配置”只表示 Key 非空，調用是否成功需要真實運行驗證。
 
-macOS 新环境安装和启动（在项目根目录执行，PyCharm 解释器选择 `.venv/bin/python`，Python 3.11）：
+macOS 新環境安裝和啟動（在項目根目錄執行，PyCharm 解釋器選擇 `.venv/bin/python`，Python 3.11）：
 
 ```bash
 python3.11 -m venv .venv
@@ -19,52 +19,52 @@ cp -n .env.example .env
 .venv/bin/python -m streamlit run app/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --browser.gatherUsageStats false
 ```
 
-安装后可运行 `.venv/bin/python -m pip check` 和 `.venv/bin/python -m pytest -q` 检查依赖与主项目测试。真实在线规划还需在 `.env` 填写上面列出的 Key。
+安裝後可運行 `.venv/bin/python -m pip check` 和 `.venv/bin/python -m pytest -q` 檢查依賴與主項目測試。真實在線規劃還需在 `.env` 填寫上面列出的 Key。
 
-Windows 也可在项目根目录运行：
+Windows 也可在項目根目錄運行：
 
 ```powershell
 .\scripts\start_web.ps1
 ```
 
-Windows 新环境：`.venv-fyp\Scripts\python.exe`（Python 3.11）。安装可使用：
+Windows 新環境：`.venv-fyp\Scripts\python.exe`（Python 3.11）。安裝可使用：
 
 ```powershell
 python -m venv .venv-fyp
 .\.venv-fyp\Scripts\python.exe -m pip install -r requirements.lock.txt
 ```
 
-## 保存的方案和说明
+## 保存的方案和說明
 
-- [另一台设备使用](docs/SECOND_DEVICE_SETUP.md)：拉取最新代码、安装依赖和配置本地密钥。
-- [OSRM 配置与限制](docs/OSRM_SETUP.md)：驾车／步行端点、避高速限制和真实证据。
-- [API 申请与填写](docs/API_SETUP.md)：需要哪些 Key、官方入口、检查方法。
-- [LTA 完整动态数据接入](docs/LTA_INTEGRATION.md)：33 类数据、公共交通实时核对、文件读取与实际覆盖范围。
-- [PyCharm 启动](docs/PYCHARM_SETUP.md)：解释器、运行菜单、网页和测试。
-- [模块实施方案](docs/FYP_IMPLEMENTATION_PLAN.md)：U00–U04、证据规则、限额与剩余验收。
-- [新版验收记录](docs/VALIDATION.md)：自动化与真实在线验收分开记录。
-- [旧项目归档索引](docs/ARCHIVE_INDEX.md)：原项目整理与恢复。
-- [后端接口](src/route_agent/service.py)：`plan_route(text, clarifications, settings=..., progress=...)`。
+- [另一臺設備使用](docs/SECOND_DEVICE_SETUP.md)：拉取最新代碼、安裝依賴和配置本地密鑰。
+- [OSRM 配置與限制](docs/OSRM_SETUP.md)：駕車／步行端點、避高速限制和真實證據。
+- [API 申請與填寫](docs/API_SETUP.md)：需要哪些 Key、官方入口、檢查方法。
+- [LTA 完整動態數據接入](docs/LTA_INTEGRATION.md)：33 類數據、公共交通實時核對、文件讀取與實際覆蓋範圍。
+- [PyCharm 啟動](docs/PYCHARM_SETUP.md)：解釋器、運行菜單、網頁和測試。
+- [模塊實施方案](docs/FYP_IMPLEMENTATION_PLAN.md)：U00–U04、證據規則、限額與剩餘驗收。
+- [新版驗收記錄](docs/VALIDATION.md)：自動化與真實在線驗收分開記錄。
+- [舊項目歸檔索引](docs/ARCHIVE_INDEX.md)：原項目整理與恢復。
+- [後端接口](src/route_agent/service.py)：`plan_route(text, clarifications, settings=..., progress=...)`。
 
-## 目录
+## 目錄
 
 ```text
-app/                        真实在线 Streamlit 页面
-src/route_agent/             DeepSeek 工具循环与真实服务适配器
-src/route_agent/fixtures/    历史合成机制测试，正常入口不导入
-tests/                      协议、发布检查和网页自动化测试
-docs/                       当前方案、配置与验收；history 保存旧版记录
-data/cache/online-v2/        带时间和来源的真实响应缓存（不包含认证头）
-outputs/                    v2 需求、分段路线、证据、事件和诊断
-baselines/mapagent/          独立原 MapAgent 基线
+app/                        真實在線 Streamlit 頁面
+src/route_agent/             DeepSeek 工具循環與真實服務適配器
+src/route_agent/fixtures/    歷史合成機制測試，正常入口不導入
+tests/                      協議、發佈檢查和網頁自動化測試
+docs/                       當前方案、配置與驗收；history 保存舊版記錄
+data/cache/online-v2/        帶時間和來源的真實響應緩存（不包含認證頭）
+outputs/                    v2 需求、分段路線、證據、事件和診斷
+baselines/mapagent/          獨立原 MapAgent 基線
 ```
 
-OSRM 提供基础服务预计时间，不是实时交通 ETA。LTA 只更新方向和几何匹配且有效的路段；覆盖不完整时完整驾车 ETA 未知。Open-Meteo 是天气模型网格预报，NEA 为可选区域补充；均不能保证全程无雨。当前停车位不能保证未来可用。未知硬约束只能列为待核实。
+OSRM 提供基礎服務預計時間，不是實時交通 ETA。LTA 只更新方向和幾何匹配且有效的路段；覆蓋不完整時完整駕車 ETA 未知。Open-Meteo 是天氣模型網格預報，NEA 為可選區域補充；均不能保證全程無雨。當前停車位不能保證未來可用。未知硬約束只能列為待核實。
 
-组合行程与业务经停、候车换乘时序及真实步行接驳的实现与验证见 [组合出行修复](docs/MULTIMODAL_PLANNING_FIX.md)。公交与地铁时刻来自 OneMap，所有接驳几何与时间来自真实路线服务；遮蔽未知时，避雨比较使用步行及等待的潜在暴露参考。
+組合行程與業務經停、候車換乘時序及真實步行接駁的實現與驗證見 [組合出行修復](docs/MULTIMODAL_PLANNING_FIX.md)。公交與地鐵時刻來自 OneMap，所有接駁幾何與時間來自真實路線服務；遮蔽未知時，避雨比較使用步行及等待的潛在暴露參考。
 
-地点描述在提取修正时不得丢失，单店早餐不会当成多个经停；网页显示每次规划中 LTA 的查询与适用状态。实现和真实服务核对见 [地点提取与 LTA 展示修复](docs/ENDPOINT_EXTRACTION_LTA_FIX.md)。
+地點描述在提取修正時不得丟失，單店早餐不會當成多個經停；網頁顯示每次規劃中 LTA 的查詢與適用狀態。實現和真實服務核對見 [地點提取與 LTA 展示修復](docs/ENDPOINT_EXTRACTION_LTA_FIX.md)。
 
-历史 20/60 请求和七种合成策略保留供机制研究，其结果不代表新版 DeepSeek 在线系统效果。旧版导出仍保留，不通过当前在线入口重放。
+歷史 20/60 請求和七種合成策略保留供機制研究，其結果不代表新版 DeepSeek 在線系統效果。舊版導出仍保留，不通過當前在線入口重放。
 
-基础预计总时长与交通修正总时长分开显示；交通证据缺失不会遮住已经存在的 OSRM 基础估计。LTA 读取不再固定于 40 页，预算内自适应分页并保留有效部分、标记完整性；硬时限继续只由有效证据验证。真实证据见 [修复验收](docs/FREE_TEXT_AND_TRAFFIC_FIX.md)。
+基礎預計總時長與交通修正總時長分開顯示；交通證據缺失不會遮住已經存在的 OSRM 基礎估計。LTA 讀取不再固定於 40 頁，預算內自適應分頁並保留有效部分、標記完整性；硬時限繼續只由有效證據驗證。真實證據見 [修復驗收](docs/FREE_TEXT_AND_TRAFFIC_FIX.md)。

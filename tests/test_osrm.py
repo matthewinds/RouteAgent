@@ -121,3 +121,42 @@ def test_pacing_is_shared_across_provider_instances_and_failures(tmp_path,monkey
     first.send_request(Client(),"GET","https://osrm.test",paced=True)
     assert all(b-a>=1.05-1e-8 for a,b in zip(stamps,stamps[1:]))
     assert first.budget.http_calls==2 and second.budget.http_calls==1
+
+
+def test_paced_requests_keep_start_spacing_but_overlap_latency(tmp_path):
+    import threading,time
+    from concurrent.futures import ThreadPoolExecutor
+    from route_agent.config import Settings
+    from route_agent.providers import Providers
+    from route_agent.tools import Budget
+    settings=Settings(root=tmp_path);provider=Providers(settings,Budget(settings))
+    starts=[];lock=threading.Lock()
+    class Client:
+        def request(self,method,url,**kwargs):
+            with lock:starts.append(time.monotonic())
+            time.sleep(1.5)  # Slow service reply.
+            return "ok"
+    began=time.monotonic()
+    with ThreadPoolExecutor(3) as pool:
+        list(pool.map(lambda _:provider.send_request(Client(),"GET","x",paced=True),range(3)))
+    starts.sort()
+    assert all(b-a>=1.0 for a,b in zip(starts,starts[1:]))
+    assert time.monotonic()-began<4.5  # Serial request+reply would take more than 6.5s.
+
+
+def test_raw_responses_are_kept_by_content_hash_for_later_audit(tmp_path,monkeypatch):
+    import httpx
+    from route_agent.config import Settings
+    from route_agent.providers import Providers, stable
+    from route_agent.tools import Budget
+    settings=Settings(root=tmp_path);provider=Providers(settings,Budget(settings))
+    bodies=iter([{"value":[1]},{"value":[2]}])
+    monkeypatch.setattr(httpx.Client,"request",lambda self,method,url,**kw:httpx.Response(200,json=next(bodies),request=httpx.Request(method,url)))
+    first,ev1=provider.request("GET","https://example.test/x","Test source",headers={"AccountKey":"secret-key"})
+    second,ev2=provider.request("GET","https://example.test/x","Test source",headers={"AccountKey":"secret-key"})
+    for payload,ident in ((first,ev1),(second,ev2)):
+        digest=provider.evidence[ident].response_sha256
+        stored=provider.evidence_store.get(digest)
+        assert stored["payload"]==payload and stable(stored["payload"])==digest and stored["source"]=="Test source"
+    import gzip
+    assert not any(b"secret-key" in gzip.open(p).read() for p in (tmp_path/"data/evidence").rglob("*.gz"))

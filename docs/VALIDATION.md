@@ -1,94 +1,94 @@
-# DeepSeek 在线改造验收记录
+# DeepSeek 在線改造驗收記錄
 
-日期：2026-10-02，新加坡时间。
+日期：2026-10-02，新加坡時間。
 
-## 状态边界
+## 狀態邊界
 
-代码接入、配置入口和自动化测试已实现。**OSM 道路／医院／餐厅与 Open-Meteo 已完成小范围真实响应检查，完整 DeepSeek 工具规划与在线网页流程仍未验收。** 页面“已配置”只判断 Key 非空；配置检查不等于接通。下方早期缺凭据记录保留为历史时间点，不代表当前配置。
+代碼接入、配置入口和自動化測試已實現。**OSM 道路／醫院／餐廳與 Open-Meteo 已完成小範圍真實響應檢查，完整 DeepSeek 工具規劃與在線網頁流程仍未驗收。** 頁面“已配置”只判斷 Key 非空；配置檢查不等於接通。下方早期缺憑據記錄保留為歷史時間點，不代表當前配置。
 
-旧版的真实中心区域 OSM 下载与合成网页演示保留在 [history/VALIDATION_V1.md](history/VALIDATION_V1.md)，不能作为新 ORS / DeepSeek 服务验收依据。
+舊版的真實中心區域 OSM 下載與合成網頁演示保留在 [history/VALIDATION_V1.md](history/VALIDATION_V1.md)，不能作為新 ORS / DeepSeek 服務驗收依據。
 
-## 自动化检查
+## 自動化檢查
 
-- 新版 test_online.py：21 项，模拟模型与 HTTP 返回；禁止真实外部网络。覆盖原生连续 tool_calls、思考历史回传、错误模型不回退、第一次 POI 验证失败后扩大查询并恢复、参数／未知 ID／重复 ID、硬约束与时间证据、有限重规划、预算、ORS 双 profile、HTTP 重试／缓存／分页、认证信息不外泄、交通方向／覆盖／未来出发／过期、停车零位、停车预留／入口、步行汇总、预报时段与几何连接。
-- 新版 test_web.py：4 项，用模拟规划结果；验证缺 Key 禁止开始、无快照／规则选择、后台完成后结果／地图组件／下载、修改提交、澄清继续、服务错误提示。
-- 历史 fixtures 后端回归：47 项，明确属于旧机制研究。
-- 环境依赖检查：无冲突。
+- 新版 test_online.py：21 項，模擬模型與 HTTP 返回；禁止真實外部網絡。覆蓋原生連續 tool_calls、思考歷史回傳、錯誤模型不回退、第一次 POI 驗證失敗後擴大查詢並恢復、參數／未知 ID／重複 ID、硬約束與時間證據、有限重規劃、預算、ORS 雙 profile、HTTP 重試／緩存／分頁、認證信息不外洩、交通方向／覆蓋／未來出發／過期、停車零位、停車預留／入口、步行彙總、預報時段與幾何連接。
+- 新版 test_web.py：4 項，用模擬規劃結果；驗證缺 Key 禁止開始、無快照／規則選擇、後臺完成後結果／地圖組件／下載、修改提交、澄清繼續、服務錯誤提示。
+- 歷史 fixtures 後端迴歸：47 項，明確屬於舊機制研究。
+- 環境依賴檢查：無衝突。
 
-最终执行：python -m pytest -q，72 passed；代码语法编译通过。没有任何模拟结果被写成真实服务响应。
+最終執行：python -m pytest -q，72 passed；代碼語法編譯通過。沒有任何模擬結果被寫成真實服務響應。
 
-## 配置存在性检查
+## 配置存在性檢查
 
-scripts/check_live.py 默认只读 Key 是否非空，不发网络请求。2026-10-02 检查：DeepSeek=false、ORS=false、LTA=false、data.gov.sg=false。输出 outputs/online-check/summary.json，connectivity 为空，acceptance=未验收。
+scripts/check_live.py 默認只讀 Key 是否非空，不髮網絡請求。2026-10-02 檢查：DeepSeek=false、ORS=false、LTA=false、data.gov.sg=false。輸出 outputs/online-check/summary.json，connectivity 為空，acceptance=未驗收。
 
---public 仅调用公开 OSM／Open-Meteo；--smoke 另检查配置好的 ORS／LTA；--plan 调用正常 DeepSeek 规划，可能产生费用。此轮已执行小范围 --smoke 和 --public，未执行真实 DeepSeek 规划。
+--public 僅調用公開 OSM／Open-Meteo；--smoke 另檢查配置好的 ORS／LTA；--plan 調用正常 DeepSeek 規劃，可能產生費用。此輪已執行小範圍 --smoke 和 --public，未執行真實 DeepSeek 規劃。
 
-## 待真实验收
+## 待真實驗收
 
-| 功能 | 状态与缺口 |
+| 功能 | 狀態與缺口 |
 | --- | --- |
-| DeepSeek 官方认证与工具协议 | Key 当前已配置，真实模型选择质量、延迟与输出长度仍未验收 |
-| ORS Pelias / driving-car / foot-walking | Pelias 真实响应通过；算路、消歧确认和道路入口未完成验收 |
-| OSM Overpass | 道路／医院／餐厅真实查询通过；完整经停和营业流程仍待验收 |
-| LTA v4 速度区间、事故、车位 | Key 当前已配置；速度区间已收到 40 页真实响应，但分页上限触发，未取得完整交通上下文；未作有效 ETA 证据，方向匹配与车位未验收 |
-| Open-Meteo / NEA | Open-Meteo 真实公开预报响应通过；路线关联和网页卡片仅模拟检查；NEA 可选补充未在线验收 |
-| 驾车／步行／停车接驳网页 | 自动化模拟验证；完整真实流程待在线验收 |
-| 新版在线对照／消融实验 | 未实施统一真实快照运行器；旧 420 次合成实验不替代新系统效果评测 |
+| DeepSeek 官方認證與工具協議 | Key 當前已配置，真實模型選擇質量、延遲與輸出長度仍未驗收 |
+| ORS Pelias / driving-car / foot-walking | Pelias 真實響應通過；算路、消歧確認和道路入口未完成驗收 |
+| OSM Overpass | 道路／醫院／餐廳真實查詢通過；完整經停和營業流程仍待驗收 |
+| LTA v4 速度區間、事故、車位 | Key 當前已配置；速度區間已收到 40 頁真實響應，但分頁上限觸發，未取得完整交通上下文；未作有效 ETA 證據，方向匹配與車位未驗收 |
+| Open-Meteo / NEA | Open-Meteo 真實公開預報響應通過；路線關聯和網頁卡片僅模擬檢查；NEA 可選補充未在線驗收 |
+| 駕車／步行／停車接駁網頁 | 自動化模擬驗證；完整真實流程待在線驗收 |
+| 新版在線對照／消融實驗 | 未實施統一真實快照運行器；舊 420 次合成實驗不替代新系統效果評測 |
 
-每次真实验收保存 run_id、响应来源、获取时间／有效期、缓存状态、模型和代码哈希；单接口成功和整个用户流程成功分别记录。需完成的流程清单见 [实施方案](FYP_IMPLEMENTATION_PLAN.md)。
+每次真實驗收保存 run_id、響應來源、獲取時間／有效期、緩存狀態、模型和代碼哈希；單接口成功和整個用戶流程成功分別記錄。需完成的流程清單見 [實施方案](FYP_IMPLEMENTATION_PLAN.md)。
 
-## 浏览器缺凭据检查
+## 瀏覽器缺憑據檢查
 
-2026-10-02 在 http://127.0.0.1:8502 打开实际新版页面：DeepSeek／ORS／LTA 显示缺少 Key，开始在线规划按钮禁用，页面没有规则解析或快照选择。未提交真实服务请求。截图见 [缺密钥页面](screenshots/online-missing-keys.png)。这仅证明缺配置状态的网页提示，不代表真实规划验收。
+2026-10-02 在 http://127.0.0.1:8502 打開實際新版頁面：DeepSeek／ORS／LTA 顯示缺少 Key，開始在線規劃按鈕禁用，頁面沒有規則解析或快照選擇。未提交真實服務請求。截圖見 [缺密鑰頁面](screenshots/online-missing-keys.png)。這僅證明缺配置狀態的網頁提示，不代表真實規劃驗收。
 
-## 2026-10-02 OSM 与 Open-Meteo 更新
+## 2026-10-02 OSM 與 Open-Meteo 更新
 
-最终自动化 85 passed：47 项旧机制、21 项在线协议、12 项 OSM／天气边界和 5 项网页模拟测试。新增道路标签／稳定 ID、医院／餐厅／咖啡店筛选、Overpass 部分失败拒绝、Open-Meteo 坐标／网格与小时单位、整点边界、未知降水、过期数据、NEA 独立补充检查。
+最終自動化 85 passed：47 項舊機制、21 項在線協議、12 項 OSM／天氣邊界和 5 項網頁模擬測試。新增道路標籤／穩定 ID、醫院／餐廳／咖啡店篩選、Overpass 部分失敗拒絕、Open-Meteo 座標／網格與小時單位、整點邊界、未知降水、過期數據、NEA 獨立補充檢查。
 
-16:57:31（新加坡时间）在固定公共 City Hall 附近查询：Open-Meteo 1 个坐标预报、OSM 10 条道路、1 个医院、10 个餐厅，均为真实网络返回，非缓存。不同查询半径为道路 200 米、医院 1500 米、餐厅 300 米；这是有上限的接口检查，不是全区域数量统计。来源、获取时间和响应哈希保存在 [OSM_WEATHER_API_EVIDENCE.json](OSM_WEATHER_API_EVIDENCE.json)。全部查询不需要 API Key。
+16:57:31（新加坡時間）在固定公共 City Hall 附近查詢：Open-Meteo 1 個座標預報、OSM 10 條道路、1 個醫院、10 個餐廳，均為真實網絡返回，非緩存。不同查詢半徑為道路 200 米、醫院 1500 米、餐廳 300 米；這是有上限的接口檢查，不是全區域數量統計。來源、獲取時間和響應哈希保存在 [OSM_WEATHER_API_EVIDENCE.json](OSM_WEATHER_API_EVIDENCE.json)。全部查詢不需要 API Key。
 
-早期 Overpass POST 返回 HTTP 406，GET 曾返回服务忙的 504。现采用 GET、明确 JSON 接受头和 64 MiB 内存上限，小范围查询成功；不使用离线结果替代。其他公共镜像连接超时，未切换当前配置。完整 Agent／路线／交通／网页过程仍未验收。
+早期 Overpass POST 返回 HTTP 406，GET 曾返回服務忙的 504。現採用 GET、明確 JSON 接受頭和 64 MiB 內存上限，小範圍查詢成功；不使用離線結果替代。其他公共鏡像連接超時，未切換當前配置。完整 Agent／路線／交通／網頁過程仍未驗收。
 
-网页新增医院示例、Open-Meteo 天气采样表和 OSM 道路属性的模拟显示检查通过；当前真实页面配置截图见 [osm-open-meteo-configured.png](screenshots/osm-open-meteo-configured.png)。截图只验证页面配置显示，没有提交模型规划。
+網頁新增醫院示例、Open-Meteo 天氣採樣表和 OSM 道路屬性的模擬顯示檢查通過；當前真實頁面配置截圖見 [osm-open-meteo-configured.png](screenshots/osm-open-meteo-configured.png)。截圖只驗證頁面配置顯示，沒有提交模型規劃。
 
-## 2026-10-02 五阶段架构：按需工具调用
+## 2026-10-02 五階段架構：按需工具調用
 
-根据用户五阶段目标，移除仅因步行而强制天气、仅因驾车而强制交通的固定查询。相关时间、拥堵、营业及天气需求仍要求尝试对应服务；硬约束检查与证据发布规则继续生效。
+根據用戶五階段目標，移除僅因步行而強制天氣、僅因駕車而強制交通的固定查詢。相關時間、擁堵、營業及天氣需求仍要求嘗試對應服務；硬約束檢查與證據發佈規則繼續生效。
 
-验证命令：`.venv-fyp/Scripts/python.exe -m pytest -q`。结果：96 passed in 6.36s。新增 11 项检查覆盖无关工具可跳过、驾车基础时间与实时 ETA 区分，以及相关需求不能绕过交通／天气查询。模拟原生工具会话也验证普通步行可以不调用天气直接完成。
+驗證命令：`.venv-fyp/Scripts/python.exe -m pytest -q`。結果：96 passed in 6.36s。新增 11 項檢查覆蓋無關工具可跳過、駕車基礎時間與實時 ETA 區分，以及相關需求不能繞過交通／天氣查詢。模擬原生工具會話也驗證普通步行可以不調用天氣直接完成。
 
-这些是自动化协议与行为证据，没有新增真实模型、交通或网页验收。最快／最短／避高速多策略接口及 OSRM／OSMnx 适配待实施。架构核对见 [FYP_AGENT_ARCHITECTURE.md](FYP_AGENT_ARCHITECTURE.md)。
+這些是自動化協議與行為證據，沒有新增真實模型、交通或網頁驗收。最快／最短／避高速多策略接口及 OSRM／OSMnx 適配待實施。架構核對見 [FYP_AGENT_ARCHITECTURE.md](FYP_AGENT_ARCHITECTURE.md)。
 
-## 2026-10-02 后续 OSRM 迁移与真实查询
+## 2026-10-02 後續 OSRM 遷移與真實查詢
 
-用户指定改为 OSRM，已替换正常路由提供者、路线数据来源、证据发布检查、比较与网页指标；ORS 仅用于地址定位。`.env` 新增 car／foot 独立端点，所有已有 Key 保留，没有新增算路 Key。PyCharm 原 FYP Web 配置沿用。
+用戶指定改為 OSRM，已替換正常路由提供者、路線數據來源、證據發佈檢查、比較與網頁指標；ORS 僅用於地址定位。`.env` 新增 car／foot 獨立端點，所有已有 Key 保留，沒有新增算路 Key。PyCharm 原 FYP Web 配置沿用。
 
-全量 109 passed in 9.22s。新增 13 项模拟 OSRM 协议检查覆盖 GET／单位／分段索引、无 ORS 算路认证、不同模式路网、NoRoute、InvalidValue、避高速失败不回退、矛盾 motorway 标记、不合法指标、共享限速和失败后的间隔。原生工具闭环测试现在引用 OSRM Route 证据。
+全量 109 passed in 9.22s。新增 13 項模擬 OSRM 協議檢查覆蓋 GET／單位／分段索引、無 ORS 算路認證、不同模式路網、NoRoute、InvalidValue、避高速失敗不回退、矛盾 motorway 標記、不合法指標、共享限速和失敗後的間隔。原生工具閉環測試現在引用 OSRM Route 證據。
 
-17:26:03（新加坡时间）真实查询固定公共坐标：car／foot 各返回两条路线，均非缓存；硬性 `exclude=motorway` 返回 unsupported_feature。真实结果与几何保存到 [OSRM_API_EVIDENCE.json](OSRM_API_EVIDENCE.json)，配置及数值见 [OSRM_SETUP.md](OSRM_SETUP.md)。OSRM 服务估计不包含已核实实时交通。
+17:26:03（新加坡時間）真實查詢固定公共座標：car／foot 各返回兩條路線，均非緩存；硬性 `exclude=motorway` 返回 unsupported_feature。真實結果與幾何保存到 [OSRM_API_EVIDENCE.json](OSRM_API_EVIDENCE.json)，配置及數值見 [OSRM_SETUP.md](OSRM_SETUP.md)。OSRM 服務估計不包含已核實實時交通。
 
-强制避高速需要配置支持排除的 OSRM 实例；本轮没有启动 Docker 图构建。最短距离多策略接口、完整真实模型／LTA／网页流程和批量评测仍未验收。
+強制避高速需要配置支持排除的 OSRM 實例；本輪沒有啟動 Docker 圖構建。最短距離多策略接口、完整真實模型／LTA／網頁流程和批量評測仍未驗收。
 
-最终补充：算路服务故障／不支持功能现在保留明确的 tool_error，不能写成道路无解；NoRoute 仍属于有限范围未找到。新增两项检查，全量 111 passed in 9.11s。已重启网页，页面实际显示 OSRM 独立 car／foot 配置与公共服务限制；[配置截图](screenshots/osrm-configured.png) 只证明配置页面显示，未提交真实模型任务。
+最終補充：算路服務故障／不支持功能現在保留明確的 tool_error，不能寫成道路無解；NoRoute 仍屬於有限範圍未找到。新增兩項檢查，全量 111 passed in 9.11s。已重啟網頁，頁面實際顯示 OSRM 獨立 car／foot 配置與公共服務限制；[配置截圖](screenshots/osrm-configured.png) 只證明配置頁面顯示，未提交真實模型任務。
 
-## 2026-10-02 自然语言入口、自动方式与 LTA 分页修复
+## 2026-10-02 自然語言入口、自動方式與 LTA 分頁修復
 
-全量自动化 **121 passed in 17.21s**。新增测试覆盖自由文本入口／空白守卫、未来时间、可信澄清、真实工具形状的方式比较与选择、不可改写明确方式、证据引用、超过 40 页分页、重复页终止与预算内部分数据保留。测试模拟与真实验收严格分开。
+全量自動化 **121 passed in 17.21s**。新增測試覆蓋自由文本入口／空白守衛、未來時間、可信澄清、真實工具形狀的方式比較與選擇、不可改寫明確方式、證據引用、超過 40 頁分頁、重複頁終止與預算內部分數據保留。測試模擬與真實驗收嚴格分開。
 
-18:13:47（新加坡时间）真实 LTA 检查获得速度区间 76 页／38,000 条、事故 1 页／22 条，总计 78 次 HTTP。速度采集因预留后续调用预算停止，complete=false；有效数据被保留。两条真实 OSRM 路线方向／几何匹配覆盖率分别约 63.0%／74.3%，完整交通时间保持未知。见 [LTA_PAGINATION_EVIDENCE.json](LTA_PAGINATION_EVIDENCE.json)。
+18:13:47（新加坡時間）真實 LTA 檢查獲得速度區間 76 頁／38,000 條、事故 1 頁／22 條，總計 78 次 HTTP。速度採集因預留後續調用預算停止，complete=false；有效數據被保留。兩條真實 OSRM 路線方向／幾何匹配覆蓋率分別約 63.0%／74.3%，完整交通時間保持未知。見 [LTA_PAGINATION_EVIDENCE.json](LTA_PAGINATION_EVIDENCE.json)。
 
-实际网页提交未指定方式的固定公共坐标需求，真实 DeepSeek 调用 compare_modes／choose_mode 后选择步行，状态 verified，推荐 453.8 米／365.2 秒。run_id=20261002T102102-4f52dc9a；约 27 秒，HTTP 13 次、工具 14 次、模型交互 10 次，候选 2 条，无重规划。已看到地图和约 6.1 分钟基础总时长；实际点击导出并验证下载 JSON 与保存结果内容一致。证据文件无真实 Key 值。见 [AUTO_MODE_WEB_EVIDENCE.json](AUTO_MODE_WEB_EVIDENCE.json)。
+實際網頁提交未指定方式的固定公共座標需求，真實 DeepSeek 調用 compare_modes／choose_mode 後選擇步行，狀態 verified，推薦 453.8 米／365.2 秒。run_id=20261002T102102-4f52dc9a；約 27 秒，HTTP 13 次、工具 14 次、模型交互 10 次，候選 2 條，無重規劃。已看到地圖和約 6.1 分鐘基礎總時長；實際點擊導出並驗證下載 JSON 與保存結果內容一致。證據文件無真實 Key 值。見 [AUTO_MODE_WEB_EVIDENCE.json](AUTO_MODE_WEB_EVIDENCE.json)。
 
-[空白输入截图](screenshots/free-text-input.png)、[自动方式结果截图](screenshots/auto-mode-live-result.png)、[基础时长截图](screenshots/base-time-live-result.png)。这证明一个真实网页自动方式选择／推荐／地图／下载个案，不代替复杂经停、停车接驳、失败重规划、天气时限和批量评测。详细改造与剩余问题见 [FREE_TEXT_AND_TRAFFIC_FIX.md](FREE_TEXT_AND_TRAFFIC_FIX.md)。
+[空白輸入截圖](screenshots/free-text-input.png)、[自動方式結果截圖](screenshots/auto-mode-live-result.png)、[基礎時長截圖](screenshots/base-time-live-result.png)。這證明一個真實網頁自動方式選擇／推薦／地圖／下載個案，不代替複雜經停、停車接駁、失敗重規劃、天氣時限和批量評測。詳細改造與剩餘問題見 [FREE_TEXT_AND_TRAFFIC_FIX.md](FREE_TEXT_AND_TRAFFIC_FIX.md)。
 
-## 2026-10-02 金沙地点候选修复
+## 2026-10-02 金沙地點候選修復
 
-用户输入“滨海湾金沙（Marina Bay Sands）”后，旧版将中英文整串发送 Pelias，结果包含 Gardens by the Bay 等无关地标；页面默认显示第一项。模型提取的终点本身是金沙，错误发生在定位与候选展示。
+用戶輸入“濱海灣金沙（Marina Bay Sands）”後，舊版將中英文整串發送 Pelias，結果包含 Gardens by the Bay 等無關地標；頁面默認顯示第一項。模型提取的終點本身是金沙，錯誤發生在定位與候選展示。
 
-现在优先查询用户明确提供的括号英文别名，不由模型翻译或编造名称；返回结果必须包含完整查询名称，不能仅因共享 Bay 等词就被接受。没有匹配时要求重新输入，保留真实来源与证据。地点确认框默认空白，未选择不能提交，并支持替换地点查询。
+現在優先查詢用戶明確提供的括號英文別名，不由模型翻譯或編造名稱；返回結果必須包含完整查詢名稱，不能僅因共享 Bay 等詞就被接受。沒有匹配時要求重新輸入，保留真實來源與證據。地點確認框默認空白，未選擇不能提交，並支持替換地點查詢。
 
-全量自动化 **126 passed in 35.00s**；新增检查覆盖别名、相邻地标拒绝、高置信度错误名称拒绝、地址与词边界、无默认确认及重新输入。真实非缓存定位查询 2 次 HTTP，金沙只得到 Marina Bay Sands, Bayfront Subzone, Singapore；市政厅得到 City Hall, Singapore。证据：[PLACE_NAME_MATCH_EVIDENCE.json](PLACE_NAME_MATCH_EVIDENCE.json)。
+全量自動化 **126 passed in 35.00s**；新增檢查覆蓋別名、相鄰地標拒絕、高置信度錯誤名稱拒絕、地址與詞邊界、無默認確認及重新輸入。真實非緩存定位查詢 2 次 HTTP，金沙只得到 Marina Bay Sands, Bayfront Subzone, Singapore；市政廳得到 City Hall, Singapore。證據：[PLACE_NAME_MATCH_EVIDENCE.json](PLACE_NAME_MATCH_EVIDENCE.json)。
 
-补充：真实继续规划复测暴露了原生 ask_user 缺少执行函数和重新解析丢失经停约束的问题；现已注册实际执行方法，在页面继续提交中保留已验证请求，并向模型提供不含原始输入的参数字段错误，便于纠正工具调用。新增三项回归，全量 **129 passed in 17.23s**。原 20261002T104054-ea714139 运行达到轮数上限，明确记为失败，不能作为路线成功证据。
+補充：真實繼續規劃複測暴露了原生 ask_user 缺少執行函數和重新解析丟失經停約束的問題；現已註冊實際執行方法，在頁面繼續提交中保留已驗證請求，並向模型提供不含原始輸入的參數字段錯誤，便於糾正工具調用。新增三項迴歸，全量 **129 passed in 17.23s**。原 20261002T104054-ea714139 運行達到輪數上限，明確記為失敗，不能作為路線成功證據。
 
-最后真实网页复测成功：run_id=20261002T104506-e0948cf3，状态 verified；终点 Marina Bay Sands, Bayfront Subzone, Singapore，经停 Toast Box，停留 600 秒；模型选择 walking，距离 2015.8 米，基础总时长 2212.5 秒（服务预计，含停留）。本次直接完成，不代表所有澄清／重规划已在线验收。完整记录：[MARINA_BAY_SANDS_WEB_EVIDENCE.json](MARINA_BAY_SANDS_WEB_EVIDENCE.json)；[网页截图](screenshots/marina-bay-sands-fixed.png)。
+最後真實網頁複測成功：run_id=20261002T104506-e0948cf3，狀態 verified；終點 Marina Bay Sands, Bayfront Subzone, Singapore，經停 Toast Box，停留 600 秒；模型選擇 walking，距離 2015.8 米，基礎總時長 2212.5 秒（服務預計，含停留）。本次直接完成，不代表所有澄清／重規劃已在線驗收。完整記錄：[MARINA_BAY_SANDS_WEB_EVIDENCE.json](MARINA_BAY_SANDS_WEB_EVIDENCE.json)；[網頁截圖](screenshots/marina-bay-sands-fixed.png)。

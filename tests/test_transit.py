@@ -56,6 +56,15 @@ def test_missing_fare_remains_unknown(transit_setup):
     assert route.fare_sgd is None and not route.fare_evidence_ids
 
 
+def test_onemap_unavailable_fare_preserves_valid_itinerary(transit_setup):
+    provider,a,b,request,payload,seen=transit_setup
+    payload["plan"]["itineraries"][0]["fare"]="info unavailable"
+    route=provider.transit_routes(a,b,request)[0]
+    assert route.total_s==900 and route.distance_m==1650
+    assert route.fare_sgd is None and not route.fare_evidence_ids
+    assert "未知" in route.fare_basis
+
+
 def test_default_departure_rounds_up_to_onemap_minute_resolution(transit_setup):
     provider,a,b,request,payload,seen=transit_setup
     itinerary=payload["plan"]["itineraries"][0]

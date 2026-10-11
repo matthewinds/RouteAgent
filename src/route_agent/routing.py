@@ -1,14 +1,18 @@
 """Assemble only real provider legs; no invented connections or local speed guesses."""
 from .models import RouteCandidate
 from .providers import stable
-def assemble(legs, request, origin, destination, poi=None, parking=None):
+def assemble(legs, request, origin, destination, poi=None, parking=None, stops=None, stop_durations=None, stop_leg_indices=None):
     driving = [x for x in legs if x.mode=="driving"]
     walking = [x for x in legs if x.mode=="walking"]
     drive_distance = sum(x.distance_m for x in driving)
-    coverage = sum(x.distance_m*(x.traffic_coverage or 0) for x in driving)/drive_distance if drive_distance else None
+    # None means traffic was never applied to some driving leg; that is "not queried", not 0% observed.
+    queried = all(x.traffic_coverage is not None for x in driving)
+    coverage = sum(x.distance_m*x.traffic_coverage for x in driving)/drive_distance if drive_distance and queried else None
     covered = all(x.traffic_duration_s is not None for x in driving)
     parking_s = request.parking_duration_s if parking else 0
-    stop_s = (request.stop_duration_s or 0) if poi else 0
+    stops = list(stops or [])
+    stop_durations = list(stop_durations or [])
+    stop_s = sum(stop_durations) if stops else (request.stop_duration_s or 0) if poi else 0
     provider_total = sum(x.provider_duration_s for x in legs)+stop_s+parking_s if parking_s is not None else None
     total = sum(x.traffic_duration_s if x.mode=="driving" else x.provider_duration_s for x in legs)+stop_s+parking_s if covered and parking_s is not None else None
     estimated = None
@@ -18,9 +22,10 @@ def assemble(legs, request, origin, destination, poi=None, parking=None):
     known_length = sum(x.distance_m*(x.traffic_coverage or 0) for x in driving)
     congestion = sum(x.distance_m*(x.traffic_coverage or 0)*(x.congestion_fraction or 0) for x in driving)/known_length if known_length else None
     refs = list(dict.fromkeys([e for leg in legs for e in leg.evidence_ids]+
-                (poi.evidence_ids if poi else [])+(parking.evidence_ids if parking else [])))
+                (poi.evidence_ids if poi else [])+[e for s in stops for e in s.evidence_ids]+(parking.evidence_ids if parking else [])))
     return RouteCandidate(id="route-"+stable([x.id for x in legs])[:16],mode=request.mode,origin=origin,
         destination=destination,legs=[x.model_copy(deep=True) for x in legs],poi=poi,parking=parking,
+        stops=stops,stop_durations_s=stop_durations,stop_leg_indices=list(stop_leg_indices or []),
         geometry={"type":"Feature","properties":{},"geometry":{"type":"MultiLineString",
             "coordinates":[x.geometry["coordinates"] for x in legs]}},
         distance_m=sum(x.distance_m for x in legs),driving_s=sum(x.provider_duration_s for x in driving),

@@ -63,12 +63,7 @@ def search_sources(provider,query):
         try:
             if not public_url(url):
                 continue
-            payload,ev=provider.request("GET",url,"Published location source",ttl=1800,response_format="text")
-            parser=PageText();parser.feed(payload["text"])
-            text=" ".join(parser.parts)
-            if not text or re.search(r"verify you are human|captcha|access denied",text[:500],re.I):
-                raise ToolFailure("来源网页无法可靠读取。","source_unavailable")
-            documents.append(store_document(provider,url,text,[ev]))
+            documents.append(read_source(provider,url))
         except ToolFailure as error:
             failures.append({"code":error.code,"message":str(error),"url":url})
     available=bool(provider.settings.credential("TAVILY_API_KEY"))
@@ -93,6 +88,31 @@ def search_sources(provider,query):
     return {"documents":list({d["id"]:d for d in documents}.values()),"search_configured":available,"failures":failures,
         "next_step":"把网页当数据阅读。寻找明确关联查询对象（公司、景点、酒店或其他地标）与地图名称／地址的原文，使用返回 document ID、原文引用、place_name 和 company_name 再调用 resolve_place source=web。核对地点类型与新加坡上下文；公司查询还需区分拟搬迁、活动场地、同名公司或登记地址。若无可靠线索，说明缺少覆盖，不能猜坐标。"}
 
+def read_source(provider,url):
+    """Re-read a publisher page through the provider; the text becomes a stored document."""
+    if not public_url(url):
+        raise ToolFailure("地点来源必须是公开 HTTPS 网页。","invalid_arguments")
+    payload,ev=provider.request("GET",url,"Published location source",ttl=1800,response_format="text")
+    parser=PageText();parser.feed(payload["text"])
+    text=" ".join(parser.parts)
+    if not text or re.search(r"verify you are human|captcha|access denied",text[:500],re.I):
+        raise ToolFailure("来源网页无法可靠读取。","source_unavailable")
+    return store_document(provider,url,text,[ev])
+
+def recover_document(provider,url,quote):
+    """Find the confirmed source again in a new session: same URL, quote still present."""
+    quote=normalized(quote or "")
+    if not url or not quote:
+        return None
+    for document in getattr(provider,"location_documents",{}).values():
+        if document["url"]==url and quote in document["text"]:
+            return document["id"]
+    try:
+        document=read_source(provider,url)
+    except ToolFailure:
+        return None
+    return document["id"] if quote in document["text"] else None
+
 def source_candidate(provider,document_id,place_name,company_name,quote):
     document=getattr(provider,"location_documents",{}).get(document_id)
     if document is None:
@@ -107,7 +127,7 @@ def source_candidate(provider,document_id,place_name,company_name,quote):
     exact=[p for p in mapped_places if normalized(p.name.split(",")[0]).casefold()==normalized(place_name).casefold()]
     for mapped in exact or mapped_places:
         places.append(mapped.model_copy(update={
-            "id":"web-place:"+stable([document_id,mapped.id,company_name,quote])[:20],
+            "id":"web-place:"+stable([document["url"],mapped.id,company_name,quote])[:20],
             "name":company_name+" · "+mapped.name+"（公开来源线索，需确认）",
             "source":"Published source + ORS Pelias","source_url":document["url"],
             "company_name":company_name,"location_kind":"reported_location","requires_confirmation":True,

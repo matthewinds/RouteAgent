@@ -427,3 +427,23 @@ def test_poi_corridors_include_transit_before_any_mode_comparison(tmp_path,mixed
     output=agent.search_pois()
     assert families==['walking','transit'] and agent.request.mode is None
     assert len(output['places'])==10 and {p['id'].startswith('transit') for p in output['places']}=={True,False}
+
+
+def test_transit_chain_departs_each_segment_after_arrival_plus_that_stops_dwell(mixed_provider):
+    from route_agent.transit import transit_chain
+    from route_agent.models import StopRequest
+    provider,a,b,request,seen=mixed_provider
+    post=Place(id='post',name='MOCK post',lat=1.295,lon=103.855,category='amenity:post_office',source='MOCK')
+    bakery=Place(id='bakery',name='MOCK bakery',lat=1.297,lon=103.857,category='shop:bakery',source='MOCK')
+    request=request.model_copy(update={'poi_required':True,'stops':[
+        StopRequest(poi_category='amenity:post_office',evidence='邮局'),StopRequest(poi_category='shop:bakery',evidence='面包店')]})
+    routes=transit_chain(provider,a,b,[post,bakery],[300,120],request)
+    route=routes[0]
+    assert [s.id for s in route.stops]==['post','bakery'] and route.stop_s==420
+    first,second=route.stop_leg_indices
+    assert (route.legs[first+1].departure_time-route.legs[first].arrival_time).total_seconds()>=300
+    assert (route.legs[second+1].departure_time-route.legs[second].arrival_time).total_seconds()>=120
+    assert route.fare_sgd is None  # Separate queries do not prove one integrated fare.
+    verify_route(route,request,provider.evidence)
+    checks={c.constraint:c.status for c in route.checks}
+    assert checks['transit_timing']=='pass' and checks['required_stops']=='pass'

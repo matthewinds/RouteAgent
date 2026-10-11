@@ -15,8 +15,8 @@ from route_agent.weather import weather_context
 @pytest.mark.parametrize("field,text",[("prefer_low_cost","最经济实惠"),("prefer_fastest","最快，因为赶时间"),("weather_required","考虑天气因素")])
 def test_explicit_preferences_cannot_be_discarded(field,text):
     with pytest.raises(ToolFailure,match="遗漏"):
-        validate_request(text,request_fields(),{})
-    req,_=validate_request(text,request_fields(**{field:True}),{})
+        validate_request(text,request_fields(mode=None),{})
+    req,_=validate_request(text,request_fields(mode=None,**{field:True}),{})
     assert getattr(req,field)
 
 
@@ -196,11 +196,11 @@ def test_failed_extraction_retry_cannot_drop_previously_supplied_endpoint(tmp_pa
     first=agent.execute('set_request',json.dumps({'fields':{'origin':'某个景点','destination':'酒店',
         'poi_category':'restaurant','poi_required':True}}),'extract-1')
     assert first['error']=='invalid_evidence' and first['repair_hint']
+    # The omitted endpoint is restored from the earlier verbatim extraction
+    # instead of being lost or costing more repair rounds.
     second=agent.execute('set_request',json.dumps({'fields':{'destination':'酒店'}}),'extract-2')
-    assert second['error']=='invalid_evidence' and '某个景点' in second['message']
-    assert not agent.done and not agent.result.questions
-    with pytest.raises(ToolFailure) as error:agent.ask_user(['origin'])
-    assert error.value.code=='request_required'
+    assert 'error' not in second and second['restored_from_previous_extraction']=={'origin':'某个景点'}
+    assert agent.request.origin=='某个景点' and 'origin' not in agent.result.questions
 
 
 def test_single_restaurant_and_breakfast_are_not_multiple_stops():
@@ -216,8 +216,80 @@ def test_single_restaurant_and_breakfast_are_not_multiple_stops():
     assert req.origin=='环球影城' and not questions and not req.multiple_stops
 
 
-def test_genuine_multiple_business_stops_keep_clarification():
+def test_two_stops_must_be_extracted_as_ordered_stops_and_four_ask_to_reduce():
     text='从家到公司，途中去邮局寄信，再去面包店买早餐'
-    req,questions=validate_request(text,{'origin':'家','destination':'公司','multiple_stops':True,
-        'multiple_stop_evidence':['去邮局寄信','去面包店买早餐']},{})
-    assert req.multiple_stops and set(questions)=={'multiple_stops'}
+    with pytest.raises(ToolFailure,match='stops'):
+        validate_request(text,{'origin':'家','destination':'公司','multiple_stops':True,
+            'multiple_stop_evidence':['去邮局寄信','去面包店买早餐']},{})
+    four='从家到公司，先去邮局寄信，再去面包店，然后去药店，最后去超市'
+    req,questions=validate_request(four,{'origin':'家','destination':'公司','multiple_stops':True,
+        'multiple_stop_evidence':['去邮局寄信','去面包店','去药店','去超市']},{})
+    assert set(questions)=={'multiple_stops'} and '3' in questions['multiple_stops']
+
+
+def test_ordered_stops_are_validated_and_missing_dwell_is_asked():
+    text='从家到公司，先去邮局寄信停留5分钟，再去面包店买早餐'
+    fields={'origin':'家','destination':'公司','poi_required':True,'evidence':{'poi_required':'先去邮局寄信停留5分钟'},
+        'stops':[{'poi_category':'amenity:post_office','evidence':'去邮局寄信','stop_duration_s':300,'duration_evidence':'停留5分钟'},
+                 {'poi_category':'shop:bakery','evidence':'去面包店买早餐'}]}
+    req,questions=validate_request(text,fields,{})
+    assert [s.poi_category for s in req.stops]==['amenity:post_office','shop:bakery'] and req.multiple_stops
+    assert set(questions)=={'stop_duration_s'} and '去面包店买早餐' in questions['stop_duration_s']
+    bad=dict(fields,stops=[fields['stops'][0],{'poi_name':'面包店','evidence':'去面包店买早餐'}])
+    with pytest.raises(ToolFailure,match='类别'):
+        validate_request(text,bad,{})
+    overlap=dict(fields,stops=[fields['stops'][0],{'poi_category':'shop:bakery','evidence':'去邮局寄信停留'}])
+    with pytest.raises(ToolFailure,match='重复引用'):
+        validate_request(text,overlap,{})
+    wrong=dict(fields,stops=[dict(fields['stops'][0],stop_duration_s=600),fields['stops'][1]])
+    with pytest.raises(ToolFailure,match='单位'):
+        validate_request(text,wrong,{})
+
+
+def test_car_availability_is_not_a_driving_mode_request():
+    text='我现在从牛车水出发去滨海湾金沙，45分钟内到达。我有车可以自己开。'
+    base={'origin':'牛车水','destination':'滨海湾金沙','car_access':True,'evidence':{'car_access':'我有车可以自己开'}}
+    with pytest.raises(ToolFailure,match='car_access'):
+        validate_request(text,{**base,'mode':'driving'},{})
+    with pytest.raises(ToolFailure,match='car_access'):
+        validate_request(text,{**base,'mode':'driving','evidence':{**base['evidence'],'mode':'我有车可以自己开'}},{})
+    req,_=validate_request(text,base,{})
+    assert req.mode is None and req.car_access
+
+
+@pytest.mark.parametrize('text,mode',[('开车去公司','driving'),('从家坐地铁去学校','transit'),('从酒店走路去码头','walking')])
+def test_explicit_mode_requests_are_kept(text,mode):
+    req,_=validate_request(text,{'origin':'家','destination':'公司','mode':mode},{})
+    assert req.mode==mode
+
+
+def test_relative_duration_cannot_become_an_absolute_arrival_deadline():
+    from datetime import datetime,timedelta
+    from route_agent.parser import SG
+    text='我现在从牛车水出发去滨海湾金沙，45分钟内到达'
+    base={'origin':'牛车水','destination':'滨海湾金沙','max_duration_s':2700,'evidence':{'max_duration_s':'45分钟内到达'}}
+    frozen=(datetime.now(SG)+timedelta(minutes=45)).isoformat()
+    with pytest.raises(ToolFailure,match='max_duration_s'):
+        validate_request(text,{**base,'arrival_deadline':frozen,'evidence':{**base['evidence'],'arrival_deadline':'45分钟内到达'}},{})
+    req,_=validate_request(text,base,{})
+    assert req.arrival_deadline is None and req.max_duration_s==2700
+
+
+@pytest.mark.parametrize('phrase',['9点前到达','下午3:30到','明天早上8点到','by 9am'])
+def test_clock_time_deadlines_are_accepted(phrase):
+    from datetime import datetime,timedelta
+    from route_agent.parser import SG
+    deadline=(datetime.now(SG)+timedelta(hours=2)).isoformat()
+    req,_=validate_request('从家去公司，'+phrase,{'origin':'家','destination':'公司','arrival_deadline':deadline,
+        'evidence':{'arrival_deadline':phrase}},{})
+    assert req.arrival_deadline is not None
+
+
+@pytest.mark.parametrize('text',['我可以选择开车去','我也可以开车去','I can drive to the hotel'])
+def test_offered_driving_option_is_not_a_mode_request(text):
+    with pytest.raises(ToolFailure,match='car_access'):
+        validate_request('从NUS去酒店，'+text,{'origin':'NUS','destination':'酒店','mode':'driving','car_access':True,
+            'evidence':{'mode':text,'car_access':text}},{})
+    req,_=validate_request('从NUS去酒店，'+text,{'origin':'NUS','destination':'酒店','car_access':True,
+        'evidence':{'car_access':text}},{})
+    assert req.mode is None and req.car_access

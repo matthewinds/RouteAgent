@@ -1,9 +1,19 @@
 [theme]
-primaryColor = "#158368"
-backgroundColor = "#f7f9f8"
-secondaryBackgroundColor = "#edf3f0"
-textColor = "#193e35"
-font = "sans-serif"
+base = "light"
+primaryColor = "#00804A"
+backgroundColor = "#EEF1EF"
+secondaryBackgroundColor = "#E3E8E5"
+textColor = "#17232B"
+linkColor = "#00804A"
+borderColor = "#D5DCD8"
+showWidgetBorder = true
+baseRadius = "10px"
+font = "Noto Sans SC:https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
+headingFont = "Noto Sans SC:https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
+
+[theme.sidebar]
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#EEF1EF"
 
 [browser]
 gatherUsageStats = false
