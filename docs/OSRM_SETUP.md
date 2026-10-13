@@ -1,6 +1,6 @@
 # OSRM 算路配置與驗收
 
-更新：2026-10-02。正常路線工具已由 ORS Directions 改為 OSRM Route；原 MapAgent 基線與歷史 fixtures 不變。ORS Pelias 僅負責文字地址定位。
+更新：2026-10-02。正常路線工具已由 ORS Directions 改為 OSRM Route。ORS Pelias 僅負責文字地址定位。
 
 ## 已配置的真實服務
 

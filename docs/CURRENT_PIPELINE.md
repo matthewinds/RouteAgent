@@ -38,7 +38,7 @@ flowchart TD
 
 - 用戶在 Streamlit 頁面輸入自然語言行程；已有澄清可隨繼續規劃一起提交。
 - `plan_route` 檢查非空輸入、在線模式、DeepSeek 思考模式及必要配置（`DEEPSEEK_API_KEY`、`ORS_API_KEY`），建立 `run_id`、`Budget`、`PlanningResult` 和 `TaskState`。
-- 正常入口使用真實在線服務；合成快照和規則基線放在獨立的 fixtures／評測入口。
+- 正常入口使用真實在線服務；自動化測試使用模擬模型和服務響應。
 - 若 LTA 速度區間鏈接索引不存在或超過 7 天，後台啟動一次維護掃描（不計入行程證據和預算）；也可手動執行 `scripts/build_lta_link_index.py`。
 
 對應：`app/streamlit_app.py`、`service.py`、`config.py`、`tools.py`、`lta_index.py`。

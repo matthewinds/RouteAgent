@@ -12,6 +12,7 @@ from test_online import make_agent
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
     monkeypatch.setattr(socket.socket,"connect",lambda *a,**k:pytest.fail("No real network in source protocol tests"))
+    monkeypatch.setenv("ORS_API_KEY","test-location-source-key")
 
 
 def registry_row(name="EXAMPLE COMPANY PTE. LTD.",country="SG"):

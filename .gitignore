@@ -16,3 +16,33 @@ outputs/
 baselines/mapagent/outputs/
 .DS_Store
 data/evidence/
+
+# Local archives and legacy research projects are not part of RouteAgent.
+/baselines/
+/datasets_dir/
+/datasets_original/
+/datasets_adapted/
+/src/coordinatoragent/
+/src/route_agent/fixtures/
+/data/requests/
+/data/snapshots/
+/docs/history/
+/docs/validation/
+/docs/ARCHIVE_INDEX.md
+/scripts/create_demo_data.py
+/scripts/evaluate_fyp.py
+/scripts/organize_project.ps1
+/scripts/prepare_osm.py
+/scripts/run_baseline.ps1
+/scripts/run_fixture.py
+/tests/test_planning.py
+/tests/test_llm_guards.py
+/.run/FYP_Evaluate_Dev.run.xml
+/.run/FYP_Evaluate_Test.run.xml
+/.run/FYP_Prepare_OSM.run.xml
+/.run/FYP_Replay_Demo.run.xml
+
+# Local editor and API-client workspace metadata.
+/.claude/
+/.postman/
+/postman/

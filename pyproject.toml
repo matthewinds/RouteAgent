@@ -19,6 +19,8 @@ test = ["pytest>=8,<10"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["route_agent", "route_agent.*"]
+exclude = ["route_agent.fixtures", "route_agent.fixtures.*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

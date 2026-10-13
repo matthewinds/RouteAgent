@@ -1,10 +1,10 @@
 # PyCharm 啟動與環境配置
 
-更新：2026-10-02。macOS 當前項目：`/Users/matthew/PycharmProjects/RouteAgent`；原 Windows 項目：`F:\develop\projects\MapAgents`。
+更新：2026-10-12。請在本機打開 RouteAgent 項目根目錄。
 
 ## 日常啟動
 
-1. 在 PyCharm 打開項目根目錄。macOS 解釋器使用 `/Users/matthew/PycharmProjects/RouteAgent/.venv/bin/python`（Python 3.11.9）；Windows 使用 `F:\develop\projects\MapAgents\.venv-fyp\Scripts\python.exe`（Python 3.11）。
+1. 在 PyCharm 打開項目根目錄。macOS 解釋器使用項目內的 `.venv/bin/python`；Windows 使用 `.venv-fyp\Scripts\python.exe`（Python 3.11）。
 2. 按 [API_SETUP.md](API_SETUP.md) 填寫根目錄 `.env`。OSRM 駕車／步行端點已補充，無需算路 Key；ORS Key 僅用於地址定位。
 3. 右上角選擇 **FYP Web**，點擊綠色運行按鈕。
 4. 瀏覽器打開 http://127.0.0.1:8502 。配置為空時頁面明確顯示缺少 Key，開始按鈕禁用。
@@ -24,13 +24,10 @@ run app/streamlit_app.py --server.address 127.0.0.1 --server.port 8502 --browser
 | 名稱 | 用途 |
 | --- | --- |
 | FYP Web | 正常 DeepSeek 在線網頁，8502 |
-| FYP Tests | 新版協議／頁面模擬測試＋獨立舊版迴歸 |
+| FYP Tests | 當前 RouteAgent 協議、後端和頁面迴歸測試 |
 | FYP Check APIs | 只檢查配置存在性，不自動消費真實 API；可手動加 --smoke 或 --plan |
-| Historical Synthetic Evaluate Dev / Test | 舊 20／60 請求和合成機制對照，不能算新系統在線驗收 |
-| Historical Synthetic Fixture | 明確標註的舊合成重放，只用於研究測試 |
-| Historical Prepare OSM | 舊本地 OSM 圖準備；當前在線路線由 OSRM 提供，不依賴它 |
 
-共享配置保存在 `.run/*.run.xml`，使用各平臺的項目解釋器。macOS 主項目使用 `.venv`；原 Windows 主項目使用 `.venv-fyp`。`baselines/mapagent` 是獨立歷史基線，依賴版本與主項目不同，需要單獨環境，不能把它的 `requirements.txt` 安裝到主項目環境。
+共享配置保存在 `.run/*.run.xml`，使用各平臺的項目解釋器。macOS 使用 `.venv`；Windows 使用 `.venv-fyp`。依賴使用根目錄 `requirements.lock.txt`。
 
 ## 終端啟動
 
@@ -54,7 +51,7 @@ Windows：
 .\.venv-fyp\Scripts\python.exe -m pytest -q
 ```
 
-自動化通過不能證明 Key 有效。一次真實自動方式判斷、推薦和下載流程已通過，複雜接駁、失敗恢復及完整評測仍待驗收；舊版 PyCharm 啟動和合成演示證據保存在 [history/PYCHARM_SETUP_V1.md](history/PYCHARM_SETUP_V1.md)。
+自動化通過不能證明 Key 有效。一次真實自動方式判斷、推薦和下載流程已通過，複雜接駁、失敗恢復及完整評測仍待驗收。
 
 ## 自然語言輸入新版
 
