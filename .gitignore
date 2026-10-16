@@ -46,3 +46,7 @@ data/evidence/
 /.claude/
 /.postman/
 /postman/
+
+# Documentation, reports and agent instructions stay on the local device.
+/docs/
+/AGENTS.md
