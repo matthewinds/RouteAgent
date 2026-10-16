@@ -2,6 +2,7 @@
 import json
 import time
 import re
+import unicodedata
 from typing import Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from .models import ToolResult, WeatherContext, TravelRequest
@@ -320,6 +321,17 @@ def deadline_readings(deadline,departure):
 AUTO_COMPLETE_REASONS = {"model_rounds":"规划轮数已用完","budget_exhausted":"规划时间或调用预算已用完",
     "model_timeout":"DeepSeek 请求超时","model_network_error":"无法连接 DeepSeek","model_rate_limited":"DeepSeek 请求受限",
     "model_error":"DeepSeek 调用失败"}
+
+# Same-named map candidates closer than this are one place, not a user choice.
+COLOCATED_M = 50
+MIN_NAME_CORE = 6
+MAP_PLACE_SOURCES = ("OneMap search","ORS Pelias")
+
+# Tool errors that mean a service or budget gap, not evidence about the user's trip.
+# replay_miss only occurs in research replays (route_agent.experiments).
+SERVICE_FAILURES = ("unsupported_feature","missing_configuration","missing_credential","invalid_configuration",
+    "network_error","provider_error","authentication_error","rate_limited","invalid_response",
+    "budget_exhausted","search_budget","replay_miss")
 
 class Agent:
     def __init__(self, result, settings, budget, stage, clarifications=None, providers=None):
@@ -653,6 +665,18 @@ class Agent:
 
     def _finish_place_resolution(self,role,query,places,selected,present_candidates):
         choice_field = role+"_place_id"
+        presented_ids=[p.id for p in places]
+        # A model can shortlist only one of several duplicate source records.
+        # Use the complete known cluster, not just its shortlist, for the fixed
+        # representative rule. Explicit user choices always retain their ID.
+        if not selected and places and present_candidates and self._auto_resolvable(role,query,places):
+            known=self.location_candidates.get(role,set())-self.rejected_location_candidates.get(role,set())
+            for ident in sorted(known-set(presented_ids)):
+                place=self.places[ident]
+                if self.candidate_searches.get(role,{}).get(ident,{}).get("source","map")!="map":
+                    continue
+                if self._auto_resolvable(role,query,[*places,place]):
+                    places=[*places,place]
         if selected:
             if selected not in {p.id for p in places}:
                 raise ToolFailure("确认地点已不在本次查询结果中，请重新选择。","stale_choice")
@@ -669,12 +693,23 @@ class Agent:
                 return {"resolved":None,"query":query,"source":search.get("source","map"),"retry_with_search_queries":not bool(search.get("search_queries")),
                     "available_sources":["map",*(["registry"] if hasattr(self.providers,"company_locations") else []),*(["web"] if hasattr(self.providers,"web_location_sources") else [])],
                     "message":"此数据源未找到匹配地点，不代表用户没有提供地点。可用别名重试或更换 registry/web 来源；网页来源先查文档再用准确引用核验地图地点。全部可用检索无可靠结果时说明覆盖缺口，不能生成坐标或猜测办公室地址。"}
-            self.choices[choice_field] = [{"id":p.id,"name":p.name,"source":p.source,"lat":p.lat,"lon":p.lon,
-                "access_note":p.access_note,"location_kind":p.location_kind,"source_url":p.source_url,"address":p.address} for p in places]
-            fields=[choice_field if places else role if role!="poi" else "poi_name"]
-            if role=="origin" and any(p.location_kind=="checkpoint" for p in places):
-                fields.append("origin_access_confirmed")
-            return self._defer_place_question(role,fields)
+            merge=self._auto_resolvable(role,query,places)
+            if merge is None:
+                self.choices[choice_field] = [{"id":p.id,"name":p.name,"source":p.source,"lat":p.lat,"lon":p.lon,
+                    "access_note":p.access_note,"location_kind":p.location_kind,"source_url":p.source_url,"address":p.address} for p in places]
+                fields=[choice_field if places else role if role!="poi" else "poi_name"]
+                if role=="origin" and any(p.location_kind=="checkpoint" for p in places):
+                    fields.append("origin_access_confirmed")
+                return self._defer_place_question(role,fields)
+            # Asking would change no constraint: same-named map records a few metres
+            # apart are one place, and a lone map record named in the user's own
+            # words is what they wrote. Pick by a fixed rule (smallest ID), never by
+            # the model's shortlist order, so the same request always routes from
+            # the same coordinates; record why no question was asked.
+            chosen = min(places,key=lambda p:p.id).model_copy(update={"requires_confirmation":False})
+            self.places[chosen.id] = chosen
+            self.result.context.setdefault("merged_place_candidates",{})[role]={"selected_id":chosen.id,
+                "presented_ids":presented_ids,"merged_ids":[p.id for p in places],"names":[p.name for p in places],**merge}
         if role=="origin" and chosen.location_kind=="checkpoint" and not self.clarifications.get("origin_access_confirmed"):
             return self._defer_place_question(role,["origin_access_confirmed"])
         self.roles[role] = chosen
@@ -683,7 +718,41 @@ class Agent:
         self.result.context.setdefault("resolved_places",{})[role] = chosen.model_dump(mode="json")
         if self.pending_place_fields and not self._unsettled_endpoints():
             return self.ask([])
-        return {"resolved":chosen.model_dump(mode="json"),"user_confirmed":bool(selected)}
+        output={"resolved":chosen.model_dump(mode="json"),"user_confirmed":bool(selected)}
+        merged=self.result.context.get("merged_place_candidates",{}).get(role)
+        if merged and merged["selected_id"]==chosen.id:
+            output["merged_duplicates"]=merged
+        return output
+
+    def _auto_resolvable(self,role,query,places):
+        """Why the shortlist needs no question, or None when the user must choose.
+
+        Two cases: every candidate is the same-named map record within
+        COLOCATED_M; or a single map candidate whose name appears in the user's
+        own place description (not only in a model-proposed alias). Only map
+        sources: a company registry or web address can match the name yet still
+        not be where the user means, so those always stay a question.
+        """
+        if not places or self.place_searches.get(role,{}).get("source","map")!="map":
+            return None
+        if any(p.source not in MAP_PLACE_SOURCES or p.location_kind=="checkpoint" for p in places):
+            return None
+        def core(name,keep_brackets=False):
+            name=unicodedata.normalize("NFKC",name)
+            if not keep_brackets:
+                name=re.sub(r"\([^()]*\)","",name)
+            return re.sub(r"[^0-9a-z\u3400-\u9fff]","",name.casefold())
+        names={core(p.name) for p in places}
+        if len(names)!=1 or len(next(iter(names)))<MIN_NAME_CORE:
+            return None
+        if len(places)==1:
+            if next(iter(names)) not in core(query,keep_brackets=True):
+                return None
+            return {"max_distance_m":0.0,"basis":"唯一地图候选的名称出现在用户原文的地点描述中，未请用户选择。"}
+        spread=max(distance([a.lon,a.lat],[b.lon,b.lat]) for a in places for b in places)
+        if spread>COLOCATED_M:
+            return None
+        return {"max_distance_m":round(spread,1),"basis":f"同名地图记录相距不超过 {COLOCATED_M} 米，视为同一地点，未请用户选择。"}
 
     def _unsettled_endpoints(self):
         return [r for r in ("origin","destination") if getattr(self.request,r,None) and
@@ -713,7 +782,13 @@ class Agent:
         lookup_name=names if search_names else poi_name
         empty_first=not self.routes and not self.result.state.attempts and any(
             s["count"]==0 and s.get("limit")==10 for s in self.result.context.get("poi_searches",[]))
-        if limit==30 and not empty_first and (not self.result.state.attempts or
+        # A first search that failed at the service produced no batch to verify;
+        # a wider retry is a new search, not an expansion past unchecked candidates.
+        failed_first=(not self.routes and not self.result.state.attempts and
+            not any(s["count"] for s in self.result.context.get("poi_searches",[])) and
+            any(e["tool"]=="search_pois" and e["error"] in SERVICE_FAILURES
+                for e in self.result.context.get("tool_failures",[])))
+        if limit==30 and not (empty_first or failed_first) and (not self.result.state.attempts or
                          any(not attempt.get("checked",False) for attempt in self.result.state.attempts)):
             raise ToolFailure("必须先验证首批已生成的候选，才能根据结果扩大 POI 搜索。","invalid_replan")
         if near=="route":
@@ -762,21 +837,34 @@ class Agent:
             basis="围绕已取得的真实参考路线、最多五个采样位置分别搜索；合并有限门店候选，再计算各方式的实际经停行程。搜索不保证覆盖所有门店。"
             if failures:
                 self.result.context.setdefault("poi_corridor_failures",[]).extend(failures)
+            if not buckets:
+                # No corridor query completed: an empty list here is a service gap,
+                # not evidence that no such business exists along the route.
+                codes={f["error"] for f in failures}
+                raise ToolFailure("沿途 POI 查询未完成，0 个结果不代表沿途没有该类门店："+
+                    "；".join(dict.fromkeys(f["message"] for f in failures)),
+                    codes.pop() if len(codes)==1 else "provider_error")
+            search_status="partial" if failures else "complete"
         else:
             if near not in self.roles:
                 raise ToolFailure("请先解析搜索中心地点。","missing_information")
             places = self.providers.pois(self.roles[near],category,radius_m,limit,lookup_name)
             basis="围绕已解析地点搜索；候选需继续算路和验证。"
+            failures,search_status=[],"complete"
         for p in places:
             self.places[p.id] = p
         if self.request.stops:
             self.stop_candidates.setdefault(stop_index,set()).update(p.id for p in places)
         self.result.context.setdefault("poi_searches",[]).append({"near":near,"category":category,
             "count":len(places),"place_ids":[p.id for p in places],"limit":limit,"radius_m":radius_m,"basis":basis,
-            "original_name":poi_name,"search_names":names,"stop_index":stop_index})
+            "original_name":poi_name,"search_names":names,"stop_index":stop_index,"search_status":search_status})
         self.stage("pois","已搜索到 "+str(len(places))+" 个真实经停候选，将由系统比较绕行和约束")
-        return {"places":[p.model_dump(mode="json") for p in places],"limit":limit,"radius_m":radius_m,
-            "finite_search":True,"search_basis":basis,"next_step":("把各经停点的候选 ID 按顺序放入 plan_candidates 的 stop_poi_ids；每个经停点都搜索后再规划。" if self.request.stops else "用返回的多个 POI ID 调用 plan_candidates，验证后比较；不需要用户选店。")}
+        output={"places":[p.model_dump(mode="json") for p in places],"limit":limit,"radius_m":radius_m,
+            "finite_search":True,"search_status":search_status,"search_basis":basis}
+        if failures:
+            output["failed_parts"]=failures
+            output["coverage_note"]="部分交通方式的沿途查询未完成，结果只覆盖已完成的部分；未覆盖部分不能当作没有门店。"
+        return {**output,"next_step":("把各经停点的候选 ID 按顺序放入 plan_candidates 的 stop_poi_ids；每个经停点都搜索后再规划。" if self.request.stops else "用返回的多个 POI ID 调用 plan_candidates，验证后比较；不需要用户选店。")}
 
     def stop_spec(self,stop_index):
         """(category, name) of the single stop, or of one ordered stop of a multi-stop trip."""
@@ -1100,6 +1188,17 @@ class Agent:
         with self.budget.search():
             return self._search_mode_candidates(mode,poi_ids,parking_ids,origin_hub_ids,destination_hub_ids,stop_poi_ids)
 
+    def _candidate_attempt_metadata(self,mode,signature,previous):
+        """Normal-entry policy; experiment subclasses supply their declared policy."""
+        if len(previous)>self.settings.max_replans:
+            raise ToolFailure("此方式已达到重规划次数上限。","budget_exhausted")
+        def lost_to_service(attempt):
+            return not attempt["route_ids"] and bool(attempt["failures"]) and all(
+                f["error"] in SERVICE_FAILURES for f in attempt["failures"])
+        if any(x["combinations"]==signature and not lost_to_service(x) for x in previous):
+            raise ToolFailure("重复的候选组合不会再次规划，请查询新的真实候选。","duplicate_search")
+        return {"replan":bool(previous)}
+
     def _search_mode_candidates(self,mode,poi_ids=None,parking_ids=None,origin_hub_ids=None,destination_hub_ids=None,stop_poi_ids=None):
         request=self.request.model_copy(update={"mode":mode})
         import itertools
@@ -1108,8 +1207,6 @@ class Agent:
             raise ToolFailure("起终点尚未解析。","missing_information")
         previous=[a for a in self.result.state.attempts if a.get("mode",mode)==mode]
         attempt=len(self.result.state.attempts)
-        if len(previous)>self.settings.max_replans:
-            raise ToolFailure("此方式已达到重规划次数上限。","budget_exhausted")
         if previous and not previous[-1].get("checked",False):
             raise ToolFailure("请先验证此方式上一轮已生成的候选，再根据结果探索新组合。","invalid_replan")
         multi = bool(request.stops)
@@ -1168,13 +1265,14 @@ class Agent:
         def ident(p):
             return tuple(q.id for q in p) if isinstance(p,tuple) else p.id if p else None
         signature = [tuple(ident(p) for p in pair) for pair in pairs[:10]]
-        if any(x["combinations"]==signature for x in previous):
-            raise ToolFailure("重复的候选组合不会再次规划，请查询新的真实候选。","duplicate_search")
-        record={"attempt":attempt,"mode":mode,"replan":bool(previous),"combinations":signature,
+        policy=self._candidate_attempt_metadata(mode,signature,previous)
+        record={"attempt":attempt,"mode":mode,**policy,"combinations":signature,
             "truncated":truncated+max(0,len(pairs)-10),"verified":0,"route_ids":[],"checked":False,"failures":[]}
         self.result.state.attempts.append(record)
         generated,unreachable = [],[]
-        self.stage("replan" if previous else "routes","根据检查结果继续比较真实组合" if previous else "正在调用路线服务比较真实分段行程")
+        stage="service_retry" if record.get("service_retry") else "replan" if record["replan"] else "routes"
+        self.stage(stage,"原組合的路線服務重試" if stage=="service_retry" else
+                   "根据检查结果继续比较真实组合" if record["replan"] else "正在调用路线服务比较真实分段行程")
         if mode in ("driving","walking") and multi:
             self._prefetch_legs(origin,destination,[],mode,segments=[seg for pair in pairs[:10] for seg in zip(path(pair),path(pair)[1:])])
         elif mode in ("driving","walking"):
@@ -1389,13 +1487,29 @@ class Agent:
             raise ToolFailure("推荐和备选 ID 必须不同。","invalid_arguments")
         selected = self.chosen_routes(ids) if ids else []
         route_failure = next((e for e in reversed(self.result.context.get("tool_failures",[])) if
-            e["tool"]=="plan_candidates" and e["error"] in ("unsupported_feature","missing_configuration","missing_credential",
-            "invalid_configuration","network_error","provider_error","authentication_error","rate_limited",
-            "invalid_response","budget_exhausted","search_budget")),None)
+            e["tool"]=="plan_candidates" and e["error"] in SERVICE_FAILURES),None)
         if route_failure and not self.routes:
             self.result.status,self.result.message = "tool_error",route_failure["message"]
             self.result.explanation = "算路工具未能完成；不能据此判断道路不可达或用户条件无解。"
             self.result.context["error_code"] = route_failure["error"]
+            self.done = True
+            self.stage("error",self.result.message)
+            return {"status":self.result.status}
+        # A required stop whose POI searches all failed at the service: no stop
+        # candidate exists to route through, so the honest end is a service gap,
+        # never "no feasible plan" and never a wait until the budget runs out.
+        poi_failures=[e for e in self.result.context.get("tool_failures",[]) if
+            e["tool"]=="search_pois" and e["error"] in SERVICE_FAILURES]
+        stop_required=self.request.poi_required or bool(self.request.stops)
+        if (stop_required and poi_failures and not self.routes and not self.result.state.attempts and
+                not any(s["count"] for s in self.result.context.get("poi_searches",[]))):
+            reasons=list(dict.fromkeys(e["message"] for e in poi_failures))
+            self.result.status="tool_error"
+            self.result.message="必需经停的真实门店查询未能完成，暂不能判断沿途是否有符合要求的门店。"
+            self.result.explanation=("门店查询服务失败："+"；".join(reasons[-3:])+
+                "。这不代表没有符合条件的门店或可行行程，可稍后重试。")
+            self.result.context["error_code"]="poi_service_unavailable"
+            self.result.context["poi_service_failures"]=[{"error":e["error"],"message":e["message"]} for e in poi_failures]
             self.done = True
             self.stage("error",self.result.message)
             return {"status":self.result.status}

@@ -14,6 +14,9 @@ from .models import Evidence, Place, RouteLeg
 from .tools import ToolFailure
 from .poi_categories import category_tag, POI_KEYS
 
+# OneMap nearby-stop queries use these radii; smaller requests are filtered locally.
+HUB_RADIUS_TIERS = (500, 1000, 2000, 5000)
+
 def now_utc():
     return datetime.now(timezone.utc)
 
@@ -119,8 +122,13 @@ class Providers:
             raise ToolFailure("接驳站点查询参数不合法。","invalid_arguments")
         endpoint="getNearestMrtStops" if kind=="rail" else "getNearestBusStops"
         base=self.settings.onemap_base.removesuffix("/routingsvc").rstrip("/")
+        # Query a fixed radius tier and keep only hubs within the requested radius.
+        # OneMap returns every stop inside the radius (checked 2026-10-15: filtered
+        # tiers equal direct queries), so results are unchanged while the same few
+        # requests recur across runs, which keeps recorded data replayable.
+        tier=next(r for r in HUB_RADIUS_TIERS if r>=radius)
         payload,ev=self.request("GET",base+"/nearbysvc/"+endpoint,"OneMap nearby transport",
-            params={"latitude":center.lat,"longitude":center.lon,"radius_in_meters":radius},
+            params={"latitude":center.lat,"longitude":center.lon,"radius_in_meters":tier},
             headers={"Authorization":self.key("ONEMAP_TOKEN").removeprefix("Bearer ")},ttl=86400)
         if not isinstance(payload,list):
             raise ToolFailure("OneMap 接驳站点响应结构无效。","invalid_response")
@@ -128,8 +136,11 @@ class Providers:
         try:
             for item in payload:
                 lat,lon=float(item["lat"]),float(item["lon"])
-                if not singapore(lon,lat) or distance([center.lon,center.lat],[lon,lat])>radius+20:
+                gap=distance([center.lon,center.lat],[lon,lat])
+                if not singapore(lon,lat) or gap>tier+20:
                     raise ValueError("Invalid hub coordinates")
+                if gap>radius:
+                    continue
                 places.append(Place(id="onemap-hub:"+kind+":"+str(item["id"]),name=item["name"],lat=lat,lon=lon,
                     category="transit_hub",source="OneMap nearby transport",address=item.get("road"),evidence_ids=[ev]))
         except (KeyError,TypeError,ValueError):

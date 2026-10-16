@@ -115,11 +115,19 @@ def validate_request(text, fields, clarifications):
     # Validate supporting phrases. These guards reject omitted/changed explicit
     # constraints; they do not create a fallback plan or parse absent values.
     sources = [text,*[value for value in clarifications.values() if isinstance(value,str)]]
+    # Name the actual problem: a wrong key is not a wrong phrase, and saying so
+    # spares a model round spent rewriting a phrase that was already exact.
+    unknown=[f for f in request.evidence if f not in clarifications and f not in TravelRequest.model_fields]
+    if unknown:
+        from difflib import get_close_matches
+        hints=[f+(" → "+match[0] if (match:=get_close_matches(f,TravelRequest.model_fields,1,.85)) else "") for f in unknown]
+        raise ToolFailure("evidence 的键必须是需求字段名，以下键无效："+"、".join(hints)+
+            "。没有对应字段的说明（例如没有经停）直接省略，不要写入 evidence。", "invalid_evidence")
     for field,phrase in request.evidence.items():
         if field in clarifications:
             continue  # Explicit user corrections have already replaced model values.
-        if field not in TravelRequest.model_fields or not phrase or not any(phrase in source for source in sources):
-            raise ToolFailure("需求依据必须是用户原文中的准确短语。", "invalid_evidence")
+        if not phrase or not any(phrase in source for source in sources):
+            raise ToolFailure(f"{field} 的需求依据必须是用户原文中的准确短语。", "invalid_evidence")
     for field in ("origin","destination"):
         if not getattr(request,field) and field not in clarifications and request.evidence.get(field):
             raise ToolFailure("已有"+field+"原文依据，不能把地点设为空；请保留用户描述并调用 resolve_place 查询，不要要求重新输入。","invalid_evidence")
@@ -149,6 +157,9 @@ def validate_request(text, fields, clarifications):
         # The cited phrase, or failing that the user's own wording, must request this family.
         phrases=[request.evidence["mode"]] if request.evidence.get("mode") else sources
         if not any(mode_requested(request.mode,phrase) for phrase in phrases):
+            if request.evidence.get("mode") and any(mode_requested(request.mode,source) for source in sources):
+                raise ToolFailure(f"原文确实要求了 {request.mode}，但引用的短语「{request.evidence['mode']}」过短，"
+                    "不能单独表明这一要求；请引用原文中包含完整要求的准确短语（例如带“到/去”的整句片段）。","invalid_evidence")
             raise ToolFailure("只有用户明确要求某种出行方式时才能填写 mode，且需要该要求的原文依据；"
                 "「有车」「可以自己开」只表示 car_access，不是要求自驾。请把 mode 设为 null，由系统比较各方式。","invalid_evidence")
     if request.arrival_deadline and "arrival_deadline" not in clarifications:
